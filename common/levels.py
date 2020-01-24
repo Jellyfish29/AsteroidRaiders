@@ -1,0 +1,209 @@
+import random
+import pickle
+
+from astraid_funcs import *
+import astraid_data as data
+from phenomenon import *
+from enemys import *
+import Gfx as gfx
+from items import Active_Items
+
+
+class Levels:
+
+    interval_score = 0
+    display_score = 0
+    display_level = 1
+    level = 1
+    level_interval = 35
+    enemy_amount = 5  # at Start
+    boss_amount = 1
+    blocker_amount = 1
+    skill_points = 1
+    spez_event_trigger = 0
+    tc = Time_controler()
+    # elite/Elites
+    elite_wait = False
+    elite_spawn_time = 0
+    event_trigger_time = (3600, 5000)
+    boss_fight = False
+    after_boss = False
+    elite_fight = False
+    second_elite_chance = 100
+    second_elite = False
+
+    @classmethod
+    def scaling(cls):
+        data.ENEMY.health += 0.4
+        data.ELITES.health += data.ELITES.health * 0.1
+        cls.second_elite_chance -= 1.5
+        if cls.level % 5 == 0:
+            cls.enemy_amount += 1
+        if cls.level % 5 == 0:
+            cls.spez_add()
+            data.BOSS.create(cls.level)
+            cls.boss_fight = True
+            cls.save_game()
+            gfx.Gfx.scroll_speed += 1
+            gfx.Gfx.bg_move = False
+
+    @classmethod
+    def elite_spawn(cls):
+        if not any((cls.after_boss, cls.boss_fight)):
+            if cls.level not in [i - 1 for i in range(5, 41, 5)]:
+                if not cls.elite_wait:
+                    cls.elite_spawn_time = 4400
+                    cls.elite_wait = True
+                if cls.elite_wait:
+                    if cls.tc.trigger_1(int(cls.elite_spawn_time)):
+                        data.ELITES.spawn()
+                        if cls.level > 10 and random.randint(0, 100) > cls.second_elite_chance:
+                            cls.second_elite = True
+                        cls.elite_wait = False
+        if cls.second_elite:
+            if cls.tc.trigger_2(240):
+                cls.second_elite = False
+                data.ELITES.spawn()
+
+    @classmethod
+    def spez_add(cls):
+        data.ENEMY.spez_spawn_time -= 30
+        data.PHENOM.spawn_time -= 30
+        if data.ENEMY.spez_spawn_time < 60:
+            data.ENEMY.spez_spawn_time = 60
+        if cls.level == 1:
+            data.ENEMY.set_spawn_table(Seeker)
+            data.ENEMY.set_spawn_table(Jumper)
+            data.PHENOM.set_spawn_table(Planet)
+        if cls.level == 5:
+            data.ENEMY.set_spawn_table(Shooter)
+            data.PHENOM.set_spawn_table(Gravity_well)
+        elif cls.level == 10:
+            data.ENEMY.set_spawn_table(Mine_layer)
+            data.PHENOM.set_spawn_table(Repair_station)
+        elif cls.level == 15:
+            data.ENEMY.set_spawn_table(Strafer)
+            data.PHENOM.set_spawn_table(Anti_gravity_well)
+        elif cls.level == 20:
+            # data.ENEMY.get_spawn_table().append(en.Miner)
+            data.PHENOM.set_spawn_table(Nabulae_aoe_damage)
+        elif cls.level == 25:
+            data.PHENOM.set_spawn_table(Nebulae_fire_rate_plus)
+
+    @classmethod
+    def spez_event(cls, kind):
+        cls.spez_event_trigger = 0
+        if kind == "wave":
+            for i in range(20):
+                data.ENEMY_DATA.append(Asteroid())
+        elif kind == "jumper":
+            for i in range(10 + cls.level):
+                data.ENEMY_DATA.append(Jumper())
+        elif kind == "shooter":
+            for i in range(3 + int(cls.level / 10)):
+                data.ENEMY_DATA.append(Shooter())
+        elif kind == "seeker":
+            for i in range(2 + int(cls.level / 10)):
+                data.ENEMY_DATA.append(Seeker())
+
+    @classmethod
+    def save_game(cls):
+        with open(os.path.join(os.getcwd()[:-7], f"save_games\\saves"), "wb") as file:
+            pickle.dump(STAGE_SAVE(), file)
+
+    @classmethod
+    def load_game(cls):
+        with open(os.path.join(os.getcwd()[:-7], f"save_games\\saves"), "rb") as file:
+            return pickle.load(file)
+
+    @classmethod
+    def update(cls):
+        if not any((cls.boss_fight, cls.after_boss, cls.elite_fight)):
+            if cls.tc.trigger_2(random.randint(cls.event_trigger_time[0], cls.event_trigger_time[1])):
+                cls.spez_event_trigger = random.randint(1, 4)
+
+        cls.elite_spawn()
+
+        if cls.interval_score > cls.level_interval:
+            cls.event_trigger_time = (cls.event_trigger_time[0] - 50, cls.event_trigger_time[1] - 75)
+            cls.level += 1
+            cls.display_level += 1
+            cls.level_interval += 7
+            cls.skill_points += 1
+            cls.scaling()
+            cls.interval_score = 0
+
+
+data.LEVELS = Levels
+
+
+class STAGE_SAVE():
+
+    def __init__(self):
+        self.items = data.ITEMS.inventory_dic
+        self.pl_health = data.PLAYER.health
+        self.pl_max_health = data.PLAYER.max_health
+        self.pl_heal_amount = data.PLAYER.heal_amount
+        self.skill_points = Levels.skill_points
+        self.upgrade_points = data.ITEMS.upgrade_points
+        self.pl_directions = data.PLAYER.directions
+        self.pl_speed = data.PLAYER.speed
+        self.pl_dmg = data.PLAYER.damage
+        self.pl_crit = data.PLAYER.crit_chance
+        self.pl_fire_rate = data.TURRET.fire_rate
+        self.pl_cd = Active_Items.cd_reduction
+        self.pl_jump = data.PLAYER.jumpdrive
+        self.pl_shield = data.PLAYER.shield
+        self.lvl = Levels.level
+        self.score = Levels.display_score
+        self.interval_score = Levels.level_interval
+        self.boss_fight = Levels.boss_fight
+        self.enemy_health = data.ENEMY.health
+        self.elite_health = data.ELITES.health
+        self.enemy_amount = Levels.enemy_amount
+        self.second_elite_chance = Levels.second_elite_chance
+        self.enemy_table = data.ENEMY.spez_spawn_table
+        self.phenomenon_spawn_table = data.PHENOM.phenomenon_spawn_table
+        self.bg_speed = gfx.Gfx.scroll_speed
+
+    def load_save(self):
+        data.ENEMY_DATA.clear()
+        data.ENEMY_PROJECTILE_DATA.clear()
+        data.PLAYER_PROJECTILE_DATA.clear()
+        data.PHENOMENON_DATA.clear()
+        data.PLAYER_DATA.clear()
+        data.ITEMS.dropped_lst.clear()
+
+        Levels.after_boss = False
+        Levels.interval_score = 0
+        Levels.level = self.lvl
+        Levels.display_score = self.score
+        Levels.level_interval = self.interval_score
+        data.ITEMS.inventory_dic = self.items
+        data.PLAYER.health = self.pl_health
+        data.PLAYER.max_health = self.pl_max_health
+        data.PLAYER.heal_amount = self.pl_heal_amount
+        data.PLAYER.hitbox.center = (1000, 900)
+        Levels.skill_points = self.skill_points
+        data.ITEMS.upgrade_points = self.upgrade_points
+        data.PLAYER.directions = self.pl_directions
+        data.PLAYER.speed = self.pl_speed
+        data.PLAYER.damage = self.pl_dmg
+        data.PLAYER.crit_chance = self.pl_crit
+        data.TURRET.fire_rate = self.pl_fire_rate
+        Active_Items.cd_reduction = self.pl_cd
+        data.PLAYER.jumpdrive = self.pl_jump
+        data.PLAYER.shield = self.pl_shield
+        Levels.boss_fight = self.boss_fight
+        data.ENEMY.health = self.enemy_health
+        data.ELITES.health = self.elite_health
+        Levels.enemy_amount = self.enemy_amount
+        Levels.second_elite_chance = self.second_elite_chance
+        data.ENEMY.spez_spawn_table = self.enemy_table
+        data.PHENOM.phenomenon_spawn_table = self.phenomenon_spawn_table
+        gfx.Gfx.scroll_speed = self.bg_speed
+        if self.boss_fight:
+            self.spawn_boss()
+
+    def spawn_boss(self):
+        data.BOSS.create(self.lvl)

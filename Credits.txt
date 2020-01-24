@@ -1,0 +1,57 @@
+## Art Assets ##
+
+Asteroids: 
+by IgalBlech / Public Domain CC0
+https://opengameart.org/content/spinning-asteroid-animation
+
+Planets: 
+by Cethiel / Public Domain CC0
+https://opengameart.org/content/planets-set-n%C2%B01
+
+Boss ships: 
+by Skorpio CC-BY-SA 3.0 / GPL 3.0
+https://opengameart.org/content/spaceships-top-down
+modified by Clemens Lütge
+
+Cursor Crosshairs: 
+by hackcraft.de /Public Domain CC0
+https://opengameart.org/content/crosshairs-and-reticles
+
+Explosion effects: 
+by StumpyStrust / Public Domain
+https://opengameart.org/content/explosion-sheet
+
+icons:
+Topbar assets by rubberduck / Public Domain CC0
+https://opengameart.org/content/sci-fi-interface-textures
+modified by Clemens Lütge
+
+power up icons:
+Originals by TRBRY CC-BY 3.0 / OGA-BY 3.0
+https://opengameart.org/content/power-up-icons
+modified by Clemens Lütge
+
+nuke and health icon:
+Original by sbed / CC-BY 3.0 / CC-BY-SA 3.0
+https://opengameart.org/content/95-game-icons
+modified by Clemens Lütge
+
+Player ships:
+https://www.pngfly.com/png-d64yx4/
+modified by Clemens Lütge
+
+Power up cargo ship: 
+Original by Skorpio CC-BY-SA / GPL 3.0
+https://opengameart.org/content/space-ship-construction-kit
+modified by Clemens Lütge
+
+AMRAAM
+https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/AIM-120A_AMRAAM_scheme.svg/5450px-AIM-120A_AMRAAM_scheme.svg.png
+
+stars
+https://www.itl.cat/view/8704/
+http://cdn.wallpaperhi.com/1920x1080/20120725/outer%20space%20stars%201920x1080%20wallpaper_www.wallpaperhi.com_25.jpg
+
+wormhole:
+https://twitter.com/worml
+
