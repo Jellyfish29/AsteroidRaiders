@@ -179,7 +179,6 @@ class Boss_mine_boat(Bosses):
         self.health = 170
         self.speed = 4
         self.fire_rate = 90
-        self.boss_skill = []
         self.move_pattern = (0, 1, 2, 3, 4, 5, 6)
         self.size = (80, 180)
         self.gfx_idx = (0, 1)

@@ -6,8 +6,6 @@ PLAYER_PROJECTILE_DATA = []
 
 PHENOMENON_DATA = []
 
-TIMER = {}
-
 PLAYER = None
 TURRET = None
 ITEMS = None
