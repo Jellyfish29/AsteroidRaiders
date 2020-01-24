@@ -21,7 +21,6 @@ class Levels:
     blocker_amount = 1
     skill_points = 1
     spez_event_trigger = 0
-    tc = Time_controler()
     # elite/Elites
     elite_wait = False
     elite_spawn_time = 0
@@ -48,20 +47,21 @@ class Levels:
             gfx.Gfx.bg_move = False
 
     @classmethod
-    def elite_spawn(cls):
+    @timer
+    def elite_spawn(cls, timer):
         if not any((cls.after_boss, cls.boss_fight)):
             if cls.level not in [i - 1 for i in range(5, 41, 5)]:
                 if not cls.elite_wait:
                     cls.elite_spawn_time = 4400
                     cls.elite_wait = True
                 if cls.elite_wait:
-                    if cls.tc.trigger_1(int(cls.elite_spawn_time)):
+                    if timer.trigger(int(cls.elite_spawn_time)):
                         data.ELITES.spawn()
                         if cls.level > 10 and random.randint(0, 100) > cls.second_elite_chance:
                             cls.second_elite = True
                         cls.elite_wait = False
         if cls.second_elite:
-            if cls.tc.trigger_2(240):
+            if timer.trigger(240):
                 cls.second_elite = False
                 data.ELITES.spawn()
 
@@ -117,9 +117,10 @@ class Levels:
             return pickle.load(file)
 
     @classmethod
-    def update(cls):
+    @timer
+    def update(cls, timer):
         if not any((cls.boss_fight, cls.after_boss, cls.elite_fight)):
-            if cls.tc.trigger_2(random.randint(cls.event_trigger_time[0], cls.event_trigger_time[1])):
+            if timer.trigger(random.randint(cls.event_trigger_time[0], cls.event_trigger_time[1])):
                 cls.spez_event_trigger = random.randint(1, 4)
 
         cls.elite_spawn()

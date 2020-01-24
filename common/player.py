@@ -46,7 +46,6 @@ class Player:
     effects_sprites = get_images("hit_effects")
     gfx_ticker = 0
     # Time
-    tc = Time_controler()
     restart_timer = False
 
     @classmethod
@@ -140,9 +139,10 @@ class Player:
         win.blit(cls.effects_sprites[3], (cls.hitbox.topleft[0] - 20, cls.hitbox.topleft[1] - 20))
 
     @classmethod
-    def gfx_warning_lights(cls):
+    @timer
+    def gfx_warning_lights(cls, timer):
         if cls.health < 2:
-            ticker = cls.tc.animation_ticker(30)
+            ticker = timer.timer_animation_ticker(30)
             if ticker < 20:
                 win.blit(cls.ship_sprites[21], (cls.hitbox.topleft[0] - 6, cls.hitbox.topleft[1] - 25))
             else:
@@ -172,7 +172,8 @@ class Player:
             cls.crit_chance = cls.crit_limit
 
     @classmethod
-    def update(cls):
+    @timer
+    def update(cls, timer):
 
         for operator, position, con, direction in [
             ("<", cls.hitbox.center[0], 0, (1, 0)),
@@ -204,7 +205,7 @@ class Player:
                 Gfx.bg_move = True
 
         if cls.restart_timer:
-            if cls.tc.trigger_1(120):
+            if timer.trigger(120):
                 data.LEVELS.after_boss = False
                 cls.restart_timer = False
 
@@ -218,13 +219,14 @@ class Player:
         Escort.spawn()
 
 
-class Escort:
+class Escort(Timer):
 
     lst = []
     spawned = False
     fire_rate = 100
 
     def __init__(self, typ, color, gfx_idx, second=False):
+        Timer.__init__(self)
         self.typ = typ
         self.color = color
         self.gfx_idx = gfx_idx
@@ -247,7 +249,7 @@ class Escort:
         return self.kill
 
     def gfx_draw(self):
-        animation_ticker = self.tc.animation_ticker(10)
+        animation_ticker = self.timer_animation_ticker(10)
         if animation_ticker < 5:
             win.blit(Player.ship_sprites[self.gfx_idx[0]], (self.hitbox.topleft[0] - 0, self.hitbox.topleft[1] - 0))
         else:
@@ -261,7 +263,7 @@ class Escort:
                 pass
 
             if self.typ == "escort_missile":
-                if self.tc.trigger_1(Escort.fire_rate * 5):
+                if self.timer_trigger(Escort.fire_rate * 5):
                     for target in targets:
                         data.PLAYER_PROJECTILE_DATA.append(Missile(15,
                                                                    (5, 5),
@@ -271,7 +273,7 @@ class Escort:
                                                                    "es_missile"))
 
             elif self.typ == "escort_gun":
-                if self.tc.trigger_1(Escort.fire_rate):
+                if self.timer_trigger(Escort.fire_rate):
                     for target in targets:
                         data.PLAYER_PROJECTILE_DATA.append(Projectile(data.TURRET.projectile_speed,
                                                                       data.TURRET.projectile_size,
@@ -282,7 +284,7 @@ class Escort:
                                                                       target=target.hitbox.center))
 
             elif self.typ == "escort_gunship":
-                if self.tc.trigger_1(Escort.fire_rate * 0.65):
+                if self.timer_trigger(Escort.fire_rate * 0.65):
                     for angle in [280, 283, 286]:
                         if self.second:
                             data.PLAYER_PROJECTILE_DATA.append(Projectile(data.TURRET.projectile_speed,
@@ -306,6 +308,7 @@ class Escort:
         self.move()
         self.skills()
         self.gfx_draw()
+        self.timer_tick()
         if not Escort.spawned:
             self.kill = True
 

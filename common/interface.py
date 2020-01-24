@@ -23,7 +23,7 @@ class Interface:
         pygame.Rect(500, 500, 100, 100)
 
     ]
-    tc = Time_controler()
+
     clickable = True
 
     def __init__(self, color, location, icon_idx, font_size, text="", button_size=(1, 1)):
@@ -88,7 +88,8 @@ class Interface:
             Interface.inter_lst.append(Interface(color, location, icon_idx, font_size))
 
     @classmethod
-    def update(cls):
+    @timer
+    def update(cls, timer):
         win.blit(Interface.icon_sprites[13], (0, 0))
 
         Interface.update_inter()
@@ -99,7 +100,7 @@ class Interface:
             win.blit(Interface.icon_sprites[6], (420, 10))
         # Skill_up
         if data.LEVELS.skill_points > 0:
-            ani_ticker = Interface.tc.animation_ticker(40)
+            ani_ticker = timer.timer_animation_ticker(40)
             if ani_ticker < 30:
                 win.blit(Interface.icon_sprites[12], (49, 42))
             else:

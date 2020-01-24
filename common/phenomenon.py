@@ -6,15 +6,15 @@ from init import *
 import astraid_data as data
 
 
-class Phenomenon:
+class Phenomenon(Timer):
 
-    tc = Time_controler()
     phenom_sprites = get_images("phenomenon")
     phenomenon_spawn_table = []
     spawn_time = 100  # 3600
     amount = 1
 
     def __init__(self, speed, size, gfx_idx, gfx_hook, flag="neutral", decay=None):
+        Timer.__init__(self)
         self.speed = speed
         self.size = size
         self.hitbox = pygame.Rect(random.randint(200, winwidth - 200), -650, size[0], size[0])
@@ -23,13 +23,12 @@ class Phenomenon:
         self.gfx_hook = gfx_hook
         self.flag = flag
         self.decay = decay
-        self.tc = Time_controler()
 
     def move(self):
         self.hitbox.move_ip(0, self.speed)
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         if self.decay is not None:
-            if self.tc.trigger_2(self.decay):
+            if self.timer_trigger(self.decay):
                 self.kill = True
 
     def border_collision(self):
@@ -43,7 +42,7 @@ class Phenomenon:
         pass
 
     def gfx_draw(self):
-        animation_ticker = self.tc.animation_ticker(10)
+        animation_ticker = self.timer_animation_ticker(10)
         if animation_ticker < 5:
             win.blit(Phenomenon.phenom_sprites[self.gfx_idx[0]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
         else:
@@ -57,6 +56,7 @@ class Phenomenon:
         self.gfx_draw()
         self.border_collision()
         self.player_collision()
+        self.timer_tick()
 
     @classmethod
     def get_spawn_table(cls):
@@ -67,11 +67,12 @@ class Phenomenon:
         cls.phenomenon_spawn_table.append(p)
 
     @classmethod
-    def update(cls):
+    @timer
+    def update(cls, timer):
 
         if not any((data.LEVELS.boss_fight, data.LEVELS.after_boss)):
             if data.LEVELS.level not in [i - 1 for i in range(5, 41, 5)]:
-                if Phenomenon.tc.trigger_1(Phenomenon.spawn_time):
+                if timer.trigger(Phenomenon.spawn_time):
                     if len(data.PHENOMENON_DATA) < Phenomenon.amount:
                         data.PHENOMENON_DATA.append(random.choice(cls.phenomenon_spawn_table)())
 # Anti_gravity_well(),Planet(), Gravity_well(), Nebulae_fire_rate_plus(), Repair_station(), Nabulae_aoe_damage()
@@ -175,7 +176,7 @@ class Repair_station(Phenomenon):
     def player_collision(self):
         if self.hitbox.colliderect(data.PLAYER.hitbox):
             if data.PLAYER.health < data.PLAYER.max_health:
-                if self.tc.trigger_1(180):
+                if self.timer_trigger(180):
                     data.PLAYER.health += 1
                     pygame.draw.rect(win, (0, 255, 0), pygame.Rect(0, 0, winwidth, winheight))
 
@@ -191,7 +192,7 @@ class Nebulae_fire_rate_plus(Phenomenon):
         if not self.move_trigger:
             if self.hitbox.center[1] > winheight / 2:
                 self.speed = 0
-                if self.tc.trigger_1(1200):
+                if self.timer_trigger(1200):
                     self.move_trigger = True
                     self.speed = 1
 
@@ -228,7 +229,7 @@ class Nabulae_aoe_damage(Phenomenon):
 
     def player_collision(self):
         if self.hitbox.colliderect(data.PLAYER.hitbox):
-            if self.tc.trigger_1(60):
+            if self.timer_trigger_1(60):
                 data.PLAYER.health -= 1
                 pygame.draw.rect(win, (0, 0, 255), pygame.Rect(0, 0, winwidth, winheight))
 

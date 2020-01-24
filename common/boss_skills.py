@@ -7,16 +7,10 @@ from Gfx import Gfx
 from projectiles import Projectile, Mine, Missile, Impactor, Explosion
 
 
-class Boss_skills():
+class Boss_skills(Timer):
 
     def __init__(self):
-        self.missile_tc = Time_controler()
-        self.main_gun_tc = Time_controler()
-        self.salvo_tc = Time_controler()
-        self.volley_tc = Time_controler()
-        self.jumpdrive_tc = Time_controler()
-        self.mine_tc = Time_controler()
-        self.star_shot_tc = Time_controler()
+        # Timer.__init__(self)
         self.missile_duration = 480
         self.missile_retarget_trigger = 90
         self.mg_angle = 0
@@ -27,7 +21,7 @@ class Boss_skills():
         self.chaser_hit = False
 
     def skill_mines(self, **kwargs):
-        if self.mine_tc.trigger_1(self.fire_rate * 5):
+        if self.timer_trigger(self.fire_rate * 5):
             data.ENEMY_PROJECTILE_DATA.append(Mine(
                 speed=12,
                 start_point=self.hitbox.center,
@@ -36,7 +30,7 @@ class Boss_skills():
             ))
 
     def skill_missile(self, **kwargs):
-        if self.missile_tc.trigger_1(self.missile_duration):
+        if self.timer_trigger(self.missile_duration):
             self.missile_direction = 270
             data.ENEMY_PROJECTILE_DATA.append(Missile(
                 speed=8,
@@ -51,19 +45,19 @@ class Boss_skills():
             ))
 
     def skill_star_shot(self, **kwargs):
-        if self.star_shot_tc.trigger_1(self.fire_rate * 5):
+        if self.timer_trigger(self.fire_rate * 5):
             for i in range(0, 359, 22):
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 6, angle=i))
 
     def skill_salvo_alpha(self, **kwargs):
-        if self.salvo_tc.trigger_1(self.fire_rate * 3):
+        if self.timer_trigger(self.fire_rate * 3):
             for i in range(0, self.size[1], int(self.size[1] / 10)):
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topleft[0], self.hitbox.topleft[1] + i), 1, "bo_salvo", 6, angle=180))
             for i in range(0, self.size[1], int(self.size[1] / 10)):
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topright[0], self.hitbox.topright[1] + i), 1, "bo_salvo", 6, angle=0))
 
     def skill_salvo_bravo(self, **kwargs):
-        if self.salvo_tc.trigger_2(self.fire_rate * 5):
+        if self.timer_trigger(self.fire_rate * 5):
             for i in range(135, 226, 9):
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 6, angle=i))
             for i in range(0, 45, 9):
@@ -72,7 +66,7 @@ class Boss_skills():
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 6, angle=i))
 
     def skill_volley(self, **kwargs):
-        if self.volley_tc.trigger_1(self.fire_rate * 3):
+        if self.timer_trigger(self.fire_rate * 3):
             for i in [-5, 0, 5]:
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "benemy", 6, angle_variation=i, target=data.PLAYER.hitbox))
 
@@ -93,7 +87,7 @@ class Boss_skills():
                 pygame.draw.rect(win, (0, 0, 100), pygame.Rect(self.jump_point, self.size))
             elif self.__class__.__name__ == "Elite":
                 pygame.draw.rect(win, (0, 0, 100), pygame.Rect(self.jump_point, self.size))
-            if self.jumpdrive_tc.trigger_1(60):
+            if self.timer_trigger(60):
                 Gfx.create_effect("jump", 2, (self.hitbox.topleft[0] - 40, self.hitbox.topleft[1] - 40))
                 self.hitbox.topleft = self.jump_point
                 self.jump_charge = False
@@ -109,8 +103,7 @@ class Boss_skills():
             bo.Boss_adds.create(amount=2, spawn_point=self.hitbox.center, respawn_speed=30, skill=[Boss_skills.skill_volley, Boss_skills.skill_jumpdrive, Boss_skills.skill_missile])
 
     def skill_main_gun(self, target=data.PLAYER.hitbox):
-        if self.main_gun_tc.delay(True, self.fire_rate * 6):
-            # if self.main_gun_tc.trigger_1(4):
+        if self.timer_delay(limit=self.fire_rate * 6):
             data.ENEMY_PROJECTILE_DATA.append(Projectile(
                 speed=50,
                 size=(4, 4),
@@ -120,7 +113,7 @@ class Boss_skills():
                 gfx_idx=7,
                 target=target,
             ))
-            if self.main_gun_tc.trigger_2(60):
+            if self.timer_trigger(60):
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(
                     speed=40,
                     size=(30, 30),
@@ -130,7 +123,7 @@ class Boss_skills():
                     gfx_idx=8,
                     target=target
                 ))
-                self.main_gun_tc.delay(False)
+                self.timer_delay(reset=True)
                 if target is not data.PLAYER.hitbox:
                     self.target = (random.randint(0, winwidth), random.randint(0, winheight))
 
@@ -138,7 +131,7 @@ class Boss_skills():
         if not self.chaser_hit:
             self.hitbox.move_ip(self.angles[degrees(data.PLAYER.hitbox.center[0], self.hitbox.center[0], data.PLAYER.hitbox.center[1], self.hitbox.center[1])])
         else:
-            if self.jumpdrive_tc.trigger_3(300):
+            if self.timer_trigger(300):
                 self.chaser_hit = False
                 self.special_move = True
         if self.hitbox.colliderect(data.PLAYER.hitbox):
@@ -153,11 +146,11 @@ class Boss_skills():
         turret_amount = len([e.set_sp_dmg() for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_turret"])
         if turret_amount > 0:
             self.special_take_damage = lambda dmg, a=turret_amount: [e.set_health(((dmg * 0.66) / a), (200, 0, 200)) for e in data.ENEMY_DATA]
-        if self.tc.delay(True, limit=600):
+        if self.timer_delay(limit=600):
             if turret_amount == 0:
                 self.skills_lst.remove(self.skill_turret_defence_matrix)
                 self.special_take_damage = None
-                self.tc.delay(False)
+                self.timer_delay(reset=True)
 
     def skill_main_gun_salvo(self):
         self.special_move = True
@@ -182,7 +175,7 @@ class Boss_skills():
         if abs(1000 - self.hitbox.center[0]) < 10 or abs(500 - self.hitbox.center[1]) < 10:
             self.angles = angles_360(0)
 
-        if self.missile_tc.trigger_2(15):
+        if self.timer_trigger(15):
             target = random.randint(0, winwidth), random.randint(0, winheight)
             data.ENEMY_PROJECTILE_DATA.append(Impactor(
                 speed=10,

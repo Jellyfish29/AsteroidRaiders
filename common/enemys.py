@@ -18,7 +18,6 @@ class Enemy(Timer):
     health = 2.6
     ttk_ticker = 100
     spez_spawn_time = 420
-    tc = Time_controler()
 
     def __init__(self, direction, speed, spawn_point, health, size, gfx_idx, gfx_hook, sprites):
         self.spawn_points = {
@@ -43,7 +42,6 @@ class Enemy(Timer):
         self.gfx_idx = gfx_idx
         self.gfx_hook = gfx_hook
         self.sprites = sprites
-        self.tc = Time_controler()
         self.kill = False
         self.ttk_bonus = 0
         self.projectile_speed = 14
@@ -137,19 +135,15 @@ class Enemy(Timer):
         data.TURRET.point_defence(self.hitbox)
         if self.health <= 0:
             self.death()
-            
         self.timer_tick()
-
-    # @classmethod
-    # def get_spawn_table(cls):
-    #     return cls.spez_spawn_table
 
     @classmethod
     def set_spawn_table(cls, e):
         cls.spez_spawn_table.append(e)
 
     @classmethod
-    def update(cls):
+    @timer
+    def update(cls, timer):
 
         if Enemy.ttk_ticker > 0:
             Enemy.ttk_ticker -= 0.4
@@ -161,7 +155,7 @@ class Enemy(Timer):
                 data.ENEMY_DATA.append(Asteroid())
                 # data.ENEMY_DATA.append(*random.random.choices([Asteroid(), Jumper(), Shooter(), Seeker(), Strafer(), Miner(), Mine_layer()], weights=[70, c, c, c, c, c, c]))
                 # data.ENEMY_DATA.append(Shooter())
-            if Enemy.tc.trigger_1(Enemy.spez_spawn_time):
+            if timer.trigger(Enemy.spez_spawn_time):
                 data.ENEMY_DATA.append(random.choice(cls.spez_spawn_table)())
 
 
@@ -224,6 +218,7 @@ class Shooter(Enemy):
         self.ttk_bonus = 40
 
     def skill(self):
+        # print(f"shooter {self.timer_calls_per_tick}")
         if self.timer_trigger(self.fire_rate):
             data.ENEMY_PROJECTILE_DATA.append(Projectile(
                 speed=self.projectile_speed,

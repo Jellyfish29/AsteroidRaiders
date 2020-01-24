@@ -61,7 +61,7 @@ class Turret:
     @classmethod
     @timer
     def test_sin(cls, timer):
-        if timer.trigger_1():
+        if timer.trigger():
             data.PLAYER_PROJECTILE_DATA.append(Wave(
                 speed=10,
                 size=(4, 4),
@@ -154,7 +154,7 @@ class Turret:
                 pd_envelope = pygame.Rect(data.PLAYER.hitbox.center[0] - 200, data.PLAYER.hitbox.center[1] - 200, 400, 400)
                 # pygame.draw.rect(win, (255, 255, 0), pd_envelope)
                 if pd_envelope.colliderect(enemy):
-                    if timer.trigger_1(6):
+                    if timer.trigger(6):
                         data.PLAYER_PROJECTILE_DATA.append(Projectile(
                             speed=30,
                             size=(10, 10),
@@ -256,7 +256,7 @@ class Turret:
         if "rapid_fire" in data.ITEMS.active_flag_lst:
             rapid_fire = data.ITEMS.get_item(flag="rapid_fire")
             if rapid_fire.active:
-                if timer.trigger_2(5):
+                if timer.trigger(5):
                     Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
                     cls.super_shot_limiter += 1
                     if cls.super_shot_limiter >= cls.super_shot_ammo:
@@ -280,7 +280,7 @@ class Turret:
         if "star_fire" in data.ITEMS.active_flag_lst:
             star_fire = data.ITEMS.get_item(flag="star_fire")
             if star_fire.active:
-                if timer.trigger_1(30):
+                if timer.trigger(30):
                     cls.star_shot_limiter += 1
                     Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
                     if cls.star_shot_limiter > cls.star_shot_ammo:
@@ -302,7 +302,7 @@ class Turret:
     @classmethod
     @timer
     def normal_fire(cls, timer):
-        if timer.trigger_1(cls.fire_rate):
+        if timer.trigger(cls.fire_rate):
             cls.shot_count += 1
 
             dmg = data.PLAYER.damage

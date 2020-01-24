@@ -124,10 +124,12 @@ def run_once(f):
 # @timer
 # foo(pos_arg_1, pos_arg_2, timer, kw_arg=0)
 
+
 def timer(f):
-    timer = Time_controler()
+    timer = Timer()
 
     def wrapper(*args, timer=timer, **kwargs):
+        timer.timer_tick()
         return f(*args, timer, **kwargs)
     return wrapper
 
@@ -135,106 +137,135 @@ def timer(f):
 class Timer:
 
     def __init__(self):
-        self.ticker = {i: 0 for i in range(20)}  # {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+        self.ticker = {}
         self.timer_calls_per_tick = 0
-        self.animation_range_ticker = 0
+        self.animation_range_ticker_1 = 0
+        self.animation_range_ticker_2 = 0
 
     def timer_trigger(self, limit):
         self.timer_calls_per_tick += 1
+        if self.timer_calls_per_tick not in self.ticker:
+            self.ticker.update({self.timer_calls_per_tick: 0})
         self.ticker[self.timer_calls_per_tick] += 1
+
+        if self.ticker[self.timer_calls_per_tick] >= limit:
+            self.ticker[self.timer_calls_per_tick] = 0
+            return True
+
+    def timer_key_trigger(self, limit, key=0):
+        if key not in self.ticker:
+            self.ticker.update({key: 0})
+
+        self.ticker[key] += 1
+        if self.ticker[key] >= limit:
+            self.ticker[key] = 0
+            return True
+
+    def trigger(self, limit):
+        self.timer_calls_per_tick += 1
+        if self.timer_calls_per_tick not in self.ticker:
+            self.ticker.update({self.timer_calls_per_tick: 0})
+        self.ticker[self.timer_calls_per_tick] += 1
+
         if self.ticker[self.timer_calls_per_tick] >= limit:
             self.ticker[self.timer_calls_per_tick] = 0
             return True
 
     def timer_delay(self, limit=0, reset=False):
+        self.timer_calls_per_tick += 1
+        if self.timer_calls_per_tick not in self.ticker:
+            self.ticker.update({self.timer_calls_per_tick: 0})
         self.ticker[self.timer_calls_per_tick] += 1
+
         if self.ticker[self.timer_calls_per_tick] >= limit:
             return True
         if reset:
             self.ticker[self.timer_calls_per_tick] = 0
-        self.timer_calls_per_tick += 1
 
     def timer_animation_ticker(self, limit):
+        self.timer_calls_per_tick += 1
+        if self.timer_calls_per_tick not in self.ticker:
+            self.ticker.update({self.timer_calls_per_tick: 0})
         self.ticker[self.timer_calls_per_tick] += 1
+
         if self.ticker[self.timer_calls_per_tick] >= limit:
             self.ticker[self.timer_calls_per_tick] = 0
         return self.ticker[self.timer_calls_per_tick]
 
     def timer_animation_range(self, interval, limit):
-        self.ticker[self.timer_calls_per_tick] += 1
-        if self.animation_range_ticker >= interval:
-            self.ticker[self.timer_calls_per_tick] += 1
-            self.animation_range_ticker = 0
-        if self.ticker[self.timer_calls_per_tick] >= limit:
-            self.ticker[self.timer_calls_per_tick] = 0
+        if self.animation_range_ticker_1 >= interval:
+            self.animation_range_ticker_2 += 1
+            self.animation_range_ticker_1 = 0
+        if self.animation_range_ticker_2 >= limit:
+            self.animation_range_ticker_2 = 0
             return None
-        self.animation_range_ticker += 1
-        return self.ticker[self.timer_calls_per_tick]
+        self.animation_range_ticker_1 += 1
+        return self.animation_range_ticker_2
 
     def timer_tick(self):
         self.timer_calls_per_tick = 0
 
 
-class Time_controler:
+# class Time_controler:
 
-    def __init__(self):
-        self.ticker_1 = 0
-        self.ticker_2 = 0
-        self.ticker_3 = 0
-        self.delay_ticker = 0
-        self.ani_ticker = 0
-        self.animation_range_ticker = 0
-        self.i = 0
+#     def __init__(self):
+#         self.ticker_1 = 0
+#         self.ticker_2 = 0
+#         self.ticker_3 = 0
+#         self.delay_ticker = 0
+#         self.ani_ticker = 0
+#         self.animation_range_ticker = 0
+#         self.i = 0
 
-    def trigger_1(self, limit):
-        self.ticker_1 += 1
-        if self.ticker_1 >= limit:
-            self.ticker_1 = 0
-            return True
-        else:
-            return False
+#     def trigger_1(self, limit):
+#         self.ticker_1 += 1
+#         if self.ticker_1 >= limit:
+#             self.ticker_1 = 0
+#             return True
+#         else:
+#             return False
 
-    def trigger_2(self, limit):
-        self.ticker_2 += 1
-        if self.ticker_2 >= limit:
-            self.ticker_2 = 0
-            return True
-        else:
-            return False
+#     def trigger_2(self, limit):
+#         self.ticker_2 += 1
+#         if self.ticker_2 >= limit:
+#             self.ticker_2 = 0
+#             return True
+#         else:
+#             return False
 
-    def trigger_3(self, limit):
-        self.ticker_3 += 1
-        if self.ticker_3 >= limit:
-            self.ticker_3 = 0
-            return True
-        else:
-            return False
+#     def trigger_3(self, limit):
+#         self.ticker_3 += 1
+#         if self.ticker_3 >= limit:
+#             self.ticker_3 = 0
+#             return True
+#         else:
+#             return False
 
-    def delay(self, run, limit=0):
-        if run:
-            self.delay_ticker += 1
-            if self.delay_ticker > limit:
-                return True
-            else:
-                return False
-        else:
-            self.delay_ticker = 0
+#     def delay(self, run, limit=0):
+#         if run:
+#             self.delay_ticker += 1
+#             if self.delay_ticker > limit:
+#                 return True
+#             else:
+#                 return False
+#         else:
+#             self.delay_ticker = 0
 
-    def animation_ticker(self, limit):
-        if self.ani_ticker >= limit:
-            self.ani_ticker = 0
-        self.ani_ticker += 1
-        return self.ani_ticker
+#     def animation_ticker(self, limit):
+#         if self.ani_ticker >= limit:
+#             self.ani_ticker = 0
+#         self.ani_ticker += 1
+#         return self.ani_ticker
 
-    def animation_range(self, interval, limit):
-        if self.animation_range_ticker >= interval:
-            self.i += 1
-            self.animation_range_ticker = 0
-        if self.i >= limit:
-            self.i = 0
-            return None
-        self.animation_range_ticker += 1
-        return self.i
+#     def animation_range(self, interval, limit):
+#         if self.animation_range_ticker >= interval:
+#             self.i += 1
+#             self.animation_range_ticker = 0
+#         if self.i >= limit:
+#             self.i = 0
+#             return None
+#         self.animation_range_ticker += 1
+#         return self.i
 
 # def change():
 #     for i, name in enumerate(os.listdir(os.path.join(os.getcwd()[:-7], "Gfx\\effects"))):

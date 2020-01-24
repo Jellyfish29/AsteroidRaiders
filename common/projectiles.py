@@ -6,11 +6,12 @@ import astraid_data as data
 from Gfx import Gfx
 
 
-class Projectile:
+class Projectile(Timer):
 
     projectile_sprites = get_images("projectile")
 
     def __init__(self, speed=0, size=(0, 0), start_point=(0, 0), damage=0, flag="player", gfx_idx=0, angle=0, angle_variation=0, target=None, piercing=False, gfx_hit_effect="shot_hit", hit_effect=None, homing=False):
+        Timer.__init__(self)
         self.speed = speed
         self.size = size
         self.start_point = start_point
@@ -26,7 +27,6 @@ class Projectile:
         self.hitbox = pygame.Rect(start_point[0], start_point[1], size[0], size[1])
         self.angles = angles_360(speed)
         self.orig_angles = self.angles
-        self.tc = Time_controler()
         self.target = target
         self.start_point = start_point
         self.homing = homing
@@ -124,11 +124,11 @@ class Missile(Projectile):
                 except IndexError:
                     self.kill = True
         self.movement_checker = self.target.center
-        if self.tc.trigger_1(self.aquisition_delay):
+        if self.timer_trigger(self.aquisition_delay):
             if abs(self.hitbox.center[0] - self.target.center[0]) > 10 or abs(self.hitbox.center[1] - self.target.center[1]) > 10:
                 self.angle = degrees(self.target.center[0], self.hitbox.center[0], self.target.center[1], self.hitbox.center[1])
         self.hitbox.move_ip(self.angles[self.angle])
-        if self.tc.delay(True, limit=480):
+        if self.timer_delay(limit=480):
             Gfx.shot_hit_effect(self.hitbox, effect=self.gfx_hit_effect)
             self.kill = True
 
@@ -155,9 +155,9 @@ class Mine(Projectile):
 
     def hit(self, obj):
         if self.decay:
-            if self.tc.trigger_1(600):
+            if self.timer_trigger(600):
                 self.kill = True
-        if self.tc.delay(True, 240):  # Fuse Delay
+        if self.timer_delay(limit=240):  # Fuse Delay
             if self.envelope.colliderect(obj.hitbox):
                 self.angle = degrees(obj.hitbox.center[0], self.hitbox.center[0], obj.hitbox.center[1], self.hitbox.center[1])
                 self.hitbox.move_ip(self.angles[self.angle])
@@ -190,7 +190,7 @@ class Explosion(Projectile):
         self.hitbox.center = l
 
     def move(self):
-        if self.tc.delay(True, self.explo_delay):
+        if self.timer_delay(limit=self.explo_delay):
             self.hitbox.inflate_ip(30, 30)
             if abs(self.hitbox.topleft[0] - self.hitbox.center[0]) > self.explo_size:
                 self.kill = True

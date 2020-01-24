@@ -5,7 +5,7 @@ from astraid_funcs import *
 from astraid_data import *
 
 
-class Gfx:
+class Gfx(Timer):
 
     gfx_lst = []
     effect_sprites = get_images("effects")
@@ -17,9 +17,8 @@ class Gfx:
     font = pygame.font.SysFont("arial", 20)
 
     def __init__(self, typ, interval, anchor, hover, follow, x, y, dmg_text, text_color):
+        Timer.__init__(self)
         self.typ = typ
-        self.tc = Time_controler()
-        self.animation_ticker = 0
         self.interval = interval
         self.anchor = anchor
         self.hover = hover
@@ -54,24 +53,24 @@ class Gfx:
                     return True
                 win.blit(text, self.hover_rect)
 
-                if self.tc.trigger_1(30):
+                if self.timer_trigger(30):
                     return True
             else:
                 try:
-                    win.blit(Gfx.effect_sprites[self.effect_types[self.typ][self.tc.animation_range(self.interval, len(self.effect_types[self.typ]))]], self.hover_rect)
+                    win.blit(Gfx.effect_sprites[self.effect_types[self.typ][self.timer_animation_range(self.interval, len(self.effect_types[self.typ]))]], self.hover_rect)
                 except TypeError:
                     return True
         elif self.follow:
             try:
                 win.blit(Gfx.effect_sprites[
-                    self.effect_types[self.typ][self.tc.animation_range(self.interval, len(self.effect_types[self.typ]))]], (self.anchor.topleft[0] + self.x, self.anchor.topleft[1] + self.y))
+                    self.effect_types[self.typ][self.timer_animation_range(self.interval, len(self.effect_types[self.typ]))]], (self.anchor.topleft[0] + self.x, self.anchor.topleft[1] + self.y))
             except TypeError:
                 return True
 
         elif not self.hover and not self.follow:
             try:
                 win.blit(Gfx.effect_sprites[
-                    self.effect_types[self.typ][self.tc.animation_range(self.interval, len(self.effect_types[self.typ]))]], self.anchor)
+                    self.effect_types[self.typ][self.timer_animation_range(self.interval, len(self.effect_types[self.typ]))]], self.anchor)
             except TypeError:
                 return True
 
@@ -110,3 +109,4 @@ class Gfx:
         for effect in Gfx.gfx_lst:
             if effect.draw():  # if animation over
                 Gfx.gfx_lst.remove(effect)
+            effect.timer_tick()

@@ -29,7 +29,6 @@ class Bosses(Shooter, Boss_skills):
             8: (winwidth / 2, 600),
             9: (winwidth / 2, 610)
         }
-        Timer.__init__(self)
         self.cp_ticker = 0
         self.direction = 0
         self.angles = angles_360(self.speed)
@@ -46,6 +45,7 @@ class Bosses(Shooter, Boss_skills):
         self.special_attack = False
         self.special_skills_lst = []
         Boss_skills.__init__(self)
+        Timer.__init__(self)
         # Health
         self.max_health = self.health
         self.healthbar_len = 100
@@ -150,10 +150,11 @@ class Bosses(Shooter, Boss_skills):
             data.TURRET.point_defence(self.hitbox)
         if self.health <= 0:
             self.death()
+        self.timer_tick()
 
     @classmethod
     def create(cls, lvl):
-        if lvl == 51:
+        if lvl == 55:
             data.ENEMY_DATA.append(Boss_mine_boat())
         elif lvl == 10:
             data.ENEMY_DATA.append(Boss_frigatte())
@@ -308,7 +309,7 @@ class Boss_destroyer(Bosses):
         self.drop_amount = 1
         super().__init__()
 
-    def phase_1(self):
+    def phase_3(self):
 
         self.special_attack = True
         self.special_skills_lst.append(self.skill_missile_barrage)
@@ -327,7 +328,7 @@ class Boss_destroyer(Bosses):
             target = (random.randint(0, winwidth), random.randint(0, winheight))
             data.ENEMY_DATA.append(Boss_main_gun_battery(self, target))
 
-    def phase_3(self):
+    def phase_1(self):
 
         self.speed += 3
         self.set_health(-100, (0, 255, 0))
@@ -336,7 +337,7 @@ class Boss_destroyer(Bosses):
         self.special_skills_lst.append(self.skill_laser_storm)
         for loc in [(0, 0), (0, -100), (0, 100)]:
             data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.15, self, loc, size=(120, 50)))
-        for _ in range(10):
+        for _ in range(5):
             data.ENEMY_DATA.append(Boss_laser_battery(self))
 
 
@@ -455,63 +456,6 @@ class Elites(Bosses):
 data.ELITES = Elites
 
 
-class Boss_adds(Bosses):
-
-    tc = Time_controler()
-
-    def __init__(self, spawn_point, move_pattern, skills):
-        self.health = 3
-        self.speed = 5
-        self.fire_rate = 120
-        self.move_pattern = move_pattern
-        self.size = (20, 50)
-        self.score_amount = 10
-        self.gfx_idx = (42, 43)
-        self.gfx_hook = (-17, -30)
-        self.skills_lst = skills
-        self.drop_amount = 0
-        Bosses.__init__(self)
-        self.checkpoints = {
-            0: (400, 750),
-            1: (700, 750),
-            2: (700, 850),
-            3: (400, 850),
-            4: (winwidth - 400, 750),
-            5: (winwidth - 700, 750),
-            6: (winwidth - 700, 850),
-            7: (winwidth - 400, 850)
-        }
-        self.healthbar_len = 50
-        self.healthbar_max_len = 50
-        self.healthbar_height = 1
-        self.hitbox.center = spawn_point
-
-    def boss_skills(self):
-        if len(self.skills_lst) > 0:
-            for skill in self.skills_lst:
-                skill(self)
-
-    def death(self):
-        self.kill = True
-
-    def player_collide(self):
-        if self.hitbox.colliderect(data.PLAYER.hitbox):
-            Gfx.create_effect("enexplo", 5, (self.hitbox.topleft[0] - 20, self.hitbox.topleft[1] - 30))
-            if self.flag == "boss" or self.flag == "elite":
-                data.PLAYER.take_damage(0.05)
-            else:
-                self.kill = True
-            data.PLAYER.take_damage(1)
-
-    @classmethod
-    def create(cls, amount=0, spawn_point=(0, 0), respawn_speed=600, skills=[]):
-        if list(map(type, data.ENEMY_DATA)).count(Boss_adds) < amount:
-            if Boss_adds.tc.trigger_1(respawn_speed):
-                data.ENEMY_DATA.append(Boss_adds(spawn_point, (0, 1, 2, 3, 4, 5, 6, 7), skills))
-                if amount == 2 and list(map(type, data.ENEMY_DATA)).count(Boss_adds) < amount:
-                    data.ENEMY_DATA.append(Boss_adds(spawn_point, (7, 6, 5, 4, 3, 2, 1, 0), skills))
-
-
 class Boss_weakspot(Enemy):
 
     def __init__(self, health, boss, location, death_effect=None, size=(50, 50)):
@@ -585,11 +529,12 @@ class Boss_laser_battery(Bosses):
 
     def __init__(self, boss):
         Boss_skills.__init__(self)
+        Timer.__init__(self)
         self.boss = boss
         self.hitbox = self.hitbox = pygame.Rect(winwidth / 2, -250, 0, 0)
         self.kill = False
         self.flag = "boss"
-        self.fire_rate = random.randint(120, 250)
+        self.fire_rate = random.randint(20, 60)
         self.hitable = False
         self.fire = False
         self.target = (random.randint(0, 1800), random.randint(0, 1000))
@@ -598,26 +543,26 @@ class Boss_laser_battery(Bosses):
     def tick(self):
         self.hitbox.center = self.boss.hitbox.center
         if not self.fire:
-            if self.tc.trigger_1(self.fire_rate):
+            if self.timer_trigger(self.fire_rate):
                 self.fire = True
                 self.target = (random.randint(0, 1800), random.randint(0, 1000))
                 self.fixed_angle += random.randint(5, 15)
                 if self.fixed_angle >= 270:
                     self.fixed_angle = 90
         else:
-            if self.tc.trigger_2(1):
-                data.ENEMY_PROJECTILE_DATA.append(Wave(
-                    speed=15,
-                    size=(5, 5),
-                    start_point=self.boss.hitbox.center,
-                    damage=1,
-                    gfx_idx=1,
-                    # target=self.target,
-                    curve_size=1.5,
-                    fixed_angle=self.fixed_angle
-                ))
-            if self.tc.trigger_3(7):
+            data.ENEMY_PROJECTILE_DATA.append(Wave(
+                speed=15,
+                size=(5, 5),
+                start_point=self.boss.hitbox.center,
+                damage=1,
+                gfx_idx=1,
+                # target=self.target,
+                curve_size=1.5,
+                fixed_angle=self.fixed_angle
+            ))
+            if self.timer_trigger(7):
                 self.fire = False
+        self.timer_tick()
 
 
 class Boss_repair_ship(Enemy):

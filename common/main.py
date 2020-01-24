@@ -54,10 +54,10 @@ def main():
     components = [Player, Turret, Enemy, Phenomenon, Interface, Levels, Items]
 
     # # # # Levels.skill_points += 100
-    Items.drop((winwidth / 2, 400), target=Item_pd((100, 100, 100)))
+    # Items.drop((winwidth / 2, 400), target=Item_pd((100, 100, 100)))
     # Items.drop((winwidth / 2, 400), target=Item_he_rounds((100, 100, 150)))
     # Items.drop((winwidth / 2, 400), target=Item_missile((100, 100, 200)))
-    # Items.drop((winwidth / 2, 400), target=Items.start_item_generator()((100, 100, 200)))
+    Items.drop((winwidth / 2, 400), target=Items.start_item_generator()((100, 100, 200)))
     # Items.drop((winwidth / 2, 400), amount=1)
     Levels.after_boss = True
     Interface.main_menu(True)

@@ -10,14 +10,17 @@ class Testo(Timer):
 
     def one(self):
         if self.timer_trigger(10):
+            # pass
             print("one")
 
     def two(self):
-        if self.timer_trigger(10):
+        if self.timer_trigger(11):
+            # pass
             print("two")
 
     def three(self):
-        if self.timer_trigger(10):
+        if self.timer_trigger(12):
+            # pass
             print("three")
 
     def tick(self):
@@ -25,40 +28,28 @@ class Testo(Timer):
         self.two()
         self.three()
         # print(self.calls_per_tick)
-        self.calls_per_tick = 0
+        self.timer_tick()
 
-# class Testo():
 
-#     def __init__(self):
-#         self.tc = Time_controler()
-
-#     def one(self):
-#         if self.tc.trigger_1(10):
-#             print("one")
-
-#     def two(self):
-#         if self.tc.trigger_2(10):
-#             print("two")
-
-#     def three(self):
-#         if self.tc.trigger_3(10):
-#             print("three")
-
-#     def tick(self):
-#         self.one()
-#         self.two()
-#         self.three()
+@timer_t
+def foo(timer):
+    if timer.timer_trigger(10):
+        print("one")
+    if timer.timer_trigger(11):
+        print("two")
+    if timer.timer_trigger(12):
+        print("three")
 
 
 lst = [Testo() for i in range(1)]
 
 
 j = 0
-while j < 20:
+while j < 100:
     j += 1
     time.sleep(0.1)
-    for t in lst:
-        t.tick()
-        print(t.ticker)
-
-    # print(j)
+    # for t in lst:
+    #     t.tick()
+    #     # print(t.ticker)
+    foo()
+    print(j)

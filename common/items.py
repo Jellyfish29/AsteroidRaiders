@@ -8,7 +8,7 @@ import astraid_data as data
 from Gfx import Gfx
 
 
-class Items:
+class Items(Timer):
 
     dropped_lst = []
     inventory_dic = {0: None, 1: None, 2: None, 3: None, 4: None, 5: None}
@@ -21,16 +21,15 @@ class Items:
     font_20 = pygame.font.SysFont("arial", 20, 10)
     font_15 = pygame.font.SysFont("arial", 15, 10)
     upgrade_points = 0
-    tc = Time_controler()
 
     def __init__(self, item_name, discription, gfx_idx, start=False):
+        Timer.__init__(self)
         self.hitbox = pygame.Rect(-1000, -1000, 50, 50)
         if start:
             self.hitbox = pygame.Rect(Items.inv_grid_cords[0][0] + 25, Items.inv_grid_cords[0][1] + 25, 50, 50)
         self.item_name = item_name
         self.discription = discription
         self.gfx_idx = gfx_idx
-        self.tc = Time_controler()
         self.drag = False
         self.clicked = False
         self.color = (0, 0, 160)
@@ -130,10 +129,11 @@ class Items:
         #     desc_str += f"{d[0]}. = {d[1]}{v}  "
         # return desc_str
 
-    def tool_tip(self):
+    @timer
+    def tool_tip(self, timer):
 
         if self.hitbox.collidepoint(pygame.mouse.get_pos()):
-            if self.tc.delay(True, limit=Items.tt_delay):
+            if timer.timer_delay(limit=Items.tt_delay):
                 # Name
                 win.blit(Items.font_20.render(self.item_name, True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1]))
                 # Desc
@@ -143,7 +143,7 @@ class Items:
                 # lvl_effect
                 win.blit(Items.font_15.render(self.get_upgrade_desc(), True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 75))
         else:
-            self.tc.delay(False)
+            timer.timer_delay(reset=True)
 
     def gfx_draw(self):
         if self.lvl is not None:
@@ -267,8 +267,9 @@ class Items:
         cls.drop((winwidth / 2, 400), amount=4)
 
     @classmethod
-    def spawm_all_items_test(cls):
-        if cls.tc.trigger_1(30):
+    @timer
+    def spawm_all_items_test(cls, timer):
+        if timer.trigger(30):
             cls.dropped_lst.clear()
             cls.drop((winwidth / 2, 400), amount=4)
 
@@ -309,28 +310,31 @@ class Active_Items(Items):
         self.effect_name = None
 
     def effect(self):
+        print(self.ticker)
         if self.get_inventory_key() < 3:
             if self.flag not in Items.active_flag_lst:
                 Items.active_flag_lst.append(self.flag)
 
             if self.active:
-                self.text = self.get_active_str()
-
                 if self.active_time is not None:
-                    if self.tc.trigger_1(self.active_time):
+                    if self.timer_key_trigger(self.active_time, key="active_time"):
                         self.end_active()
 
-            elif self.cooldown:
-                self.text = self.get_cd_str() + "s"
+                self.text = self.get_active_str()
 
-                if self.tc.trigger_2(self.get_cd_len()):
+            elif self.cooldown:
+                if self.timer_key_trigger(self.get_cd_len(), key="cd"):
                     self.cooldown = False
+
+                self.text = self.get_cd_str() + "s"
 
             else:
                 self.text = self.get_key_str()
         else:
             self.end_effect()
             self.text = "/"
+
+        self.timer_tick()
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
@@ -351,11 +355,11 @@ class Active_Items(Items):
                 Gfx.create_effect(self.effect_name, 25, data.PLAYER.hitbox.topleft, hover=True)
 
     def get_cd_str(self):
-        return str(int((self.get_cd_len() - self.tc.ticker_2) / 60) + 1)
+        return str(int((self.get_cd_len() - self.ticker["cd"]) / 60) + 1)
 
     def get_active_str(self):
         if self.active_time is not None:
-            return f">{int((self.active_time - self.tc.ticker_1) / 60) + 1}"
+            return f">{int((self.active_time - self.ticker['active_time']) / 60 + 1)}"
 
     def get_cd_len(self):
         return self.cd_len - self.cd_len * Active_Items.cd_reduction
@@ -669,10 +673,11 @@ class Item_auto_repair(Items):
     def get_upgrade_desc(self):
         return f"Repair Time: {int(self.get_lvl_effects()[self.lvl] / 60) + 1}s"
 
-    def effect(self):
+    @timer
+    def effect(self, timer):
         if self.flag not in Items.active_flag_lst:
             Items.active_flag_lst.append(self.flag)
-        if self.tc.trigger_1(self.get_lvl_effects()[self.lvl]):
+        if timer.trigger(self.get_lvl_effects()[self.lvl]):
             if data.PLAYER.health < data.PLAYER.max_health:
                 data.PLAYER.health += 1
 
