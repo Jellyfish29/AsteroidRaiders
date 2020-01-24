@@ -11,4 +11,3 @@ CC-BY-NC-SA 4.0
 Requires:
 Python 3.7.4
 pygame (cmd: pip install pygame)
-numpy(cmd. pip intall numpy)
