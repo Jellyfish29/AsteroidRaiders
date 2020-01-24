@@ -135,7 +135,7 @@ def timer(f):
 class Timer:
 
     def __init__(self):
-        self.ticker = {i: 0 for i in range(11)}  # {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+        self.ticker = {i: 0 for i in range(20)}  # {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
         self.timer_calls_per_tick = 0
         self.animation_range_ticker = 0
 
