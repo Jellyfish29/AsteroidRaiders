@@ -116,55 +116,65 @@ class Gravity_well(Phenomenon):
         super().__init__(speed, size, gfx_idx, gfx_hook, flag=flag, decay=decay)
         self.new_d = directions(2)
         self.new_a = angles_360(2)
+        self.objs = {}
 
         if location is not None:
             self.hitbox.center = location
 
     def hit(self, obj):
-        if self.hitbox.colliderect(obj.hitbox):
-            if isinstance(obj, type):  # check if obj == class
-                data.PLAYER.directions = self.new_d
-            else:
-                obj.angles = self.new_a
-        if not self.hitbox.colliderect(obj.hitbox):
-            if isinstance(obj, type):
-                data.PLAYER.directions = data.PLAYER.orig_directions
-            else:
-                obj.angles = obj.orig_angles
+        if not issubclass(obj.__class__, Phenomenon):
+            if self.hitbox.colliderect(obj.hitbox):
+                if obj not in self.objs:
+                    self.objs.update({obj: obj.angles})
+                if isinstance(obj, type):
+                    obj.angles = self.new_d
+                else:
+                    obj.angles = self.new_a
+        for obj, speed in list(self.objs.items()):
+            if not self.hitbox.colliderect(obj.hitbox):
+                obj.angles = speed
+                del self.objs[obj]
 
 
 class Black_hole(Phenomenon):
 
-    def __init__(self, speed=0, size=(300, 300), gfx_idx=(1, 1), gfx_hook=(-300, -300), decay=300, location=None, flag="phenom"):
+    def __init__(self, speed=0, size=(300, 300), gfx_idx=(0, 0), gfx_hook=(-150, -150), decay=300, location=None, flag="phenom", damage=1):
         super().__init__(speed, size, gfx_idx, gfx_hook, flag=flag, decay=decay)
         # self.new_d = directions(2)
         self.new_a = angles_360(6)
         self.zero_a = angles_360(0)
-        self.objs = set()
+        self.damage = damage
+        self.objs = {}
         if location is not None:
             self.hitbox.center = location
 
     def hit(self, obj):
-        self.objs.add(obj)
+        if not issubclass(obj.__class__, Phenomenon):
+            if self.hitbox.colliderect(obj.hitbox):
+                if obj not in self.objs:
+                    self.objs.update({obj: obj.angles})
+                if isinstance(obj, type):
+                    pass
+                else:
+                    obj.angles = self.new_a
+                    obj.direction = degrees(self.hitbox.center[0], obj.hitbox.center[0], self.hitbox.center[1], obj.hitbox.center[1])
+                if abs(obj.hitbox.center[0] - self.hitbox.center[0]) < 5 or abs(obj.hitbox.center[1] - self.hitbox.center[1]) < 5:
+                    try:
+                        obj.take_damage(self.damage, staggered=True)
+                    except AttributeError:
+                        obj.kill = True
+                    obj.angles = self.zero_a
 
-        if self.hitbox.colliderect(obj.hitbox):
-            obj.angles = self.new_a
-            obj.direction = degrees(self.hitbox.center[0], obj.hitbox.center[0], self.hitbox.center[1], obj.hitbox.center[1])
-            if abs(obj.hitbox.center[0] - self.hitbox.center[0]) < 5 or abs(obj.hitbox.center[1] - self.hitbox.center[1]) < 5:
-                try:
-                    obj.take_damage(data.PLAYER.damage * 0.6, staggered=True)
-                except AttributeError:
-                    obj.kill = True
-                obj.angles = self.zero_a
-
-        if not self.hitbox.colliderect(obj.hitbox):
-            obj.angles = obj.orig_angles
+        for obj, speed in list(self.objs.items()):
+            if not self.hitbox.colliderect(obj.hitbox):
+                obj.angles = speed
+                del self.objs[obj]
 
     def destroy(self):
         if self.kill:
-            for obj in self.objs:
-                obj.angles = obj.orig_angles
-                obj.direction = random.randint(0, 359)
+            for obj, speed in list(self.objs.items()):
+                obj.angles = speed
+                del self.objs[obj]
             return True
 
 
@@ -213,8 +223,18 @@ class Planet(Phenomenon):
             data.PLAYER.take_damage(0.1)
 
     def hit(self, obj):
-        if obj.flag != "boss" and obj.flag != "elite":
-            if self.hitbox.colliderect(obj.hitbox):
+        if self.hitbox.colliderect(obj.hitbox):
+            if obj.flag == "boss" or obj.flag == "elite":
+                if self.hitbox.center[0] < winwidth / 2:
+                    new_cp = (self.hitbox.center[0] + 300, winheight / 2)
+                else:
+                    new_cp = (self.hitbox.center[0] - 300, winheight / 2)
+                if new_cp not in obj.checkpoints:
+                    obj.move_pattern.append(len(obj.checkpoints) + 1)
+                    obj.checkpoints.update({len(obj.checkpoints) + 1: new_cp})
+                obj.cp_ticker = len(obj.checkpoints)
+
+            else:
                 try:
                     obj.gfx_hit()
                 except AttributeError:
@@ -247,15 +267,18 @@ class Anti_gravity_well(Phenomenon):
         super().__init__(1, (500, 500), (7, 7), (-300, -300))
         self.new_d = directions(40)
         self.new_a = angles_360(60)
-
-    def player_collision(self):
-        if self.hitbox.colliderect(data.PLAYER.hitbox):
-            data.PLAYER.directions = self.new_d
-        else:
-            data.PLAYER.directions = data.PLAYER.orig_directions
+        self.objs = {}
 
     def hit(self, obj):
-        if self.hitbox.colliderect(obj.hitbox):
-            obj.angles = self.new_a
-        if not self.hitbox.colliderect(obj.hitbox):
-            obj.angles = obj.orig_angles
+        if not issubclass(obj.__class__, Phenomenon):
+            if self.hitbox.colliderect(obj.hitbox):
+                if obj not in self.objs:
+                    self.objs.update({obj: obj.angles})
+                if isinstance(obj, type):
+                    obj.angles = self.new_d
+                else:
+                    obj.angles = self.new_a
+        for obj, speed in list(self.objs.items()):
+            if not self.hitbox.colliderect(obj.hitbox):
+                obj.angles = speed
+                del self.objs[obj]

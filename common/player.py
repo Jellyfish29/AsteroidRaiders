@@ -25,8 +25,7 @@ class Player:
     raw_speed = speed
     speed_limit = 14
     direction = "idle"
-    directions = directions(speed)
-    orig_directions = directions
+    angles = directions(speed)
     jumpdrive = Item_jump_drive((0, 0, 0))
     afterburner = Item_afterburner((0, 0, 0,))
     # Damage
@@ -114,9 +113,9 @@ class Player:
     def afterburner_update(cls):
         cls.afterburner.effect()
         if cls.afterburner.active:
-            cls.directions = directions(40)
+            cls.angles = directions(40)
         if cls.afterburner.cooldown:
-            cls.directions = directions(cls.speed)
+            cls.angles = directions(cls.speed)
 
     @classmethod
     def draw_jump_dest(cls):
@@ -154,8 +153,7 @@ class Player:
         cls.speed = cls.raw_speed
         if cls.speed > cls.speed_limit:
             cls.speed = cls.speed_limit
-        cls.directions = directions(cls.speed)
-        cls.orig_directions = directions(cls.speed)
+        cls.angles = directions(cls.speed)
 
     @classmethod
     def set_player_health(cls, hp):
@@ -190,7 +188,7 @@ class Player:
                     cls.hitbox.move_ip(direction)
                     break
         else:
-            cls.hitbox.move_ip(cls.directions[cls.direction])
+            cls.hitbox.move_ip(cls.angles[cls.direction])
 
         if data.LEVELS.after_boss:
             if cls.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):

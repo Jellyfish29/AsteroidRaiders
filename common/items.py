@@ -133,7 +133,7 @@ class Items(Timer):
     def tool_tip(self, timer):
 
         if self.hitbox.collidepoint(pygame.mouse.get_pos()):
-            if timer.timer_delay(limit=Items.tt_delay):
+            if timer.timer_key_delay(limit=Items.tt_delay, key=self.flag):
                 # Name
                 win.blit(Items.font_20.render(self.item_name, True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1]))
                 # Desc
@@ -143,7 +143,7 @@ class Items(Timer):
                 # lvl_effect
                 win.blit(Items.font_15.render(self.get_upgrade_desc(), True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 75))
         else:
-            timer.timer_delay(reset=True)
+            timer.timer_key_delay(key=self.flag, reset=True)
 
     def gfx_draw(self):
         if self.lvl is not None:
@@ -310,7 +310,6 @@ class Active_Items(Items):
         self.effect_name = None
 
     def effect(self):
-        print(self.ticker)
         if self.get_inventory_key() < 3:
             if self.flag not in Items.active_flag_lst:
                 Items.active_flag_lst.append(self.flag)
@@ -1043,7 +1042,6 @@ class Item_escort_missile(Items):
         if self.flag in Items.active_flag_lst:
             Items.active_flag_lst.remove(self.flag)
             pl.Escort.spawned = False
-            print([obj for obj in data.PLAYER_DATA if obj.__class__.__name__ == "Escort"][0])
             data.PLAYER_DATA.remove([obj for obj in data.PLAYER_DATA if obj.__class__.__name__ == "Escort"][0])
             if "2nd_escort" in Items.active_flag_lst:
                 data.PLAYER_DATA.remove([obj for obj in data.PLAYER_DATA if obj.__class__.__name__ == "Escort"][0])

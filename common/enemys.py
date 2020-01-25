@@ -74,7 +74,7 @@ class Enemy(Timer):
             color = (255, 10, 10)
 
         if staggered:
-            if self.timer_trigger(60):
+            if self.timer_trigger(30):
                 self.set_health(dmg, color)
         elif self.special_take_damage is not None:
             self.special_take_damage(dmg)

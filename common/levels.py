@@ -52,7 +52,7 @@ class Levels:
         if not any((cls.after_boss, cls.boss_fight)):
             if cls.level not in [i - 1 for i in range(5, 41, 5)]:
                 if not cls.elite_wait:
-                    cls.elite_spawn_time = 4400
+                    cls.elite_spawn_time = 4000
                     cls.elite_wait = True
                 if cls.elite_wait:
                     if timer.trigger(int(cls.elite_spawn_time)):
@@ -75,6 +75,7 @@ class Levels:
             data.ENEMY.set_spawn_table(Seeker)
             data.ENEMY.set_spawn_table(Jumper)
             data.PHENOM.set_spawn_table(Planet)
+            # data.PHENOM.set_spawn_table(Gravity_well)
         if cls.level == 5:
             data.ENEMY.set_spawn_table(Shooter)
             data.PHENOM.set_spawn_table(Gravity_well)
@@ -147,7 +148,7 @@ class STAGE_SAVE():
         self.pl_heal_amount = data.PLAYER.heal_amount
         self.skill_points = Levels.skill_points
         self.upgrade_points = data.ITEMS.upgrade_points
-        self.pl_directions = data.PLAYER.directions
+        self.pl_angles = data.PLAYER.angles
         self.pl_speed = data.PLAYER.speed
         self.pl_dmg = data.PLAYER.damage
         self.pl_crit = data.PLAYER.crit_chance
@@ -187,7 +188,7 @@ class STAGE_SAVE():
         data.PLAYER.hitbox.center = (1000, 900)
         Levels.skill_points = self.skill_points
         data.ITEMS.upgrade_points = self.upgrade_points
-        data.PLAYER.directions = self.pl_directions
+        data.PLAYER.angles = self.pl_angles
         data.PLAYER.speed = self.pl_speed
         data.PLAYER.damage = self.pl_dmg
         data.PLAYER.crit_chance = self.pl_crit

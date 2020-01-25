@@ -41,7 +41,7 @@ class Bosses(Shooter, Boss_skills):
         self.shot_angle = 0
         self.shot_angles = angles_360(8)  # projectilespeed
         self.score_amount = 400
-        self.projectile_speed = 12
+        self.projectile_speed = 16
         self.special_attack = False
         self.special_skills_lst = []
         Boss_skills.__init__(self)
@@ -154,13 +154,13 @@ class Bosses(Shooter, Boss_skills):
 
     @classmethod
     def create(cls, lvl):
-        if lvl == 55:
+        if lvl == 5:
             data.ENEMY_DATA.append(Boss_mine_boat())
         elif lvl == 10:
             data.ENEMY_DATA.append(Boss_frigatte())
         elif lvl == 15:
             data.ENEMY_DATA.append(Boss_corvette())
-        elif lvl == 5:
+        elif lvl == 20:
             data.ENEMY_DATA.append(Boss_destroyer())
         elif lvl == 25:
             data.ENEMY_DATA.append(Boss_cruiser())

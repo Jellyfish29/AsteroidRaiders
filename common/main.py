@@ -55,7 +55,7 @@ def main():
 
     # # # # Levels.skill_points += 100
     # Items.drop((winwidth / 2, 400), target=Item_pd((100, 100, 100)))
-    # Items.drop((winwidth / 2, 400), target=Item_he_rounds((100, 100, 150)))
+    Items.drop((winwidth / 2, 400), target=Item_black_hole_bomb((100, 100, 150)))
     # Items.drop((winwidth / 2, 400), target=Item_missile((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=Items.start_item_generator()((100, 100, 200)))
     # Items.drop((winwidth / 2, 400), amount=1)

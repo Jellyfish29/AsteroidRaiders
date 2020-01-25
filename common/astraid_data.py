@@ -19,6 +19,39 @@ INTERFACE = None
 
 def GAME_UPDATE():
 
+    for projectile in PLAYER_PROJECTILE_DATA:
+
+        if projectile.destroy():
+            PLAYER_PROJECTILE_DATA.remove(projectile)
+        else:
+            projectile.tick()
+
+            for phenom in PHENOMENON_DATA:
+                if phenom.flag != "player":
+                    phenom.hit(projectile)
+
+    for projectile in ENEMY_PROJECTILE_DATA:
+
+        if projectile.destroy():
+            ENEMY_PROJECTILE_DATA.remove(projectile)
+        else:
+            projectile.tick()
+
+            for phenom in PHENOMENON_DATA:
+                if phenom.flag != "enemy":
+                    phenom.hit(projectile)
+
+            if projectile.hit(PLAYER):
+                PLAYER.take_damage(projectile.apply_damage())
+                projectile.kill = True
+
+            if projectile.flag == "en_mine" or projectile.flag == "en_missile":
+                for pd in PLAYER_PROJECTILE_DATA:
+                    if pd.hit(projectile):
+                        projectile.kill = True
+                        if not pd.piercing:
+                            pd.kill = True
+
     for enemy in ENEMY_DATA:
 
         if enemy.destroy():
@@ -60,39 +93,6 @@ def GAME_UPDATE():
                     if phenom.hit(pl_obj):
                         if phenom.hitable:
                             pl_obj.take_damage(phenom.apply_damage())
-
-    for projectile in PLAYER_PROJECTILE_DATA:
-
-        if projectile.destroy():
-            PLAYER_PROJECTILE_DATA.remove(projectile)
-        else:
-            projectile.tick()
-
-            for phenom in PHENOMENON_DATA:
-                if phenom.flag != "player":
-                    phenom.hit(projectile)
-
-    for projectile in ENEMY_PROJECTILE_DATA:
-
-        if projectile.destroy():
-            ENEMY_PROJECTILE_DATA.remove(projectile)
-        else:
-            projectile.tick()
-
-            for phenom in PHENOMENON_DATA:
-                if phenom.flag != "enemy":
-                    phenom.hit(projectile)
-
-            if projectile.hit(PLAYER):
-                PLAYER.take_damage(projectile.apply_damage())
-                projectile.kill = True
-
-            if projectile.flag == "en_mine" or projectile.flag == "en_missile":
-                for pd in PLAYER_PROJECTILE_DATA:
-                    if pd.hit(projectile):
-                        projectile.kill = True
-                        if not pd.piercing:
-                            pd.kill = True
 
     for phenom in PHENOMENON_DATA:
 

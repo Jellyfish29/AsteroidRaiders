@@ -41,5 +41,11 @@ import math
 
 # x += [2, 2, 2, 22]
 
-for i in range(200):
-    math.degrees(math.sin(i)
+dic = {1: 0, 2: 9, "1": 0}
+
+for _ in range(10):
+    print(dic)
+    if "2" not in dic:
+        dic.update({"2": 0})
+
+

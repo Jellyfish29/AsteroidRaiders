@@ -7,6 +7,7 @@ class Testo(Timer):
 
     def __init__(self):
         Timer.__init__(self)
+        self.num = random.random()
 
     def one(self):
         if self.timer_trigger(10):
@@ -31,7 +32,7 @@ class Testo(Timer):
         self.timer_tick()
 
 
-@timer_t
+@timer
 def foo(timer):
     if timer.timer_trigger(10):
         print("one")
@@ -44,12 +45,16 @@ def foo(timer):
 lst = [Testo() for i in range(1)]
 
 
-j = 0
-while j < 100:
-    j += 1
-    time.sleep(0.1)
-    # for t in lst:
-    #     t.tick()
-    #     # print(t.ticker)
-    foo()
-    print(j)
+# j = 0
+# while j < 100:
+#     j += 1
+#     time.sleep(0.1)
+#     for t in lst:
+#         t.tick()
+#         print(id(t))
+# print(t.ticker)
+# foo()
+# pri
+T = Testo
+if type(T) == "<class 'type'>":
+    print("oof")

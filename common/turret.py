@@ -137,11 +137,10 @@ class Turret:
                         impact_effect=lambda loc=pos: data.PLAYER_PROJECTILE_DATA.append(Black_hole(
                             speed=0,
                             size=(300, 300),
-                            gfx_idx=(1, 1),
-                            gfx_hook=(-300, -300),
                             decay=data.ITEMS.get_item(flag="black_hole_bomb").active_time,
                             location=loc,
-                            flag="player"))
+                            flag="player",
+                            damage=1 + data.PLAYER.damage * 0.5))
                     ))
                     data.ITEMS.get_item(flag="black_hole_bomb").engage = False
                     data.ITEMS.get_item(flag="black_hole_bomb").end_active()

@@ -25,7 +25,7 @@ class Boss_skills(Timer):
             data.ENEMY_PROJECTILE_DATA.append(Mine(
                 speed=12,
                 start_point=self.hitbox.center,
-                damage=1,
+                damage=2,
                 flag="en_mine"
             ))
 
@@ -37,7 +37,7 @@ class Boss_skills(Timer):
                 size=(10, 10),
                 start_point=self.hitbox.bottomleft,
                 target=data.PLAYER.hitbox,
-                damage=1,
+                damage=2,
                 flag="en_missile",
                 gfx_idx=11,
                 aquisition_delay=self.missile_retarget_trigger,
@@ -118,7 +118,7 @@ class Boss_skills(Timer):
                     speed=40,
                     size=(30, 30),
                     start_point=self.hitbox.center,
-                    damage=2,
+                    damage=4,
                     flag="enemy",
                     gfx_idx=8,
                     target=target
@@ -181,13 +181,13 @@ class Boss_skills(Timer):
                 speed=10,
                 size=(6, 6),
                 start_point=self.hitbox.center,
-                damage=1,
+                damage=2,
                 flag="en_missile",
                 target=target,
                 impact_effect=lambda loc=target: data.ENEMY_PROJECTILE_DATA.append(Explosion(
                     location=loc,
                     explo_size=100,
-                    damage=2
+                    damage=3
                 ))
             ))
         if len([e for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_weakspot"]) == 0:
