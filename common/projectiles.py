@@ -83,6 +83,7 @@ class Projectile(Timer):
         self.gfx_draw()
         if self.out_of_bounds():
             self.kill = True
+        self.timer_tick()
 
 
 class Impactor(Projectile):
@@ -106,6 +107,31 @@ class Impactor(Projectile):
             return True
         else:
             return False
+
+
+class Dart(Projectile):
+
+    def __init__(self, start_point=(0, 0), damage=1, gfx_idx=15, target=None, aquisition_delay=60):
+        super().__init__(speed=60, size=(5, 5), start_point=start_point, damage=damage, flag="en_missile", gfx_idx=gfx_idx, target=target)
+        self.aquisition_delay = aquisition_delay
+        self.angle = None
+        self.gfx_angle = None
+        self.aiming = True
+
+    def move(self):
+        if self.timer_delay(self.aquisition_delay):
+            self.aiming = False
+            if self.angle is None:
+                self.angle = degrees(self.target[0], self.hitbox.center[0], self.target[1], self.hitbox.center[1])
+                self.gfx_angle = degrees(self.target[1], self.hitbox.center[1], self.target[0], self.hitbox.center[0])
+                self.gfx_idx = 11
+            self.hitbox.move_ip(self.angles[self.angle])
+
+    def gfx_draw(self):
+        if self.aiming:
+            win.blit(gfx_rotate(Projectile.projectile_sprites[self.gfx_idx], degrees(self.target[1], self.hitbox.center[1], self.target[0], self.hitbox.center[0])), (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5))
+        else:
+            win.blit(gfx_rotate(Projectile.projectile_sprites[self.gfx_idx], self.gfx_angle), (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5))
 
 
 class Missile(Projectile):
@@ -141,6 +167,7 @@ class Missile(Projectile):
         data.TURRET.point_defence(self.hitbox)
         if self.out_of_bounds():
             self.kill = True
+        self.timer_tick()
 
 
 class Mine(Projectile):
@@ -176,6 +203,7 @@ class Mine(Projectile):
         data.TURRET.point_defence(self.hitbox)
         if self.out_of_bounds():
             self.kill = True
+        self.timer_tick()
 
 
 class Explosion(Projectile):
