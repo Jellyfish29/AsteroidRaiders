@@ -120,7 +120,7 @@ class Interface:
                 f"{data.PLAYER.max_health}      ++    Max Health",
                 f"{int(data.PLAYER.damage * 10)}    ++    Damage",
                 f"{100 - data.PLAYER.crit_chance} %   ++    Crit Chance",
-                f"{round(1/ (data.TURRET.fire_rate / 60), 2)}/s   ++    Fire Rate",
+                f"{round(data.TURRET.fire_rate, 2)}/s   ++    Fire Rate",
                 f"{int(Active_Items.cd_reduction * 100)} %  ++ Cooldown reduction"
 
             ]
@@ -177,11 +177,11 @@ class Interface:
                                     if data.PLAYER.crit_chance == data.PLAYER.crit_limit:
                                         data.LEVELS.skill_points += 1
                                 elif idx == 5:
-                                    data.TURRET.set_fire_rate(-1)
+                                    data.TURRET.set_fire_rate(data.TURRET.base_fire_rate * 0.075)
                                     if data.TURRET.fire_rate == data.TURRET.fire_rate_limit:
                                         data.LEVELS.skill_points += 1
                                 elif idx == 6:
-                                    Active_Items.set_cd_reduction(0.02)
+                                    Active_Items.set_cd_reduction(0.04)
                                     if Active_Items.cd_reduction == Active_Items.cd_limit:
                                         data.LEVELS.skill_points += 1
                                 data.LEVELS.skill_points -= 1

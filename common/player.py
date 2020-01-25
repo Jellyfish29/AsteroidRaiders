@@ -52,20 +52,22 @@ class Player:
         cls.direction = direction
 
     @classmethod
-    def take_damage(cls, damage, sure_death=False):
-        if damage > 0:
-            if cls.shield.active:
-                cls.shield_strength -= 1
-                # cls.gfx_hit_effect()
-                if cls.shield_strength < 1:
-                    cls.shield.end_active()
-                    cls.shield_strength = cls.max_shield_strength
-            else:  # not cls.shield.active:
-                cls.health -= damage
-                cls.gfx_hit_effect()
-                cls.reset_overdrive()
-                if int(cls.health) <= 0:
-                    cls.quit_game_WIP()
+    @timer
+    def take_damage(cls, damage, timer, staggered=0):
+        if timer.trigger(staggered):
+            if damage > 0:
+                if cls.shield.active:
+                    cls.shield_strength -= 1
+                    # cls.gfx_hit_effect()
+                    if cls.shield_strength < 1:
+                        cls.shield.end_active()
+                        cls.shield_strength = cls.max_shield_strength
+                else:  # not cls.shield.active:
+                    cls.health -= damage
+                    cls.gfx_hit_effect()
+                    cls.reset_overdrive()
+                    if int(cls.health) <= 0:
+                        cls.quit_game_WIP()
 
     @classmethod
     def quit_game_WIP(cls):
@@ -74,6 +76,7 @@ class Player:
         data.LEVELS.display_score -= 50
         if data.LEVELS.display_score < 0:
             quit()
+            # reset save
         else:
             data.INTERFACE.pause_menu(True)
 

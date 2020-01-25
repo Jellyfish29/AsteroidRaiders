@@ -42,9 +42,9 @@ class Levels:
             cls.spez_add()
             data.BOSS.create(cls.level)
             cls.boss_fight = True
-            cls.save_game()
             gfx.Gfx.scroll_speed += 1
             gfx.Gfx.bg_move = False
+            cls.save_game()
 
     @classmethod
     @timer
@@ -130,7 +130,7 @@ class Levels:
             cls.event_trigger_time = (cls.event_trigger_time[0] - 50, cls.event_trigger_time[1] - 75)
             cls.level += 1
             cls.display_level += 1
-            cls.level_interval += 7
+            cls.level_interval += 4
             cls.skill_points += 1
             cls.scaling()
             cls.interval_score = 0
@@ -146,17 +146,22 @@ class STAGE_SAVE():
         self.pl_health = data.PLAYER.health
         self.pl_max_health = data.PLAYER.max_health
         self.pl_heal_amount = data.PLAYER.heal_amount
+        self.pl_raw_health = data.PLAYER.raw_max_health
         self.skill_points = Levels.skill_points
         self.upgrade_points = data.ITEMS.upgrade_points
         self.pl_angles = data.PLAYER.angles
         self.pl_speed = data.PLAYER.speed
+        self.pl_raw_speed = data.PLAYER.raw_speed
         self.pl_dmg = data.PLAYER.damage
         self.pl_crit = data.PLAYER.crit_chance
+        self.pl_raw_crit = data.PLAYER.raw_crit_chance
         self.pl_fire_rate = data.TURRET.fire_rate
+        self.pl_raw_fire_rate = data.TURRET.raw_fire_rate
         self.pl_cd = Active_Items.cd_reduction
         self.pl_jump = data.PLAYER.jumpdrive
         self.pl_shield = data.PLAYER.shield
         self.lvl = Levels.level
+        self.display_level = Levels.display_level
         self.score = Levels.display_score
         self.interval_score = Levels.level_interval
         self.boss_fight = Levels.boss_fight
@@ -167,6 +172,7 @@ class STAGE_SAVE():
         self.enemy_table = data.ENEMY.spez_spawn_table
         self.phenomenon_spawn_table = data.PHENOM.phenomenon_spawn_table
         self.bg_speed = gfx.Gfx.scroll_speed
+        self.bg_move = gfx.Gfx.bg_move
 
     def load_save(self):
         data.ENEMY_DATA.clear()
@@ -179,20 +185,25 @@ class STAGE_SAVE():
         Levels.after_boss = False
         Levels.interval_score = 0
         Levels.level = self.lvl
+        Levels.display_level = self.display_level
         Levels.display_score = self.score
         Levels.level_interval = self.interval_score
         data.ITEMS.inventory_dic = self.items
         data.PLAYER.health = self.pl_health
         data.PLAYER.max_health = self.pl_max_health
         data.PLAYER.heal_amount = self.pl_heal_amount
+        data.PLAYER.raw_max_health = self.pl_raw_health
         data.PLAYER.hitbox.center = (1000, 900)
         Levels.skill_points = self.skill_points
         data.ITEMS.upgrade_points = self.upgrade_points
         data.PLAYER.angles = self.pl_angles
         data.PLAYER.speed = self.pl_speed
+        data.PLAYER.raw_speed = self.pl_raw_speed
         data.PLAYER.damage = self.pl_dmg
         data.PLAYER.crit_chance = self.pl_crit
+        data.PLAYER.raw_crit_chance = self.pl_raw_crit
         data.TURRET.fire_rate = self.pl_fire_rate
+        data.TURRET.raw_fire_rate = self.pl_raw_fire_rate
         Active_Items.cd_reduction = self.pl_cd
         data.PLAYER.jumpdrive = self.pl_jump
         data.PLAYER.shield = self.pl_shield
@@ -204,6 +215,7 @@ class STAGE_SAVE():
         data.ENEMY.spez_spawn_table = self.enemy_table
         data.PHENOM.phenomenon_spawn_table = self.phenomenon_spawn_table
         gfx.Gfx.scroll_speed = self.bg_speed
+        gfx.Gfx.bg_move = self.bg_move
         if self.boss_fight:
             self.spawn_boss()
 

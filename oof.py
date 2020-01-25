@@ -16,15 +16,15 @@ import math
 #     print("dumm")
 
 
-# effects = [4 * (i / 100) for i in (100, 80, 65, 45)]
+effects = [0.6 * (i / 100) for i in (100, 80, 65, 45)]
 
 # lvl_lst = ["1", "2", "3", "4"]
 
 # # print(effects)
 
-# effects.reverse()
+effects.reverse()
 
-# print(effects)
+print(effects)
 
 # print([int(e) for e in effects])
 
@@ -47,5 +47,3 @@ for _ in range(10):
     print(dic)
     if "2" not in dic:
         dic.update({"2": 0})
-
-

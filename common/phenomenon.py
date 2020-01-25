@@ -122,18 +122,24 @@ class Gravity_well(Phenomenon):
             self.hitbox.center = location
 
     def hit(self, obj):
-        if not issubclass(obj.__class__, Phenomenon):
-            if self.hitbox.colliderect(obj.hitbox):
+        if self.hitbox.colliderect(obj.hitbox):
+            if not issubclass(obj.__class__, Phenomenon):
                 if obj not in self.objs:
                     self.objs.update({obj: obj.angles})
+                    obj.angles = self.new_a
                 if isinstance(obj, type):
                     obj.angles = self.new_d
-                else:
-                    obj.angles = self.new_a
-        for obj, speed in list(self.objs.items()):
+        if obj in self.objs:
             if not self.hitbox.colliderect(obj.hitbox):
+                obj.angles = self.objs[obj]
+                del self.objs[obj]
+
+    def destroy(self):
+        if self.kill:
+            for obj, speed in list(self.objs.items()):
                 obj.angles = speed
                 del self.objs[obj]
+            return True
 
 
 class Black_hole(Phenomenon):
@@ -143,21 +149,23 @@ class Black_hole(Phenomenon):
         # self.new_d = directions(2)
         self.new_a = angles_360(6)
         self.zero_a = angles_360(0)
+        self.new_d = directions(12)
+        self.zero_d = directions(0)
         self.damage = damage
         self.objs = {}
         if location is not None:
             self.hitbox.center = location
 
     def hit(self, obj):
-        if not issubclass(obj.__class__, Phenomenon):
-            if self.hitbox.colliderect(obj.hitbox):
+        if self.hitbox.colliderect(obj.hitbox):
+            if not issubclass(obj.__class__, Phenomenon):
                 if obj not in self.objs:
                     self.objs.update({obj: obj.angles})
-                if isinstance(obj, type):
-                    pass
-                else:
-                    obj.angles = self.new_a
-                    obj.direction = degrees(self.hitbox.center[0], obj.hitbox.center[0], self.hitbox.center[1], obj.hitbox.center[1])
+                    if isinstance(obj, type):
+                        pass
+                    else:
+                        obj.angles = self.new_a
+                        obj.direction = degrees(self.hitbox.center[0], obj.hitbox.center[0], self.hitbox.center[1], obj.hitbox.center[1])
                 if abs(obj.hitbox.center[0] - self.hitbox.center[0]) < 5 or abs(obj.hitbox.center[1] - self.hitbox.center[1]) < 5:
                     try:
                         obj.take_damage(self.damage, staggered=True)
@@ -165,9 +173,9 @@ class Black_hole(Phenomenon):
                         obj.kill = True
                     obj.angles = self.zero_a
 
-        for obj, speed in list(self.objs.items()):
+        if obj in self.objs:
             if not self.hitbox.colliderect(obj.hitbox):
-                obj.angles = speed
+                obj.angles = self.objs[obj]
                 del self.objs[obj]
 
     def destroy(self):
@@ -196,6 +204,7 @@ class Nebulae_fire_rate_plus(Phenomenon):
     def __init__(self):
         super().__init__(1, (300, 300), (5, 5), (-180, -180))
         self.move_trigger = False
+        self.objs = {}
 
     def move(self):
         self.hitbox.move_ip(0, self.speed)
@@ -206,11 +215,17 @@ class Nebulae_fire_rate_plus(Phenomenon):
                     self.move_trigger = True
                     self.speed = 1
 
-    def player_collision(self):
+    def hit(self, obj):
         if self.hitbox.colliderect(data.PLAYER.hitbox):
-            data.TURRET.fire_rate = data.TURRET.normal_fire_rate - 15
-        else:
-            data.TURRET.fire_rate = data.TURRET.normal_fire_rate
+            if not issubclass(obj.__class__, Phenomenon):
+                if obj not in self.objs:
+                    self.objs.update({obj: obj.fire_rate})
+                    obj.set_fire_rate(2)
+
+        if obj in self.objs:
+            if not self.hitbox.colliderect(obj.hitbox):
+                obj.fire_rate = self.objs[obj]
+                del self.objs[obj]
 
 
 class Planet(Phenomenon):
@@ -224,22 +239,23 @@ class Planet(Phenomenon):
 
     def hit(self, obj):
         if self.hitbox.colliderect(obj.hitbox):
-            if obj.flag == "boss" or obj.flag == "elite":
-                if self.hitbox.center[0] < winwidth / 2:
-                    new_cp = (self.hitbox.center[0] + 300, winheight / 2)
-                else:
-                    new_cp = (self.hitbox.center[0] - 300, winheight / 2)
-                if new_cp not in obj.checkpoints:
-                    obj.move_pattern.append(len(obj.checkpoints) + 1)
-                    obj.checkpoints.update({len(obj.checkpoints) + 1: new_cp})
-                obj.cp_ticker = len(obj.checkpoints)
+            if not issubclass(obj.__class__, Phenomenon):
+                if obj.flag == "boss" or obj.flag == "elite":
+                    if self.hitbox.center[0] < winwidth / 2:
+                        new_cp = (self.hitbox.center[0] + 300, winheight / 2)
+                    else:
+                        new_cp = (self.hitbox.center[0] - 300, winheight / 2)
+                    if new_cp not in obj.checkpoints:
+                        obj.move_pattern.append(len(obj.checkpoints) + 1)
+                        obj.checkpoints.update({len(obj.checkpoints) + 1: new_cp})
+                    obj.cp_ticker = len(obj.checkpoints)
 
-            else:
-                try:
-                    obj.gfx_hit()
-                except AttributeError:
-                    pass
-                obj.kill = True
+                else:
+                    try:
+                        obj.gfx_hit()
+                    except AttributeError:
+                        pass
+                    obj.kill = True
 
 
 class Nabulae_aoe_damage(Phenomenon):
@@ -249,14 +265,14 @@ class Nabulae_aoe_damage(Phenomenon):
 
     def player_collision(self):
         if self.hitbox.colliderect(data.PLAYER.hitbox):
-            if self.timer_trigger_1(60):
+            if self.timer_trigger(60):
                 data.PLAYER.health -= 1
                 pygame.draw.rect(win, (0, 0, 255), pygame.Rect(0, 0, winwidth, winheight))
 
     def hit(self, obj):
         if self.hitbox.colliderect(obj.hitbox):
             try:
-                obj.take_damage(0.015)
+                obj.take_damage(1, staggered=60)
             except AttributeError:
                 obj.kill = True
 
@@ -270,15 +286,16 @@ class Anti_gravity_well(Phenomenon):
         self.objs = {}
 
     def hit(self, obj):
-        if not issubclass(obj.__class__, Phenomenon):
-            if self.hitbox.colliderect(obj.hitbox):
+        if self.hitbox.colliderect(obj.hitbox):
+            if not issubclass(obj.__class__, Phenomenon):
                 if obj not in self.objs:
                     self.objs.update({obj: obj.angles})
-                if isinstance(obj, type):
-                    obj.angles = self.new_d
-                else:
-                    obj.angles = self.new_a
-        for obj, speed in list(self.objs.items()):
+                    if isinstance(obj, type):
+                        obj.angles = self.new_d
+                    else:
+                        obj.angles = self.new_a
+
+        if obj in self.objs:
             if not self.hitbox.colliderect(obj.hitbox):
-                obj.angles = speed
+                obj.angles = self.objs[obj]
                 del self.objs[obj]

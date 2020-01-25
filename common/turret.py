@@ -17,9 +17,10 @@ class Turret:
     projectile_speed = 20
     firing = False
     direction = None
-    fire_rate = 35
+    base_fire_rate = 1.8
+    fire_rate = base_fire_rate  # attacks per second
     raw_fire_rate = fire_rate
-    fire_rate_limit = 10
+    fire_rate_limit = 6
     shot_count = 0
     gfx_idx = 0
     # Overdrive
@@ -27,7 +28,7 @@ class Turret:
     # ammunition = normal_fire_rate[1]
     fire_limiter = 0
     # super shot values
-    super_shot_ammo = 45
+    super_shot_ammo = 30
     super_shot_limiter = 0
     # star shot values
     star_shot_limiter = 0
@@ -218,7 +219,6 @@ class Turret:
                         gfx_idx=2,
                         angle_variation=i,
                         target=pygame.mouse.get_pos(),
-                        hit_effect=cls.he_rounds()
                     ))
                 return True
             else:
@@ -235,7 +235,6 @@ class Turret:
                     damage=data.ITEMS.get_item(flag="hammer_shot").effect_strength,
                     gfx_idx=2,
                     target=pygame.mouse.get_pos(),
-                    hit_explo=cls.he_rounds()
                 ))
                 return True
             else:
@@ -301,7 +300,7 @@ class Turret:
     @classmethod
     @timer
     def normal_fire(cls, timer):
-        if timer.trigger(cls.fire_rate):
+        if timer.trigger(cls.get_fire_rate()):
             cls.shot_count += 1
 
             dmg = data.PLAYER.damage
@@ -332,10 +331,14 @@ class Turret:
             ))
 
     @classmethod
+    def get_fire_rate(cls):
+        return 1 / cls.fire_rate * 60
+
+    @classmethod
     def set_fire_rate(cls, fr):
         cls.raw_fire_rate += fr
         cls.fire_rate = cls.raw_fire_rate
-        if cls.fire_rate < cls.fire_rate_limit:
+        if cls.fire_rate > cls.fire_rate_limit:
             cls.fire_rate = cls.fire_rate_limit
 
     @classmethod

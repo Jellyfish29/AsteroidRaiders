@@ -168,16 +168,16 @@ class Timer:
             return True
 
     def timer_delay(self, limit=0, reset=False):
+        if reset:
+            self.ticker[self.timer_calls_per_tick] = 0
         self.timer_calls_per_tick += 1
         if self.timer_calls_per_tick not in self.ticker:
             self.ticker.update({self.timer_calls_per_tick: 0})
         self.ticker[self.timer_calls_per_tick] += 1
-        if reset:
-            self.ticker[self.timer_calls_per_tick] = 0
         if self.ticker[self.timer_calls_per_tick] >= limit:
             return True
 
-    def timer_key_delay(self, limit=0, key="", reset=False):
+    def timer_key_delay(self, limit=0, reset=False, key=""):
         if key not in self.ticker:
             self.ticker.update({key: 0})
         self.ticker[key] += 1

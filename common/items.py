@@ -276,6 +276,8 @@ class Items(Timer):
     @classmethod
     def update(cls):
 
+        # cls.spawm_all_items_test()
+
         for item in cls.dropped_lst:
             item.draw()
             item.gfx_draw()
@@ -526,7 +528,7 @@ class Item_rapid_fire(Active_Items):
         super().__init__(color, "Rapid Fire (active)", "On Activation massivly increases Fire Rate", (41, 42))
         self.color = color
         self.flag = "rapid_fire"
-        self.base_effect = 3600  # cooldown time
+        self.base_effect = 5400   # cooldown time
         self.cd_len = self.get_lvl_effects()[self.lvl]
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
 
@@ -588,7 +590,7 @@ class Item_black_hole_bomb(Active_Items):
         super().__init__(color, "Balck Hole Bomb (active)", "Fires a Missile that upon Impact creates a micro singularity", (40, 40))
         self.color = color
         self.flag = "black_hole_bomb"
-        self.base_effect = 2200  # cooldwon time
+        self.base_effect = 2700  # cooldwon time
         self.cd_len = self.get_lvl_effects()[self.lvl]
         self.active_time = 300
         self.engage = False
@@ -665,7 +667,6 @@ class Item_auto_repair(Items):
         super().__init__("Repair Drones (passiv)", "Drones passively repair the Ship over time", (10, 11))
         self.color = color
         self.flag = "auto_repair"
-        self.tc = Time_controler()
         self.base_effect = 3000
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
 
@@ -779,21 +780,21 @@ class Item_improved_feeding(Items):
         super().__init__("Improved Ammo Feeding System (passiv)", "Increases Fire Rate", (20, 21))
         self.color = color
         self.flag = "improved_feeding"
-        self.base_effect = 12
+        self.base_effect = 0.8
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "Shots/s")
 
     def get_upgrade_desc(self):
-        return f"Bonus Fire Rate: {round(1 / (int(self.get_lvl_effects(reverse=True)[self.lvl]) / 60), 2)}/s"
+        return f"Bonus Fire Rate: {int(self.get_lvl_effects(reverse=True)[self.lvl] * 100)}%"
 
     def effect(self):
         if self.flag not in Items.active_flag_lst:
             Items.active_flag_lst.append(self.flag)
-            data.TURRET.set_fire_rate(-int(self.get_lvl_effects(reverse=True)[self.lvl]))
+            data.TURRET.set_fire_rate(data.TURRET.base_fire_rate * self.get_lvl_effects(reverse=True)[self.lvl])
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
             Items.active_flag_lst.remove(self.flag)
-            data.TURRET.set_fire_rate(int(self.get_lvl_effects(reverse=True)[self.lvl]))
+            data.TURRET.set_fire_rate(-(data.TURRET.base_fire_rate * self.get_lvl_effects(reverse=True)[self.lvl]))
 
 
 class Item_targeting_scanner(Items):
@@ -1084,15 +1085,16 @@ class Item_supply_crate(Items):
         super().__init__("Supply Container", "Provides New Supplies", (38, 38))
         self.color = color
         self.flag = "supply_con"
-        self.lvl = 0
+        self.base_effect = 4
+        self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
 
     def get_upgrade_desc(self):
-        return f"Skill Points: + 1"
+        return f"Upgrade Points: + {int(self.get_lvl_effects(reverse=True)[self.lvl])}"
 
     def effect(self):
         if "supply_con" not in Items.active_flag_lst:
 
-            data.LEVELS.skill_points += 1
+            data.LEVELS.skill_points += int(self.get_lvl_effects(reverse=True)[self.lvl])
 
             # Gfx.create_effect("con_collected", 25, data.PLAYER.hitbox.topleft, hover=True)
             for key, item in Items.inventory_dic.items():
@@ -1107,7 +1109,7 @@ class Item_upgrade_point_crate(Items):
         self.color = color
         self.flag = "upgrade_con"
         self.base_effect = 4
-        self.lvl = random.randint(0, 3)
+        self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
 
     def get_upgrade_desc(self):
         return f"Upgrade Points: + {int(self.get_lvl_effects(reverse=True)[self.lvl])}"
@@ -1130,7 +1132,7 @@ class Item_heal_crate(Items):
         self.color = color
         self.flag = "heal_con"
         self.base_effect = 4
-        self.lvl = random.randint(0, 3)
+        self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
 
     def get_upgrade_desc(self):
         return f"Health: + {int(self.get_lvl_effects(reverse=True)[self.lvl])} <> Damage Control: + 1"

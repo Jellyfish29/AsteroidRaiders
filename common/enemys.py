@@ -48,6 +48,7 @@ class Enemy(Timer):
         self.hitable = True
         self.special_take_damage = None
         self.flag = "normal"
+        self.fire_rate = 0
 
     def move(self):
         self.hitbox.move_ip(self.angles[int(self.direction)])
@@ -85,6 +86,11 @@ class Enemy(Timer):
         self.health -= hp
         self.healthbar_len -= (self.healthbar_max_len / (self.max_health / hp))
         Gfx.create_effect("dmg_txt", 4, (self.hitbox.center[0] + random.randint(-10, 10), self.hitbox.center[1] + random.randint(-10, 10)), hover=True, follow=True, dmg_text=hp, text_color=color)
+        if self.health > self.max_health:
+            self.health = self.max_health
+
+    def set_fire_rate(self, fr):
+        self.fire_rate += fr
 
     def skill(self):
         pass
