@@ -4,7 +4,8 @@ import astraid_data as data
 from init import *
 from astraid_funcs import *
 from Gfx import Gfx
-from projectiles import Projectile, Mine, Missile, Impactor, Explosion
+from projectiles import Projectile, Mine, Missile, Impactor, Explosion, Dart
+from phenomenon import Gravity_well
 
 
 class Boss_skills(Timer):
@@ -15,6 +16,9 @@ class Boss_skills(Timer):
         self.missile_retarget_trigger = 90
         self.mg_angle = 0
         self.main_gun_angles = angles_360(35)
+        self.salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 10))])
+        self.dart_salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 5))])
+        self.dart_missiles = 6
         self.jump_charge = False
         self.jump_point = 0
         self.jump_chance = 1100
@@ -65,6 +69,18 @@ class Boss_skills(Timer):
             for i in range(315, 360, 9):
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 6, angle=i))
 
+    def skill_salvo_charlie(self, **kwargs):
+        if self.timer_key_delay(limit=self.fire_rate * 3, key="salvo_c"):
+            if self.trigger(5):
+                shot_sp = next(self.salvo_start_point, "stop")
+                if shot_sp == "stop":
+                    self.salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 10))])
+                    print(self.timer_calls_per_tick)
+                    self.timer_key_delay(reset=True, key="salvo_c")
+                else:
+                    data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topleft[0], self.hitbox.topleft[1] + shot_sp), 1, "bo_salvo", 6, angle=180))
+                    data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topright[0], self.hitbox.topright[1] + shot_sp), 1, "bo_salvo", 6, angle=0))
+
     def skill_volley(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 3):
             for i in [-5, 0, 5]:
@@ -92,18 +108,16 @@ class Boss_skills(Timer):
                 self.hitbox.topleft = self.jump_point
                 self.jump_charge = False
 
-    def skill_adds(self, **kwargs):
-        if self.__class__.__name__ == "Boss_cruiser":
-            bo.Boss_adds.create(amount=1, spawn_point=self.hitbox.center, respawn_speed=800)
-        elif self.__class__.__name__ == "Boss_battleship":
-            bo.Boss_adds.create(amount=2, spawn_point=self.hitbox.center, respawn_speed=600, skill=[Boss_skills.skill_volley])
-        elif self.__class__.__name__ == "Elite":
-            bo.Boss_adds.create(amount=2, spawn_point=self.hitbox.center, respawn_speed=800)
-        elif self.__class__.__name__ == "Boss_carrier":
-            bo.Boss_adds.create(amount=2, spawn_point=self.hitbox.center, respawn_speed=30, skill=[Boss_skills.skill_volley, Boss_skills.skill_jumpdrive, Boss_skills.skill_missile])
+    def skill_speed_boost(self):
+        if self.timer_key_delay(limit=300, key="sboost"):
+            self.angles = angles_360(40)
+            if self.timer_trigger(15):
+                self.timer_key_delay(reset=True, key="sboost")
+        else:
+            self.angles = angles_360(self.speed)
 
     def skill_main_gun(self, target=data.PLAYER.hitbox):
-        if self.timer_delay(limit=self.fire_rate * 6):
+        if self.timer_key_delay(limit=self.fire_rate * 6, key="main_gun"):
             data.ENEMY_PROJECTILE_DATA.append(Projectile(
                 speed=50,
                 size=(4, 4),
@@ -123,9 +137,90 @@ class Boss_skills(Timer):
                     gfx_idx=8,
                     target=target
                 ))
-                self.timer_delay(reset=True)
+                self.timer_key_delay(reset=True, key="main_gun")
                 if target is not data.PLAYER.hitbox:
                     self.target = (random.randint(0, winwidth), random.randint(0, winheight))
+
+    def skill_dart_missiles(self):
+        if self.timer_key_delay(limit=self.fire_rate * 15, key="darts"):
+            if self.trigger(60):
+                shot_sp = next(self.dart_salvo_start_point, "stop")
+                if shot_sp == "stop":
+                    self.dart_salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 5))])
+                    print(self.timer_calls_per_tick)
+                    self.timer_key_delay(reset=True, key="darts")
+                else:
+                    data.ENEMY_PROJECTILE_DATA.append(Impactor(
+                        speed=6,
+                        size=(6, 6),
+                        start_point=(self.hitbox.topleft[0], self.hitbox.topleft[1] + shot_sp),
+                        flag="boss",
+                        gfx_idx=15,
+                        target=(self.hitbox.topleft[0] - 250, self.hitbox.topleft[1] + shot_sp + 10),
+                        impact_effect=lambda shot_sp=shot_sp: data.ENEMY_PROJECTILE_DATA.append(Dart(
+                            start_point=(self.hitbox.topright[0] - 250, self.hitbox.topright[1] + shot_sp),
+                            damage=3,
+                            target=data.PLAYER.hitbox
+                        ))
+                    ))
+                    data.ENEMY_PROJECTILE_DATA.append(Impactor(
+                        speed=6,
+                        size=(6, 6),
+                        start_point=(self.hitbox.topright[0], self.hitbox.topright[1] + shot_sp),
+                        flag="boss",
+                        gfx_idx=15,
+                        target=(self.hitbox.topleft[0] + 250, self.hitbox.topleft[1] + shot_sp + 10),
+                        impact_effect=lambda shot_sp=shot_sp: data.ENEMY_PROJECTILE_DATA.append(Dart(
+                            start_point=(self.hitbox.topright[0] + 250, self.hitbox.topright[1] + shot_sp),
+                            damage=2,
+                            target=data.PLAYER.hitbox
+                        ))
+                    ))
+
+    def skill_dart_missile_last_stand(self):
+        self.special_move = True
+        self.hitbox.move_ip(self.angles[degrees(1920, self.hitbox.center[0], 500, self.hitbox.center[1])])
+        if abs(1920 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
+            self.angles = angles_360(0)
+            if self.timer_key_delay(60 - self.dart_missiles, key="darts2"):
+                if self.trigger(60 - self.dart_missiles):
+                    shot_sp = next(self.dart_salvo_start_point, "stop")
+                    if shot_sp == "stop":
+                        if self.dart_missiles <= 40:
+                            self.dart_missiles += 4
+                        self.dart_salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / self.dart_missiles))])
+                        print(self.timer_calls_per_tick)
+                        self.timer_key_delay(reset=True, key="darts2")
+                    else:
+                        data.ENEMY_PROJECTILE_DATA.append(Impactor(
+                            speed=6,
+                            size=(6, 6),
+                            start_point=(self.hitbox.topleft[0], self.hitbox.topleft[1] + shot_sp),
+                            flag="boss",
+                            gfx_idx=15,
+                            target=(self.hitbox.topleft[0] - 250, self.hitbox.topleft[1] + shot_sp + 10),
+                            impact_effect=lambda shot_sp=shot_sp: data.ENEMY_PROJECTILE_DATA.append(Dart(
+                                start_point=(self.hitbox.topright[0] - 250, self.hitbox.topright[1] + shot_sp),
+                                damage=3,
+                                target=data.PLAYER.hitbox
+                            ))
+                        ))
+            if self.trigger(600):
+                location = random.randint(300, 1500), random.randint(100, 900)
+                data.ENEMY_PROJECTILE_DATA.append(Impactor(
+                    speed=10,
+                    size=(6, 6),
+                    start_point=self.hitbox.center,
+                    damage=2,
+                    flag="en_missile",
+                    target=location,
+                    impact_effect=lambda location=location: data.PHENOMENON_DATA.append(Gravity_well(
+                        speed=0,
+                        decay=600,
+                        location=location,
+                        flag="enemy"
+                    ))
+                ))
 
     def skill_chaser(self):
         if not self.chaser_hit:
@@ -145,7 +240,7 @@ class Boss_skills(Timer):
     def skill_turret_defence_matrix(self):
         turret_amount = len([e.set_sp_dmg() for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_turret"])
         if turret_amount > 0:
-            self.special_take_damage = lambda dmg, a=turret_amount: [e.set_health(((dmg * 0.66) / a), (200, 0, 200)) for e in data.ENEMY_DATA]
+            self.special_take_damage = lambda dmg, a=turret_amount: [e.set_health((dmg / a), (200, 0, 200)) for e in data.ENEMY_DATA]
         if self.timer_delay(limit=600):
             if turret_amount == 0:
                 self.skills_lst.remove(self.skill_turret_defence_matrix)
@@ -175,10 +270,10 @@ class Boss_skills(Timer):
         if abs(1000 - self.hitbox.center[0]) < 10 or abs(500 - self.hitbox.center[1]) < 10:
             self.angles = angles_360(0)
 
-        if self.timer_trigger(15):
+        if self.timer_trigger(10):
             target = random.randint(0, winwidth), random.randint(0, winheight)
             data.ENEMY_PROJECTILE_DATA.append(Impactor(
-                speed=10,
+                speed=15,
                 size=(6, 6),
                 start_point=self.hitbox.center,
                 damage=2,

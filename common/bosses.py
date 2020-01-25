@@ -95,6 +95,9 @@ class Bosses(Shooter, Boss_skills):
     def phase_3(self):
         pass
 
+    def special_death(self):
+        pass
+
     def phases(self):
         if self.health < self.phase_triggers[0]:
             self.phase_1()
@@ -124,6 +127,7 @@ class Bosses(Shooter, Boss_skills):
         data.ENEMY_PROJECTILE_DATA.clear()
         data.LEVELS.boss_fight = False
         data.LEVELS.after_boss = True
+        self.special_death()
         self.kill = True
 
     def border_collide(self):
@@ -257,7 +261,7 @@ class Boss_frigatte(Bosses):
                 start_point=self.hitbox.center,
                 flag="enemy",
                 target=spawn_loaction,
-                impact_effect=lambda loc=spawn_loaction: data.ENEMY_DATA.append(Boss_turret(self.max_health * 0.5, self, loc))
+                impact_effect=lambda loc=spawn_loaction: data.ENEMY_DATA.append(Boss_turret(self.max_health * 0.05, self, loc))
             ))
 
 
@@ -276,22 +280,34 @@ class Boss_corvette(Bosses):
         self.skills_lst = [self.skill_volley]
         super().__init__()
 
-    def phase_1(self):
-
-        self.angles = angles_360(self.speed + 2)
-        self.skills_lst.append(self.skill_jumpdrive)
-
     def phase_2(self):
 
-        self.angles = angles_360(self.speed + 4)
+        Gfx.bg_move = True
+        Gfx.scroll_speed += 2
+        self.speed += 2
+        self.angles = angles_360(self.speed)
+        self.skills_lst.append(self.skill_jumpdrive)
+
+    def phase_1(self):
+
+        self.speed += 2
+        Gfx.scroll_speed += 2
+        self.angles = angles_360(self.speed)
         self.fire_rate -= 10
         self.skills_lst.append(self.skill_jumpdrive)
+        self.skills_lst.append(self.skill_speed_boost)
 
     def phase_3(self):
 
-        self.angles = angles_360(self.speed + 6)
+        Gfx.scroll_speed += 4
+        self.speed += 4
+        self.angles = angles_360(self.speed)
         self.fire_rate -= 10
         self.skills_lst.append(self.skill_jumpdrive)
+
+    def special_death(self):
+        Gfx.bg_move = False
+        Gfx.scroll_speed -= 8
 
 
 class Boss_destroyer(Bosses):
@@ -308,7 +324,7 @@ class Boss_destroyer(Bosses):
         self.drop_amount = 1
         super().__init__()
 
-    def phase_3(self):
+    def phase_1(self):
 
         self.special_attack = True
         self.special_skills_lst.append(self.skill_missile_barrage)
@@ -322,12 +338,12 @@ class Boss_destroyer(Bosses):
         self.special_skills_lst.append(self.skill_main_gun_salvo)
         self.skills_lst.append(self.skill_jumpdrive)
         for loc in [(0, 0), (0, -100), (0, 100)]:
-            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.1, self, loc, size=(120, 50)))
+            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.05, self, loc, size=(120, 50)))
         for _ in range(10):
             target = (random.randint(0, winwidth), random.randint(0, winheight))
             data.ENEMY_DATA.append(Boss_main_gun_battery(self, target))
 
-    def phase_1(self):
+    def phase_3(self):
 
         self.speed += 3
         self.set_health(-100, (0, 255, 0))
@@ -335,7 +351,7 @@ class Boss_destroyer(Bosses):
         self.special_attack = True
         self.special_skills_lst.append(self.skill_laser_storm)
         for loc in [(0, 0), (0, -100), (0, 100)]:
-            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.15, self, loc, size=(120, 50)))
+            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.05, self, loc, size=(120, 50)))
         for _ in range(5):
             data.ENEMY_DATA.append(Boss_laser_battery(self))
 
@@ -343,29 +359,37 @@ class Boss_destroyer(Bosses):
 class Boss_cruiser(Bosses):
 
     def __init__(self):
-        self.health = 1800
+        self.health = 2500
         self.speed = 2
         self.fire_rate = 50
         self.move_pattern = (8, 9)
         self.size = (130, 240)
         self.gfx_idx = (24, 25)
         self.gfx_hook = (-80, -180)
-        self.skills_lst = [self.skill_volley, self.skill_missile, self.skill_salvo_alpha]
+        self.skills_lst = [self.skill_volley, self.skill_missile, self.skill_salvo_charlie]  # self.skill_salvo_alpha
         self.drop_amount = 1
         super().__init__()
 
     def phase_1(self):
 
+        self.move_pattern = (0, 7, 0, 1, 2)
+        # self.angles = angles_360(3)
+        self.skills_lst.append(self.skill_dart_missiles)
         for _ in range(4):
             data.ENEMY_DATA.append(Boss_repair_ship(self))
 
     def phase_2(self):
 
+        self.move_pattern = [random.randint(0, 9) for _ in range(40)]
+        self.angles = angles_360(4)
+        self.skills_lst.append(self.skill_salvo_alpha)
         for _ in range(6):
             data.ENEMY_DATA.append(Boss_repair_ship(self))
 
     def phase_3(self):
 
+        self.special_attack = True
+        self.special_skills_lst.append(self.skill_dart_missile_last_stand)
         for _ in range(8):
             data.ENEMY_DATA.append(Boss_repair_ship(self))
 
@@ -489,7 +513,7 @@ class Boss_turret(Shooter):
         self.max_health = self.health
         self.location = location
         self.flag = "boss"
-        self.fire_rate = 70
+        self.fire_rate = 150
         self.direction = angles_360(0)
         self.special_take_damage = boss.special_take_damage
 
@@ -503,7 +527,9 @@ class Boss_turret(Shooter):
 class Boss_main_gun_battery(Bosses):
 
     def __init__(self, boss, target):
+        self.size = (10, 10)
         Boss_skills.__init__(self)
+        Timer.__init__(self)
         self.boss = boss
         self.hitbox = self.hitbox = pygame.Rect(winwidth / 2, -250, 0, 0)
         self.kill = False
@@ -527,6 +553,7 @@ class Boss_main_gun_battery(Bosses):
 class Boss_laser_battery(Bosses):
 
     def __init__(self, boss):
+        self.size = (10, 10)
         Boss_skills.__init__(self)
         Timer.__init__(self)
         self.boss = boss
@@ -570,9 +597,11 @@ class Boss_repair_ship(Enemy):
     def __init__(self, boss):
         self.boss = boss
         self.flag = "boss"
-        super().__init__(0, 2, random.randint(1, 4), Enemy.health + 2, (100, 100), (0, 1), (0, 0), Enemy.spez_sprites)
+        super().__init__(0, 4, random.randint(1, 4), Enemy.health + 8, (100, 60), (0, 1), (0, 0), Enemy.spez_sprites)
+        self.gfx_hook = (-70, -30)
 
     def move(self):
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         self.hitbox.move_ip(self.angles[degrees(self.boss.hitbox.center[0], self.hitbox.center[0], self.boss.hitbox.center[1], self.hitbox.center[1])])
         if self.hitbox.colliderect(self.boss.hitbox):
             # gfx_effect -->
