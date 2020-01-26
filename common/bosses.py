@@ -164,9 +164,9 @@ class Bosses(Shooter, Boss_skills):
 
     @classmethod
     def create(cls, lvl):
-        if lvl == 55:
+        if lvl == 5:
             data.ENEMY_DATA.append(Boss_mine_boat())
-        elif lvl == 5:
+        elif lvl == 10:
             data.ENEMY_DATA.append(Boss_frigatte())
         elif lvl == 15:
             data.ENEMY_DATA.append(Boss_corvette())
