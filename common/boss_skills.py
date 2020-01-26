@@ -4,7 +4,7 @@ import astraid_data as data
 from init import *
 from astraid_funcs import *
 from Gfx import Gfx
-from projectiles import Projectile, Mine, Missile, Impactor, Explosion, Dart
+from projectiles import Projectile, Mine, Missile, Impactor, Explosion, Dart, Wave
 from phenomenon import Gravity_well
 
 
@@ -71,15 +71,35 @@ class Boss_skills(Timer):
 
     def skill_salvo_charlie(self, **kwargs):
         if self.timer_key_delay(limit=self.fire_rate * 3, key="salvo_c"):
-            if self.trigger(5):
+            if self.timer_trigger(5):
                 shot_sp = next(self.salvo_start_point, "stop")
                 if shot_sp == "stop":
                     self.salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 10))])
-                    print(self.timer_calls_per_tick)
                     self.timer_key_delay(reset=True, key="salvo_c")
                 else:
                     data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topleft[0], self.hitbox.topleft[1] + shot_sp), 1, "bo_salvo", 6, angle=180))
                     data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topright[0], self.hitbox.topright[1] + shot_sp), 1, "bo_salvo", 6, angle=0))
+
+    def skill_salvo_delta(self, **kwargs):
+        if self.timer_key_delay(limit=self.fire_rate * 3, key="salvo_d"):
+            if self.timer_trigger(5):
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(15, (6, 6), (self.hitbox.center[0], self.hitbox.center[1]), 1, "bo_salvo", 6, target=data.PLAYER.hitbox))
+                if self.timer_trigger(8):
+                    self.timer_key_delay(reset=True, key="salvo_d")
+
+    def skill_wave_motion_gun(self):
+        if self.timer_key_delay(limit=self.fire_rate * 3, key="laser"):
+            data.ENEMY_PROJECTILE_DATA.append(Wave(
+                speed=25,
+                size=(5, 5),
+                start_point=self.hitbox.center,
+                damage=1,
+                gfx_idx=1,
+                target=data.PLAYER.hitbox,
+                curve_size=1.5,
+            ))
+            if self.timer_trigger(10):
+                self.timer_key_delay(reset=True, key="laser")
 
     def skill_volley(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 3):

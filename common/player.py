@@ -19,7 +19,7 @@ class Player:
     max_health = 5
     raw_max_health = max_health
     heal_amount = 1
-    health_limit = 26
+    health_limit = 20
     # Movement
     speed = 6
     raw_speed = speed
@@ -90,8 +90,6 @@ class Player:
     @classmethod
     def shield_update(cls):
         cls.shield.effect()
-        if cls.shield.active:
-            win.blit(cls.ship_sprites[29], (cls.hitbox.topleft[0] - 38, cls.hitbox.topleft[1] - 60))
 
     @classmethod
     def use_heal(cls):

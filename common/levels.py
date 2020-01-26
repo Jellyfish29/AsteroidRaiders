@@ -16,9 +16,7 @@ class Levels:
     display_level = 1
     level = 1
     level_interval = 35
-    enemy_amount = 5  # at Start
-    boss_amount = 1
-    blocker_amount = 1
+    enemy_amount = 3  # at Start
     skill_points = 1
     spez_event_trigger = 0
     # elite/Elites
@@ -52,7 +50,7 @@ class Levels:
         if not any((cls.after_boss, cls.boss_fight)):
             if cls.level not in [i - 1 for i in range(5, 41, 5)]:
                 if not cls.elite_wait:
-                    cls.elite_spawn_time = 4000
+                    cls.elite_spawn_time = 3600
                     cls.elite_wait = True
                 if cls.elite_wait:
                     if timer.trigger(int(cls.elite_spawn_time)):
@@ -67,8 +65,8 @@ class Levels:
 
     @classmethod
     def spez_add(cls):
-        data.ENEMY.spez_spawn_time -= 30
-        data.PHENOM.spawn_time -= 30
+        data.ENEMY.spez_spawn_time -= 15
+        data.PHENOM.spawn_time -= 15
         if data.ENEMY.spez_spawn_time < 60:
             data.ENEMY.spez_spawn_time = 60
         if cls.level == 1:
@@ -98,10 +96,10 @@ class Levels:
             for i in range(20):
                 data.ENEMY_DATA.append(Asteroid())
         elif kind == "jumper":
-            for i in range(10 + cls.level):
+            for i in range(3 + cls.level):
                 data.ENEMY_DATA.append(Jumper())
         elif kind == "shooter":
-            for i in range(3 + int(cls.level / 10)):
+            for i in range(2 + int(cls.level / 10)):
                 data.ENEMY_DATA.append(Shooter())
         elif kind == "seeker":
             for i in range(2 + int(cls.level / 10)):

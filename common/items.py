@@ -617,6 +617,10 @@ class Item_shield(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
 
+    def activation_effect(self):
+        if not self.cooldown:
+            Gfx.create_effect("shield", 2, pl_shield=True)
+
     def get_upgrade_desc(self):
         return f"Cooldown: {int(self.get_cd_len() / 60) + 1}s"
 

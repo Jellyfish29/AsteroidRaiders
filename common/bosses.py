@@ -63,7 +63,7 @@ class Bosses(Shooter, Boss_skills):
         self.special_gfx = False
         self.hide_health_bar = False
 
-    def gfx_direction(self):
+    def gfx_animation(self):
         if self.direction > 45 and self.direction < 135:  # up
             self.gfx_idx = self.orig_gfx_idx
         elif self.direction > 135 and self.direction < 225:  # left
@@ -72,6 +72,12 @@ class Bosses(Shooter, Boss_skills):
             self.gfx_idx = [i + 4 for i in self.orig_gfx_idx]
         elif self.direction < 45 or self.direction > 315:  # right
             self.gfx_idx = [i + 6 for i in self.orig_gfx_idx]
+
+        animation_ticker = self.timer_animation_ticker(8)
+        if animation_ticker < 4:
+            win.blit(self.sprites[self.gfx_idx[0]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+        else:
+            win.blit(self.sprites[self.gfx_idx[1]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
 
     def move(self):
         rel_x, rel_y = self.checkpoints[self.move_pattern[self.cp_ticker]][0] - self.hitbox.center[0], self.checkpoints[self.move_pattern[self.cp_ticker]][1] - self.hitbox.center[1]
@@ -118,6 +124,7 @@ class Bosses(Shooter, Boss_skills):
             skill()
 
     def death(self):
+        Gfx.create_effect("explosion_3", 3, (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300), explo=True)
         data.LEVELS.display_score += self.score_amount
 
         data.ITEMS.drop(self.hitbox.center, amount=self.drop_amount)
@@ -147,10 +154,9 @@ class Bosses(Shooter, Boss_skills):
             self.move()
         if not self.special_gfx:
             self.gfx_animation()
-            self.gfx_direction()
         if self.hitable:
             data.TURRET.missile_aquisition(self)
-        if self.__class__.__name__ == "Boss_adds" or self.__class__.__name__ == "Boss_weakspot":
+        if self.__class__.__name__ == "Boss_turret" or self.__class__.__name__ == "Boss_weakspot":
             data.TURRET.point_defence(self.hitbox)
         if self.health <= 0:
             self.death()
@@ -158,9 +164,9 @@ class Bosses(Shooter, Boss_skills):
 
     @classmethod
     def create(cls, lvl):
-        if lvl == 5:
+        if lvl == 55:
             data.ENEMY_DATA.append(Boss_mine_boat())
-        elif lvl == 10:
+        elif lvl == 5:
             data.ENEMY_DATA.append(Boss_frigatte())
         elif lvl == 15:
             data.ENEMY_DATA.append(Boss_corvette())
@@ -204,6 +210,7 @@ class Boss_mine_boat(Bosses):
         self.skills_lst.append(self.skill_missile)
 
     def phase_3(self):
+        Gfx.bg_move = True
         self.agles = self.angles = angles_360(7)
         self.fire_rate -= 25
         self.set_health(-50, (0, 255, 0))
@@ -280,7 +287,7 @@ class Boss_corvette(Bosses):
         self.skills_lst = [self.skill_volley]
         super().__init__()
 
-    def phase_2(self):
+    def phase_1(self):
 
         Gfx.bg_move = True
         Gfx.scroll_speed += 2
@@ -288,7 +295,7 @@ class Boss_corvette(Bosses):
         self.angles = angles_360(self.speed)
         self.skills_lst.append(self.skill_jumpdrive)
 
-    def phase_1(self):
+    def phase_2(self):
 
         self.speed += 2
         Gfx.scroll_speed += 2
@@ -429,26 +436,29 @@ class Boss_carrier(Bosses):
 
 class Elites(Bosses):
 
-    health = 25
+    health = 20
+    sprites = get_images("elites")
 
-    def __init__(self, health=0, speed=0, fire_rate=0, skill=[]):
+    def __init__(self, health=0, speed=0, fire_rate=0, skill=[], gfx_idx=(0, 1), gfx_hook=(-30, -30)):
         self.health = health
         self.speed = speed
         self.fire_rate = fire_rate
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]
-        self.size = (80, 180)
-        self.gfx_idx = [0, 1]
-        self.gfx_hook = (-50, -120)
+        self.size = (100, 100)
+        self.gfx_idx = gfx_idx
+        self.gfx_hook = gfx_hook
         self.drop_amount = 0
         self.elite_skill = skill
         self.score_amount = 100
         self.flag = "elite"
         super().__init__()
+        self.sprites = Elites.sprites
 
     def phases(self):
         pass
 
     def death(self):
+        Gfx.create_effect("explosion_3", 3, (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300), explo=True)
         data.LEVELSelite_fight = False
         if random.randint(0, 100) > 95:
             data.ITEMS.drop((self.hitbox.topleft), amount=1)
@@ -463,16 +473,24 @@ class Elites(Bosses):
     def boss_skills(self):
         self.elite_skill(self)
 
+    def gfx_animation(self):
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        animation_ticker = self.timer_animation_ticker(8)
+        gfx_angle = degrees(data.PLAYER.hitbox.center[1], self.hitbox.center[1], data.PLAYER.hitbox.center[0], self.hitbox.center[0])
+        if animation_ticker < 4:
+            win.blit(gfx_rotate(self.sprites[self.gfx_idx[0]], gfx_angle), (self.hitbox.topleft[0] + self.gfx_hook[0], self.hitbox.topleft[1] + self.gfx_hook[1]))
+        else:
+            win.blit(gfx_rotate(self.sprites[self.gfx_idx[1]], gfx_angle), (self.hitbox.topleft[0] + self.gfx_hook[0], self.hitbox.topleft[1] + self.gfx_hook[1]))
+
     @classmethod
     def spawn(cls):
         data.ENEMY_DATA.append(random.choice([
-            lambda: Elites(health=Elites.health, speed=2, fire_rate=170, skill=Boss_skills.skill_mines),
-            lambda: Elites(health=Elites.health + Elites.health * 0.2, speed=4, fire_rate=120, skill=Boss_skills.skill_missile),
-            lambda: Elites(health=Elites.health - Elites.health * 0.2, speed=8, fire_rate=80, skill=Boss_skills.skill_jumpdrive),
-            lambda: Elites(health=Elites.health + Elites.health, speed=3, fire_rate=100, skill=Boss_skills.skill_salvo_alpha),
-            # lambda: Elites(health=Elites.health, speed=2, fire_rate=120, skill=Boss_skills.skill_adds),
-            lambda: Elites(health=Elites.health + Elites.health * 0.1, speed=2, fire_rate=200, skill=Boss_skills.skill_main_gun),
-            lambda: Elites(health=Elites.health + Elites.health * 0.1, speed=6, fire_rate=200, skill=Boss_skills.skill_salvo_bravo)
+            lambda: Elites(health=Elites.health, speed=2, fire_rate=170, skill=Boss_skills.skill_mines, gfx_idx=(8, 9)),
+            lambda: Elites(health=Elites.health + Elites.health * 0.2, speed=4, fire_rate=120, skill=Boss_skills.skill_missile, gfx_idx=(2, 3)),
+            lambda: Elites(health=Elites.health - Elites.health * 0.2, speed=8, fire_rate=80, skill=Boss_skills.skill_jumpdrive, gfx_idx=(4, 5)),
+            lambda: Elites(health=Elites.health + Elites.health, speed=3, fire_rate=100, skill=Boss_skills.skill_salvo_delta, gfx_idx=(6, 7)),
+            lambda: Elites(health=Elites.health + Elites.health * 0.1, speed=2, fire_rate=100, skill=Boss_skills.skill_main_gun, gfx_idx=(0, 1)),
+            lambda: Elites(health=Elites.health + Elites.health * 0.1, speed=6, fire_rate=100, skill=Boss_skills.skill_wave_motion_gun, gfx_idx=(10, 11))
         ])())
 
 
@@ -500,6 +518,13 @@ class Boss_weakspot(Enemy):
                 self.death_effect()
         self.kill = True
 
+    def gfx_animation(self):
+        animation_ticker = self.timer_animation_ticker(8)
+        if animation_ticker < 4:
+            win.blit(self.sprites[self.gfx_idx[0]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+        else:
+            win.blit(self.sprites[self.gfx_idx[1]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+
     def border_collide(self):
         pass
 
@@ -514,14 +539,19 @@ class Boss_turret(Shooter):
         self.location = location
         self.flag = "boss"
         self.fire_rate = 150
-        self.direction = angles_360(0)
+        self.target = data.PLAYER.hitbox
         self.special_take_damage = boss.special_take_damage
+        self.gfx_idx = (19, 19)
 
     def move(self):
         self.hitbox.center = self.location
 
     def set_sp_dmg(self):
         self.special_take_damage = self.boss.special_take_damage
+
+    def gfx_animation(self):
+        gfx_angle = degrees(self.target[1], self.hitbox.center[1], self.target[0], self.hitbox.center[0])
+        win.blit(rot_center(self.sprites[self.gfx_idx[0]], gfx_angle), (self.hitbox.topleft[0] + self.gfx_hook[0], self.hitbox.topleft[1] + self.gfx_hook[1]))
 
 
 class Boss_main_gun_battery(Bosses):

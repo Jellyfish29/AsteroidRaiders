@@ -90,7 +90,9 @@ class Turret:
                         impact_effect=lambda loc=pos: data.PLAYER_PROJECTILE_DATA.append(Explosion(
                             location=loc,
                             explo_size=400,
-                            damage=1.5 + data.PLAYER.damage * 0.5))
+                            damage=1.5 + data.PLAYER.damage * 0.5,
+                            explosion_effect=lambda loc: Gfx.create_effect("explosion_1", 3, (loc[0] - 400, loc[1] - 400), explo=True)
+                        ))
                     ))
                     data.ITEMS.get_item(flag="nuke").engage = False
                     data.ITEMS.get_item(flag="nuke").end_active()

@@ -207,24 +207,30 @@ class Mine(Projectile):
 
 
 class Explosion(Projectile):
-    def __init__(self, location=(0, 0), explo_size=0, damage=0, explo_delay=0):
+    def __init__(self, location=(0, 0), explo_size=0, damage=0, explo_delay=0, explosion_effect=None):
         super().__init__(damage=damage, flag="explo", piercing=True)
         self.hitbox = pygame.Rect(location[0], location[1], 1, 1)
         self.explo_size = explo_size
         self.explo_delay = explo_delay
         self.piercing = True
+        self.explosion_effect = run_once(explosion_effect)
 
     def set_location(self, l):
         self.hitbox.center = l
 
     def move(self):
         if self.timer_delay(limit=self.explo_delay):
+            self.run_explosion_effect()
             self.hitbox.inflate_ip(30, 30)
             if abs(self.hitbox.topleft[0] - self.hitbox.center[0]) > self.explo_size:
                 self.kill = True
 
+    def run_explosion_effect(self):
+        self.explosion_effect(self.hitbox.topleft)
+
     def gfx_draw(self):
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        pass
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
 
 
 class Wave(Projectile):
