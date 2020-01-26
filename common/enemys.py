@@ -176,17 +176,26 @@ class Asteroid(Enemy):
     # direction, speed, spawn_point, health, size, gfx_idx, gfx_hook
     def __init__(self, event=False):
         super().__init__(random.randint(0, 360), random.randint(2, 8), random.randint(1, 4), Enemy.health, (80, 80), 0, (0, 0), Enemy.asteroid_sprites)
-        self.animation_speed = {self.speed + 1 - i: i * 15 for i in range(1, self.speed + 1)}[self.speed]
+        # self.animation_speed = {self.speed + 1 - i: i * 15 for i in range(1, self.speed + 1)}[self.speed]
+        self.gfx_offset = [8 * i for i in range(8)]
+        self.gfx_idx = random.choice([0, 4, 64, 68])
+        self.orig_gfx_idx = self.gfx_idx
+        self.frame_counter = 0
+        self.animation_speed = 3  # 10 - self.speed
+        # if self.animation_speed > 6:
+        #     self.animation_speed = 6
 
     def gfx_animation(self):
-        animation_ticker = self.timer_animation_ticker(self.animation_speed * len(Enemy.asteroid_sprites))
-        if animation_ticker == (self.animation_speed * len(Enemy.asteroid_sprites)):  # 480
-            self.gfx_idx = 0
-        if animation_ticker % self.animation_speed == 0:
-            self.gfx_idx += 1
-            if self.gfx_idx == len(Enemy.asteroid_sprites):
-                self.gfx_idx = 0
-        win.blit(Enemy.asteroid_sprites[self.gfx_idx], (self.hitbox.topleft[0] - 8, self.hitbox.topleft[1] - 15))
+        # Weil die Bilder in eine beschissenne reinfolge sind muss der schmutz hier gemacht werden Big OOF
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        win.blit(Enemy.asteroid_sprites[self.gfx_idx + self.gfx_offset[self.frame_counter]], (self.hitbox.topleft[0] - 25, self.hitbox.topleft[1] - 25))
+        if self.trigger(self.animation_speed):
+            self.frame_counter += 1
+            if self.frame_counter == 8:
+                self.gfx_idx += 1
+                self.frame_counter = 0
+            if self.gfx_idx > self.orig_gfx_idx + 3:
+                self.gfx_idx = self.orig_gfx_idx
 
 
 class Jumper(Enemy):
@@ -206,6 +215,8 @@ class Jumper(Enemy):
             if self.gfx_idx == len(Enemy.asteroid_sprites):
                 self.gfx_idx = 0
         win.blit(Enemy.asteroid_sprites[self.gfx_idx], (self.hitbox.topleft[0] - 8, self.hitbox.topleft[1] - 15))
+        if self.timer_trigger(60):
+            Gfx.create_effect("lightning", 8, anchor=self.hitbox, follow=True, x=-30, y=-30)
 
     def skill(self):
         if self.timer_trigger(35):

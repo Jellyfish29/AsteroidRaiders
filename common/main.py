@@ -16,8 +16,8 @@ from phenomenon import *
 
 
 def test_mode():
-    Levels.display_level += 1
-    Levels.level += 1
+    # Levels.display_level += 1
+    # Levels.level += 1
     Levels.scaling()
     # Player.max_health += 0 40000
     Player.health += 40000
@@ -25,9 +25,9 @@ def test_mode():
     Items.upgrade_points += 400
     Levels.skill_points += 100
     pygame.mouse.set_visible(True)
-    Elites.spawn()
+    # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
-    # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
+    data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
 
 
 def main():
