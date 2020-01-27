@@ -93,10 +93,10 @@ class Levels:
     def spez_event(cls, kind):
         cls.spez_event_trigger = 0
         if kind == "wave":
-            for i in range(4 + cls.level):
+            for i in range(4 + int(cls.level / 2)):
                 data.ENEMY_DATA.append(Asteroid())
         elif kind == "jumper":
-            for i in range(2 + cls.level):
+            for i in range(2 + int(cls.level / 2)):
                 data.ENEMY_DATA.append(Jumper())
         elif kind == "shooter":
             for i in range(2 + int(cls.level / 10)):

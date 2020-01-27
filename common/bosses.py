@@ -307,7 +307,7 @@ class Boss_corvette(Bosses):
     def phase_3(self):
 
         Gfx.scroll_speed += 4
-        self.speed += 4
+        self.speed += 2
         self.angles = angles_360(self.speed)
         self.fire_rate -= 10
         self.skills_lst.append(self.skill_jumpdrive)
