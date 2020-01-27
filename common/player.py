@@ -57,11 +57,12 @@ class Player:
         if timer.trigger(staggered):
             if damage > 0:
                 if cls.shield.active:
-                    cls.shield_strength -= 1
+                    cls.shield_strength -= damage
                     # cls.gfx_hit_effect()
                     if cls.shield_strength < 1:
                         cls.shield.end_active()
                         cls.shield_strength = cls.max_shield_strength
+                        cls.health -= damage + cls.shield_strength
                 else:  # not cls.shield.active:
                     cls.health -= damage
                     cls.gfx_hit_effect()

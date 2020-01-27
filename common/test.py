@@ -11,6 +11,7 @@ from levels import *
 from items import *
 from phenomenon import *
 
+win = pygame.display.set_mode((winwidth, winheight))
 
 Boss_test_lst = [Boss_mine_boat(), Boss_frigatte(), Boss_corvette(), Boss_destroyer(), Boss_cruiser()]  # Boss_battleship(), Boss_carrier()]
 
@@ -39,7 +40,24 @@ def boss_tick_test():
 
         Clock.tick(fps)
         pygame.display.update()
+    print("Boss Test Complete")
 
+
+def item_test():
+    for item in Items.get_drop_table_absolute():
+        it = item[0]((item[1]))
+        Items.inventory_dic[0] = it
+        it.effect()
+        Items.update()
+        assert it.flag in Items.active_flag_lst
+        it.lvl += 3
+        assert it.get_lvl_effects() == self.base_effect
+        it.remove_from_inventory(0)
+        assert len(Items.active_flag_lst) == 0
+        assert it in Items.dropped_lst
+        assert Items.inventory_dic[0] == None
+    print("Item Test complete")
 
 if __name__ == "__main__":
-    boss_tick_test()
+    # boss_tick_+test()
+    item_test()

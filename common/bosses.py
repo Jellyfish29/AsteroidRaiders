@@ -132,6 +132,7 @@ class Bosses(Shooter, Boss_skills):
         data.ITEMS.drop(self.hitbox.center, target=Item_heal_crate((0, 255, 0)))
 
         data.ENEMY_PROJECTILE_DATA.clear()
+        Gfx.bg_move = False
         data.LEVELS.boss_fight = False
         data.LEVELS.after_boss = True
         self.special_death()
@@ -210,7 +211,7 @@ class Boss_mine_boat(Bosses):
         self.skills_lst.append(self.skill_missile)
 
     def phase_3(self):
-        Gfx.bg_move = False
+        Gfx.bg_move = True
         self.agles = self.angles = angles_360(7)
         self.fire_rate -= 25
         self.set_health(-50, (0, 255, 0))
