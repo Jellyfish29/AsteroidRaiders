@@ -176,8 +176,8 @@ class Turret:
                 aa_target_area = pygame.Rect(m_pos[0] - 100, m_pos[1] - 100, 200, 200)
                 # pygame.draw.rect(win, (255, 255, 0), aa_target_area)
                 if aa_target_area.colliderect(enemy.hitbox):
-                    for x in [-18, 60]:
-                        Gfx.create_effect("missilemuzzle", 3, data.PLAYER.hitbox, follow=True, x=x, y=8)
+                    # for x in [-18, 60]:
+                        # Gfx.create_effect("missilemuzzle", 3, data.PLAYER.hitbox, follow=True, x=x, y=8)
                     for location in [data.PLAYER.hitbox.topleft, data.PLAYER.hitbox.topright]:
                         data.PLAYER_PROJECTILE_DATA.append(Missile(
                             speed=15,
@@ -202,9 +202,11 @@ class Turret:
                     gfx_idx=0,
                     target=pygame.mouse.get_pos(),
                     piercing=False,
-                    hit_effect=Explosion(
+                    hit_effect=lambda l: data.PLAYER_PROJECTILE_DATA.append(Explosion(
+                        location=l,
                         explo_size=70,
-                        damage=data.PLAYER.damage * 0.2)
+                        damage=data.PLAYER.damage * 0.2
+                    ))
                 ))
                 return True
 

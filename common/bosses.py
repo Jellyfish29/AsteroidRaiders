@@ -155,6 +155,8 @@ class Bosses(Shooter, Boss_skills):
             self.move()
         if not self.special_gfx:
             self.gfx_animation()
+        else:
+            self.special_gfx_animation()
         if self.hitable:
             data.TURRET.missile_aquisition(self)
         if self.__class__.__name__ == "Boss_turret" or self.__class__.__name__ == "Boss_weakspot":
@@ -165,7 +167,7 @@ class Bosses(Shooter, Boss_skills):
 
     @classmethod
     def create(cls, lvl):
-        if lvl == 5:
+        if lvl == 55:
             data.ENEMY_DATA.append(Boss_mine_boat())
         elif lvl == 10:
             data.ENEMY_DATA.append(Boss_frigatte())
@@ -175,7 +177,7 @@ class Bosses(Shooter, Boss_skills):
             data.ENEMY_DATA.append(Boss_destroyer())
         elif lvl == 25:
             data.ENEMY_DATA.append(Boss_cruiser())
-        elif lvl == 30:
+        elif lvl == 5:
             data.ENEMY_DATA.append(Boss_battleship())
         elif lvl == 35:
             data.ENEMY_DATA.append(Boss_carrier())
@@ -396,6 +398,7 @@ class Boss_cruiser(Bosses):
 
     def phase_3(self):
 
+        self.angles = angles_360(4)
         self.special_attack = True
         self.special_skills_lst.append(self.skill_dart_missile_last_stand)
         for _ in range(8):
@@ -413,9 +416,29 @@ class Boss_battleship(Bosses):
         self.gfx_idx = (32, 33)
         self.gfx_hook = (-80, -220)
         self.skills_lst = [self.skill_volley, self.skill_missile, self.skill_salvo_alpha, self.skill_star_shot, self.skill_main_gun]
-        self.phase_skills = [[self.skill_main_gun], [self.skill_jumpdrive, self.skill_salvo_bravo]]
         self.drop_amount = 1
         super().__init__()
+
+    def phase_1(self):
+
+        self.special_attack = True
+        self.special_skills_lst.append(self.skill_radar_guided_gun)
+
+    def phase_2(self):
+
+        pass
+
+    def phase_3(self):
+
+        pass
+
+    def special_gfx_animation(self):
+        animation_ticker = self.timer_animation_ticker(8)
+        # gfx_angle = degrees(data.PLAYER.hitbox.center[1], self.hitbox.center[1], data.PLAYER.hitbox.center[0], self.hitbox.center[0])
+        if animation_ticker < 4:
+            win.blit(rot_center(self.sprites[self.gfx_idx[0]], 270), (self.hitbox.center[0] - 300, self.hitbox.center[1]))
+        else:
+            win.blit(rot_center(self.sprites[self.gfx_idx[1]], 270), (self.hitbox.center[0] - 300, self.hitbox.center[1]))
 
 
 class Boss_carrier(Bosses):

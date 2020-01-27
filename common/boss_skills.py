@@ -18,11 +18,16 @@ class Boss_skills(Timer):
         self.main_gun_angles = angles_360(35)
         self.salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 10))])
         self.dart_salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 5))])
+        self.dummy_targets = [[400, 0], [400, winheight / 2], [400, winheight]]
         self.dart_missiles = 6
         self.jump_charge = False
         self.jump_point = 0
         self.jump_chance = 1100
         self.chaser_hit = False
+        self.sinus_target = None
+        self.sinus_direction = 2
+        self.sin_wave_offset = 350
+        self.sinus_delay = 300
 
     def skill_mines(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 5):
@@ -100,6 +105,93 @@ class Boss_skills(Timer):
             ))
             if self.timer_trigger(10):
                 self.timer_key_delay(reset=True, key="laser")
+
+    def skill_sinus_wave_gun(self):
+        self.special_move = True
+        self.hitbox.move_ip(self.angles[degrees(1870, self.hitbox.center[0], 500, self.hitbox.center[1])])
+        if abs(1870 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
+            self.angles = angles_360(0)
+            if self.timer_key_delay(limit=self.sinus_delay, key="sinus"):
+                if self.sinus_target is None:
+                    self.sinus_target = pygame.Rect(data.PLAYER.hitbox.center[0], data.PLAYER.hitbox.center[1], 1, 1)
+                self.sinus_target.move_ip(0, self.sinus_direction)
+                if self.sinus_target.center[1] > 800:
+                    self.sinus_direction = -2
+                elif self.sinus_target.center[1] < 200:
+                    self.sinus_direction = 2
+
+                self.sin_wave_offset -= 1
+                if self.sin_wave_offset < 50:
+                    self.sin_wave_offset = 350
+
+                for sp, target in [
+                    (self.hitbox.topleft, (self.sinus_target.center[0], self.sinus_target.center[1] - self.sin_wave_offset)),
+                    (self.hitbox.bottomleft, (self.sinus_target.center[0], self.sinus_target.center[1] + self.sin_wave_offset))
+                ]:
+                    data.ENEMY_PROJECTILE_DATA.append(Wave(
+                        speed=40,
+                        size=(5, 5),
+                        start_point=sp,
+                        damage=4,
+                        gfx_idx=1,
+                        target=target,
+                        curve_size=0.2,
+                        # fixed_angle=angle + random.randint(-20, 20),
+                        variation=False
+                    ))
+
+                if self.timer_trigger(600):
+                    data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                        speed=200,
+                        size=(30, 30),
+                        start_point=self.hitbox.center,
+                        damage=4,
+                        flag="enemy",
+                        gfx_idx=8,
+                        target=data.PLAYER.hitbox.center
+                    ))
+
+                    self.sinus_target = None
+                    self.timer_key_delay(reset=True, key="sinus")
+                    self.sinus_delay = 300
+
+    def skill_radar_guided_gun(self):
+        self.special_move = True
+        self.hitbox.move_ip(self.angles[degrees(1700, self.hitbox.center[0], 500, self.hitbox.center[1])])
+        if abs(1700 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
+            self.angles = angles_360(0)
+            self.special_gfx = True
+            if self.timer_trigger(30):
+                for dummy in self.dummy_targets:
+                    dummy[1] += random.randint(-100, 100)
+                    if dummy[1] > 1000:
+                        dummy[1] = 100
+                    elif dummy[1] < 100:
+                        dummy[1] = 1000
+
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                    speed=28,
+                    size=(20, 200),
+                    start_point=self.hitbox.center,
+                    damage=0,
+                    flag="neutral",
+                    gfx_idx=16,
+                    target=random.choice([data.PLAYER.hitbox.center, self.dummy_targets[random.randint(0, 2)]]),
+                    hit_effect=lambda l: data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                        speed=100,
+                        size=(30, 30),
+                        start_point=self.hitbox.center,
+                        damage=4,
+                        flag="enemy",
+                        gfx_idx=8,
+                        target=data.PLAYER.hitbox.center
+                    )),
+                    spez_gfx=lambda a: Gfx.create_effect("radar", 10, anchor=a, follow=True, x=-170, y=-30)
+
+                ))
+
+    def get_sinus_wave_target(self):
+        return pygame.Rect(data.PLAYER.hitbox.center[0], data.PLAYER.hitbox.center[1], 1, 1)
 
     def skill_volley(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 3):

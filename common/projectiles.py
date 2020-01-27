@@ -10,7 +10,7 @@ class Projectile(Timer):
 
     projectile_sprites = get_images("projectile")
 
-    def __init__(self, speed=0, size=(0, 0), start_point=(0, 0), damage=0, flag="player", gfx_idx=0, angle=0, angle_variation=0, target=None, piercing=False, gfx_hit_effect="shot_hit", hit_effect=None, homing=False):
+    def __init__(self, speed=0, size=(0, 0), start_point=(0, 0), damage=0, flag="player", gfx_idx=0, angle=0, angle_variation=0, target=None, piercing=False, gfx_hit_effect="shot_hit", hit_effect=None, homing=False, spez_gfx=None,):
         Timer.__init__(self)
         self.speed = speed
         self.size = size
@@ -29,6 +29,8 @@ class Projectile(Timer):
         self.orig_angles = self.angles
         self.target = target
         self.start_point = start_point
+        self.spez_gfx = spez_gfx
+        self.run_spez_gfx = run_once(spez_gfx)
         self.homing = homing
 
         if target is None:
@@ -52,16 +54,17 @@ class Projectile(Timer):
 
     def hit(self, obj):
         if self.hitbox.colliderect(obj.hitbox):
+            if self.hit_effect is not None:
+                self.hit_effect(self.hitbox.center)
             if self.damage > 0:
-                self.gfx_hit()  # Gfx.shot_hit_effect(self.hitbox, effect=self.gfx_hit_effect)
-                if self.hit_effect is not None:
-                    self.hit_effect.set_location(self.hitbox.center)
-                    data.PLAYER_PROJECTILE_DATA.append(self.hit_effect)
+                self.gfx_hit()
                 return True
 
     def gfx_draw(self):
         # pygame.draw.rect(win, (0, 255, 255), self.hitbox)
         win.blit(Projectile.projectile_sprites[self.gfx_idx], (self.hitbox.topleft[0] - 8, self.hitbox.topleft[1] - 8))
+        if self.spez_gfx is not None:
+            self.run_spez_gfx(self.hitbox)
 
     def gfx_hit(self):
         Gfx.shot_hit_effect(self.hitbox, effect=self.gfx_hit_effect)
@@ -207,6 +210,7 @@ class Mine(Projectile):
 
 
 class Explosion(Projectile):
+
     def __init__(self, location=(0, 0), explo_size=0, damage=0, explo_delay=0, explosion_effect=None):
         super().__init__(damage=damage, flag="explo", piercing=True)
         self.hitbox = pygame.Rect(location[0], location[1], 1, 1)
@@ -220,7 +224,10 @@ class Explosion(Projectile):
 
     def move(self):
         if self.timer_delay(limit=self.explo_delay):
-            self.run_explosion_effect()
+            try:
+                self.run_explosion_effect()
+            except TypeError:
+                pass
             self.hitbox.inflate_ip(30, 30)
             if abs(self.hitbox.topleft[0] - self.hitbox.center[0]) > self.explo_size:
                 self.kill = True
