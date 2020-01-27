@@ -248,7 +248,7 @@ class Turret:
             if cls.overdrive_count < data.ITEMS.get_item(flag="overdrive").effect_strength:
                 cls.overdrive_count += 1
                 data.PLAYER.damage += 0.05
-                cls.fire_rate -= 0.7
+                cls.set_fire_rate(0.2)
 
     @classmethod
     @timer

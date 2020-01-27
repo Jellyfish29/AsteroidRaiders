@@ -90,18 +90,18 @@ class Levels:
             data.PHENOM.set_spawn_table(Nebulae_fire_rate_plus)
 
     @classmethod
-    def spez_event(cls, kind):
+    def spez_event(cls, flag):
         cls.spez_event_trigger = 0
-        if kind == "wave":
+        if flag == "wave":
             for i in range(4 + int(cls.level / 2)):
                 data.ENEMY_DATA.append(Asteroid())
-        elif kind == "jumper":
+        elif flag == "jumper":
             for i in range(2 + int(cls.level / 2)):
                 data.ENEMY_DATA.append(Jumper())
-        elif kind == "shooter":
+        elif flag == "shooter":
             for i in range(2 + int(cls.level / 10)):
                 data.ENEMY_DATA.append(Shooter())
-        elif kind == "seeker":
+        elif flag == "seeker":
             for i in range(2 + int(cls.level / 10)):
                 data.ENEMY_DATA.append(Seeker())
 

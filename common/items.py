@@ -949,10 +949,8 @@ class Item_overdrive(Items):
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
+            data.PLAYER.reset_overdrive()
             Items.active_flag_lst.remove(self.flag)
-            data.PLAYER.damage -= 0.05 * data.TURRET.overdrive_count
-            data.TURRET.fire_rate += 0.7 * data.TURRET.overdrive_count
-            data.TURRET.overdrive_count = 0
 
 
 ## Escorts ##

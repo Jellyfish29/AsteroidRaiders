@@ -84,7 +84,7 @@ class Player:
     def reset_overdrive(cls):
         if "overdrive" in data.ITEMS.active_flag_lst:
             cls.damage -= 0.05 * data.TURRET.overdrive_count
-            data.TURRET.fire_rate += 0.7 * data.TURRET.overdrive_count
+            data.TURRET.set_fire_rate(-0.1 * data.TURRET.overdrive_count)
             data.TURRET.overdrive_count = 0
 
     @classmethod

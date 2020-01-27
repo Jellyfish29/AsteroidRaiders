@@ -210,7 +210,7 @@ class Boss_mine_boat(Bosses):
         self.skills_lst.append(self.skill_missile)
 
     def phase_3(self):
-        Gfx.bg_move = True
+        Gfx.bg_move = False
         self.agles = self.angles = angles_360(7)
         self.fire_rate -= 25
         self.set_health(-50, (0, 255, 0))
@@ -306,7 +306,7 @@ class Boss_corvette(Bosses):
 
     def phase_3(self):
 
-        Gfx.scroll_speed += 4
+        Gfx.scroll_speed += 2
         self.speed += 2
         self.angles = angles_360(self.speed)
         self.fire_rate -= 10
