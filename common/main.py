@@ -32,6 +32,7 @@ def test_mode():
 
 def main():
 
+    
     right, left, up, down = [False, False, False, False]
 
     def move_condition(bool_1, str_1, bool_2, str_2, str_3):

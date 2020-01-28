@@ -62,7 +62,7 @@ class Bosses(Shooter, Boss_skills):
         self.special_move = False
         self.special_gfx = False
         self.hide_health_bar = False
-        self.engine = {"right": (-90, -10), "down": (-19, -153), "up": (-18, 90), "left": (30, -10)}
+        self.engine = {"right": (-78, -10), "down": (-19, -153), "up": (-15, 90), "left": (32, -10)}
 
     def gfx_animation(self):
         if self.direction > 338 or self.direction < 22:
@@ -74,19 +74,19 @@ class Bosses(Shooter, Boss_skills):
             if self.timer_trigger(20):
                 Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=90, x=self.engine["right"][0], y=self.engine["right"][1])
             if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=360, x=self.engine["down"][0], y=self.engine["down"][1])
+                Gfx.create_effect("engine2", 5, anchor=self.hitbox, rot=360, x=self.engine["down"][0] - 33, y=self.engine["down"][1] - 20)
             # pass
         elif 67 <= self.direction <= 112:
             # down
             if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=360, x=self.engine["down"][0], y=self.engine["down"][1])
+                Gfx.create_effect("engine2", 5, anchor=self.hitbox, rot=360, x=self.engine["down"][0] - 33, y=self.engine["down"][1] - 20)
             # pass
         elif 112 <= self.direction <= 157:
             # leftdown
             if self.timer_trigger(20):
                 Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=270, x=self.engine["left"][0], y=self.engine["left"][1])
             if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=360, x=self.engine["down"][0], y=self.engine["down"][1])
+                Gfx.create_effect("engine2", 5, anchor=self.hitbox, rot=360, x=self.engine["down"][0] - 33, y=self.engine["down"][1] - 20)
             # pass
         elif 157 <= self.direction <= 202:
             # links
@@ -205,9 +205,9 @@ class Bosses(Shooter, Boss_skills):
             data.ENEMY_DATA.append(Boss_mine_boat())
         elif lvl == 10:
             data.ENEMY_DATA.append(Boss_frigatte())
-        elif lvl == 5:
+        elif lvl == 15:
             data.ENEMY_DATA.append(Boss_corvette())
-        elif lvl == 20:
+        elif lvl == 5:
             data.ENEMY_DATA.append(Boss_destroyer())
         elif lvl == 25:
             data.ENEMY_DATA.append(Boss_cruiser())
@@ -233,7 +233,7 @@ class Boss_mine_boat(Bosses):
         self.drop_amount = 1
         self.skills_lst = [self.skill_mines]
         super().__init__()
-        self.engine = {"right": (-90, -10), "down": (-19, -153), "up": (-18, 90), "left": (30, -10)}
+        self.engine = {"right": (-78, -10), "down": (-19, -153), "up": (-15, 90), "left": (32, -10)}
 
     def phase_1(self):
         self.angles = angles_360(5)
@@ -273,7 +273,7 @@ class Boss_frigatte(Bosses):
         self.wp_locations = ((-50, 50), (50, 50), (0, -100))
         self.skills_lst = [self.skill_missile]
         super().__init__()
-        self.engine = {"right": (-108, -10), "down": (-19, -153), "up": (-18, 90), "left": (40, -10)}
+        self.engine = {"right": (-108, -10), "down": (-19, -153), "up": (-18, 90), "left": (67, -10)}
 
     def phase_1(self):
 
@@ -329,6 +329,7 @@ class Boss_corvette(Bosses):
         self.drop_amount = 1
         self.skills_lst = [self.skill_volley]
         super().__init__()
+        self.engine = {"right": (-80, -10), "down": (-19, -153), "up": (-10, 100), "left": (40, -10)}
 
     def phase_1(self):
 
