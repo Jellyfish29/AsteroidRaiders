@@ -77,12 +77,11 @@ def main():
         # print(Items.upgrade_points)
         # print(len(data.ENEMY_DATA))dd
 
+        Gfx.update()
         data.GAME_UPDATE()
 
         for component in components:
             component.update()
-
-        Gfx.update()
 
         for spez_event in map(pygame.event.post, [event for (condition, event) in event_conditions if condition()]):
             spez_event

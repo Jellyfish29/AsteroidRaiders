@@ -9,6 +9,32 @@ Turret.star_shot_ammo 		+=
 Power_ups.star_shot_tubes 	+=
 
 
+Richtungen:
+
+0 = Rechts
+338 -- 23
+45 = rechtsunten
+23 -- 67
+90 = unten
+67 -- 112
+135 = linksunten
+112 -- 157
+180 = links
+157 -- 202
+225 = linksoben
+202 -- 247
+270 = oben
+247 -- 292
+315 = rechtsoben
+292 -- 338
+
+engine:
+180 = nach oben fliegen zeigt nach unten
+90 = nach rechts fliegen zeigt nach links
+270 = nach links fleigen zeigt nach rechts
+360 = nach unten fliegen zeigt nach oben
+
+
 seltenheit/Item-lvl:
 
 - jedes Item 4 Level

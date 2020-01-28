@@ -340,12 +340,15 @@ class Boss_skills(Timer):
         else:
             if self.timer_trigger(300):
                 self.chaser_hit = False
-                self.special_move = True
+                # self.special_move = True
+                self.special_gfx = True
         if self.hitbox.colliderect(data.PLAYER.hitbox):
             self.chaser_hit = True
-            self.special_move = False
+            # self.special_move = False
+            self.special_gfx = False
         if len([e for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_weakspot"]) == 0:
             self.special_move = False
+            # self.special_gfx = False
             self.angles = self.orig_angles
             self.skills_lst.remove(self.skill_chaser)
 

@@ -17,7 +17,7 @@ class Gfx(Timer):
     bg_move = True
     font = pygame.font.SysFont("arial", 20)
 
-    def __init__(self, typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield):
+    def __init__(self, typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield, rot):
         Timer.__init__(self)
         if explo:
             self.sprites = Gfx.explosion_sprites
@@ -34,6 +34,7 @@ class Gfx(Timer):
         self.follow = follow
         self.dmg_text = dmg_text
         self.text_color = text_color
+        self.rot = rot
         self.effect_types = {
             "shield": (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
             "shot_hit": (12, 13, 14),
@@ -47,7 +48,8 @@ class Gfx(Timer):
             "explosion_3": (24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37),
             "nuke": (39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51),
             "lightning": (28, 29, 30, 31, 32, 33, 34, 35),
-            "radar": (36, 37, 38, 39, 40, 41, 42)
+            "radar": (36, 37, 38, 39, 40, 41, 42),
+            "engine": (43, 44, 45, 46, 47, 48, 49)
         }
 
     def draw(self):
@@ -81,9 +83,16 @@ class Gfx(Timer):
             except TypeError:
                 if not data.PLAYER.shield.active:
                     return True
+        elif self.rot is not None:
+            try:
+                win.blit(rot_center(self.sprites[
+                    self.effect_types[self.typ][self.timer_animation_range(self.interval, len(self.effect_types[self.typ]))]], self.rot), (self.anchor.center[0] + self.x, self.anchor.center[1] + self.y))
+            except TypeError:
+                return True
 
         # elif not self.hover and not self.follow:
         else:
+
             try:
                 win.blit(self.sprites[
                     self.effect_types[self.typ][self.timer_animation_range(self.interval, len(self.effect_types[self.typ]))]], self.anchor)
@@ -98,8 +107,8 @@ class Gfx(Timer):
         Gfx.create_effect(effect, 4, (shot.topleft[0] - 10, shot.topleft[1] - 10))
 
     @classmethod
-    def create_effect(cls, typ, interval, anchor=(0, 0), hover=False, follow=False, x=0, y=0, dmg_text=None, text_color=(0, 0, 0), explo=False, pl_shield=False):
-        Gfx.gfx_lst.append(Gfx(typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield))
+    def create_effect(cls, typ, interval, anchor=(0, 0), hover=False, follow=False, x=0, y=0, dmg_text=None, text_color=(0, 0, 0), explo=False, pl_shield=False, rot=None):
+        Gfx.gfx_lst.append(Gfx(typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield, rot))
 
     @classmethod
     def cursor(cls):
