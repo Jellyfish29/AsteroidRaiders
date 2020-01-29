@@ -171,6 +171,7 @@ class STAGE_SAVE():
         self.phenomenon_spawn_table = data.PHENOM.phenomenon_spawn_table
         self.bg_speed = gfx.Gfx.scroll_speed
         self.bg_move = gfx.Gfx.bg_move
+        self.overdrive_count = data.TURRET.overdrive_count
 
     def load_save(self):
         data.ENEMY_DATA.clear()
@@ -214,6 +215,7 @@ class STAGE_SAVE():
         data.PHENOM.phenomenon_spawn_table = self.phenomenon_spawn_table
         gfx.Gfx.scroll_speed = self.bg_speed
         gfx.Gfx.bg_move = self.bg_move
+        data.TURRET.overdrive_count = self.overdrive_count
         if self.boss_fight:
             self.spawn_boss()
 

@@ -424,7 +424,7 @@ class Boss_skills(Timer):
         #     self.hide_health_bar = False
         #     self.angles = angles_360(self.speed)
         #     self.special_skills_lst.remove(self.skill_laser_storm)
-        if self.boss.health <= 0:
+        if self.health <= 0:
             for e in data.ENEMY_DATA:
                 if e.__class__.__name__ == "Boss_laser_battery":
                     e.kill = True

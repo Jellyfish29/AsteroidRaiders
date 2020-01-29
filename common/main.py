@@ -24,7 +24,7 @@ def test_mode():
     Player.damage += 5
     Items.upgrade_points += 400
     Levels.skill_points += 100
-    # pygame.mouse.set_visible(True)
+    # pygame.mouse.set_visible(True)AAAAAAAAAA
     # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
@@ -58,7 +58,7 @@ def main():
 
     # # # # Levels.skill_points += 100
     # Items.drop((winwidth / 2, 400), target=Item_nuke((100, 100, 100)))
-    Items.drop((winwidth / 2, 400), target=Item_he_rounds((100, 100, 150)))
+    # Items.drop((winwidth / 2, 400), target=Item_he_rounds((100, 100, 150)))
     # Items.drop((winwidth / 2, 400), target=Item_improved_feeding((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=Items.start_item_generator()((100, 100, 200)))
     # Items.drop((winwidth / 2, 400), amount=1)
