@@ -7,7 +7,9 @@ import astraid_data as data
 
 class Gfx(Timer):
 
-    gfx_lst = []
+    gfx_layer_1_lst = []
+    gfx_layer_2_lst = []
+    gfx_layer_3_lst = []
     effect_sprites = get_images("effects")
     cursor_sprites = get_images("cursor")
     explosion_sprites = get_images("explosions")
@@ -52,7 +54,6 @@ class Gfx(Timer):
             "engine": (43, 44, 45, 46, 47, 48, 49),
             "engine2": (50, 51, 52, 53)
         }
-        print(Gfx.effect_sprites)
 
     def draw(self):
         if self.hover:
@@ -109,8 +110,13 @@ class Gfx(Timer):
         Gfx.create_effect(effect, 4, (shot.topleft[0] - 10, shot.topleft[1] - 10))
 
     @classmethod
-    def create_effect(cls, typ, interval, anchor=(0, 0), hover=False, follow=False, x=0, y=0, dmg_text=None, text_color=(0, 0, 0), explo=False, pl_shield=False, rot=None):
-        Gfx.gfx_lst.append(Gfx(typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield, rot))
+    def create_effect(cls, typ, interval, anchor=(0, 0), hover=False, follow=False, x=0, y=0, dmg_text=None, text_color=(0, 0, 0), explo=False, pl_shield=False, rot=None, layer=1):
+        if layer == 3:
+            Gfx.gfx_layer_3_lst.append(Gfx(typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield, rot))
+        elif layer == 2:
+            Gfx.gfx_layer_2_lst.append(Gfx(typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield, rot))
+        else:
+            Gfx.gfx_layer_1_lst.append(Gfx(typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield, rot))
 
     @classmethod
     def cursor(cls):
@@ -132,8 +138,22 @@ class Gfx(Timer):
             Gfx.y = 0
 
     @classmethod
-    def update(cls):
-        for effect in Gfx.gfx_lst:
+    def layer_1_update(cls):
+        for effect in Gfx.gfx_layer_1_lst:
             if effect.draw():  # if animation over
-                Gfx.gfx_lst.remove(effect)
+                Gfx.gfx_layer_1_lst.remove(effect)
+            effect.timer_tick()
+
+    @classmethod
+    def layer_2_update(cls):
+        for effect in Gfx.gfx_layer_2_lst:
+            if effect.draw():  # if animation over
+                Gfx.gfx_layer_2_lst.remove(effect)
+            effect.timer_tick()
+
+    @classmethod
+    def layer_3_update(cls):
+        for effect in Gfx.gfx_layer_3_lst:
+            if effect.draw():  # if animation over
+                Gfx.gfx_layer_3_lst.remove(effect)
             effect.timer_tick()

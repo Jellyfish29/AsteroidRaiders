@@ -32,7 +32,6 @@ def test_mode():
 
 def main():
 
-    
     right, left, up, down = [False, False, False, False]
 
     def move_condition(bool_1, str_1, bool_2, str_2, str_3):
@@ -78,11 +77,16 @@ def main():
         # print(Items.upgrade_points)
         # print(len(data.ENEMY_DATA))dd
 
-        Gfx.update()
+        Gfx.layer_3_update()
+
         data.GAME_UPDATE()
+
+        Gfx.layer_2_update()
 
         for component in components:
             component.update()
+
+        Gfx.layer_1_update()
 
         for spez_event in map(pygame.event.post, [event for (condition, event) in event_conditions if condition()]):
             spez_event

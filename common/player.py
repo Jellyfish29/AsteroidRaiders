@@ -62,7 +62,6 @@ class Player:
                     if cls.shield_strength < 1:
                         cls.shield.end_active()
                         cls.shield_strength = cls.max_shield_strength
-                        cls.health -= damage + cls.shield_strength
                 else:  # not cls.shield.active:
                     cls.health -= damage
                     cls.gfx_hit_effect()

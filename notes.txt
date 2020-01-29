@@ -34,6 +34,9 @@ engine:
 270 = nach links fleigen zeigt nach rechts
 360 = nach unten fliegen zeigt nach oben
 
+git fetch --all
+git reset --hard originn/changes
+
 
 seltenheit/Item-lvl:
 

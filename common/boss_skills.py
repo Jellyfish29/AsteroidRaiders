@@ -239,9 +239,9 @@ class Boss_skills(Timer):
                 gfx_idx=7,
                 target=target,
             ))
-            if self.timer_trigger(60):
+            if self.timer_trigger(45):
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(
-                    speed=40,
+                    speed=80,
                     size=(30, 30),
                     start_point=self.hitbox.center,
                     damage=4,
@@ -251,7 +251,7 @@ class Boss_skills(Timer):
                 ))
                 self.timer_key_delay(reset=True, key="main_gun")
                 if target is not data.PLAYER.hitbox:
-                    self.target = (random.randint(0, winwidth), random.randint(0, winheight))
+                    self.target = random.choice([(random.randint(0, winwidth), random.randint(0, winheight), data.PLAYER.hitbox.center)])
 
     def skill_dart_missiles(self):
         if self.timer_key_delay(limit=self.fire_rate * 15, key="darts"):
@@ -294,6 +294,8 @@ class Boss_skills(Timer):
         self.hitbox.move_ip(self.angles[degrees(1920, self.hitbox.center[0], 500, self.hitbox.center[1])])
         if abs(1920 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
             self.angles = angles_360(0)
+            self.speed = 0
+            self.special_gfx = True
             if self.timer_key_delay(60 - self.dart_missiles, key="darts2"):
                 if self.trigger(60 - self.dart_missiles):
                     shot_sp = next(self.dart_salvo_start_point, "stop")
@@ -407,18 +409,22 @@ class Boss_skills(Timer):
             self.angles = angles_360(self.speed)
             self.special_skills_lst.remove(self.skill_missile_barrage)
 
-    def skill_laser_storm(self):
+    def skill_laser_storm_laststand(self):
         self.special_move = True
-        self.hide_health_bar = True
-        self.hitbox.move_ip(self.angles[degrees(1920, self.hitbox.center[0], 500, self.hitbox.center[1])])
-        if abs(1920 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
+        # self.hide_health_bar = True
+        self.hitbox.move_ip(self.angles[degrees(1850, self.hitbox.center[0], 500, self.hitbox.center[1])])
+        if abs(1850 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
             self.angles = angles_360(0)
-        if len([e for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_weakspot"]) == 0:
-            self.special_move = False
-            self.special_attack = False
-            self.hide_health_bar = False
-            self.angles = angles_360(self.speed)
-            self.special_skills_lst.remove(self.skill_laser_storm)
+            self.special_gfx = True
+            # if self.timer_trigger(120):
+            #     self.hitbox = pygame.Rect(self.hitbox.topleft[0], self.hitbox.topleft[1], self.size[1], self.size[0])
+        # if len([e for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_weakspot"]) == 0:
+        #     self.special_move = False
+        #     self.special_attack = False
+        #     self.hide_health_bar = False
+        #     self.angles = angles_360(self.speed)
+        #     self.special_skills_lst.remove(self.skill_laser_storm)
+        if self.boss.health <= 0:
             for e in data.ENEMY_DATA:
                 if e.__class__.__name__ == "Boss_laser_battery":
                     e.kill = True

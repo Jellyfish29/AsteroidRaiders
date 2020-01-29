@@ -48,7 +48,7 @@ class Bosses(Shooter, Boss_skills):
         Timer.__init__(self)
         # Health
         self.max_health = self.health
-        self.healthbar_len = 100
+        self.healthbar_len = self.size[0]
         self.healthbar_max_len = self.healthbar_len
         self.healthbar_height = 5
         self.kill = False
@@ -62,58 +62,56 @@ class Bosses(Shooter, Boss_skills):
         self.special_move = False
         self.special_gfx = False
         self.hide_health_bar = False
-        self.engine = {"right": (-78, -10), "down": (-19, -153), "up": (-15, 90), "left": (32, -10)}
+        self.engine = {"right": (-105, -10), "down": (-19, -153), "up": (-15, 90), "left": (70, -10)}
 
     def gfx_animation(self):
-        if self.direction > 338 or self.direction < 22:
-            # rechts
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=90, x=self.engine["right"][0], y=self.engine["right"][1])
-        elif 23 <= self.direction <= 67:
-            # right down
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=90, x=self.engine["right"][0], y=self.engine["right"][1])
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine2", 5, anchor=self.hitbox, rot=360, x=self.engine["down"][0] - 33, y=self.engine["down"][1] - 20)
-            # pass
-        elif 67 <= self.direction <= 112:
-            # down
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine2", 5, anchor=self.hitbox, rot=360, x=self.engine["down"][0] - 33, y=self.engine["down"][1] - 20)
-            # pass
-        elif 112 <= self.direction <= 157:
-            # leftdown
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=270, x=self.engine["left"][0], y=self.engine["left"][1])
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine2", 5, anchor=self.hitbox, rot=360, x=self.engine["down"][0] - 33, y=self.engine["down"][1] - 20)
-            # pass
-        elif 157 <= self.direction <= 202:
-            # links
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=270, x=self.engine["left"][0], y=self.engine["left"][1])
-           # pass
-        elif 202 <= self.direction <= 247:
-            # leftup
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=270, x=self.engine["left"][0], y=self.engine["left"][1])
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=180, x=self.engine["up"][0], y=self.engine["up"][1])
-            # pass
-        elif 247 <= self.direction <= 292:
-            # up
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=180, x=self.engine["up"][0], y=self.engine["up"][1])
-            # pass
-        elif 292 <= self.direction <= 338:
-            # riht up
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=90, x=self.engine["right"][0], y=self.engine["right"][1])
-            if self.timer_trigger(20):
-                Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=180, x=self.engine["up"][0], y=self.engine["up"][1])
-            # pass
+        if self.angles[0][0] > 0:
+            if self.direction > 338 or self.direction < 22:
+                # rechts
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=90, x=self.engine["right"][0], y=self.engine["right"][1], layer=3)
+            elif 23 <= self.direction <= 67:
+                # right down
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=90, x=self.engine["right"][0], y=self.engine["right"][1], layer=3)
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine2", 5, anchor=self.hitbox, rot=360, x=self.engine["down"][0] - 33, y=self.engine["down"][1] - 20, layer=3)
+            elif 67 <= self.direction <= 112:
+                # down
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine2", 5, anchor=self.hitbox, rot=360, x=self.engine["down"][0] - 33, y=self.engine["down"][1] - 20, layer=3)
+            elif 112 <= self.direction <= 157:
+                # leftdown
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=270, x=self.engine["left"][0], y=self.engine["left"][1])
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine2", 5, anchor=self.hitbox, rot=360, x=self.engine["down"][0] - 33, y=self.engine["down"][1] - 20, layer=3)
+            elif 157 <= self.direction <= 202:
+                # links
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=270, x=self.engine["left"][0], y=self.engine["left"][1], layer=3)
+            elif 202 <= self.direction <= 247:
+                # leftup
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=270, x=self.engine["left"][0], y=self.engine["left"][1], layer=3)
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=180, x=self.engine["up"][0], y=self.engine["up"][1], layer=3)
+            elif 247 <= self.direction <= 292:
+                # up
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=180, x=self.engine["up"][0], y=self.engine["up"][1], layer=3)
+            elif 292 <= self.direction <= 338:
+                # riht up
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=90, x=self.engine["right"][0], y=self.engine["right"][1], layer=3)
+                if self.timer_trigger(20):
+                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=180, x=self.engine["up"][0], y=self.engine["up"][1], layer=3)
 
-        win.blit(self.sprites[self.gfx_idx], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+        animation_ticker = self.timer_animation_ticker(120)
+        if animation_ticker <= 60:
+            win.blit(self.sprites[self.gfx_idx[0]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+        else:
+            win.blit(self.sprites[self.gfx_idx[1]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
 
     def move(self):
@@ -207,11 +205,11 @@ class Bosses(Shooter, Boss_skills):
             data.ENEMY_DATA.append(Boss_frigatte())
         elif lvl == 15:
             data.ENEMY_DATA.append(Boss_corvette())
-        elif lvl == 5:
+        elif lvl == 20:
             data.ENEMY_DATA.append(Boss_destroyer())
         elif lvl == 25:
             data.ENEMY_DATA.append(Boss_cruiser())
-        elif lvl == 35:
+        elif lvl == 5:
             data.ENEMY_DATA.append(Boss_battleship())
         # elif lvl == 35:
         #     data.ENEMY_DATA.append(Boss_carrier())
@@ -228,7 +226,7 @@ class Boss_mine_boat(Bosses):
         self.fire_rate = 90
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]  # (0, 1, 2, 3, 4, 5, 6)
         self.size = (80, 200)
-        self.gfx_idx = 0
+        self.gfx_idx = (0, 1)
         self.gfx_hook = (-130, -120)
         self.drop_amount = 1
         self.skills_lst = [self.skill_mines]
@@ -267,7 +265,7 @@ class Boss_frigatte(Bosses):
         self.fire_rate = 60
         self.move_pattern = (0, 1, 2, 3)
         self.size = (120, 220)
-        self.gfx_idx = 1
+        self.gfx_idx = (2, 3)
         self.gfx_hook = (-130, -120)
         self.drop_amount = 1
         self.wp_locations = ((-50, 50), (50, 50), (0, -100))
@@ -324,7 +322,7 @@ class Boss_corvette(Bosses):
         self.fire_rate = 30
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]
         self.size = (80, 200)
-        self.gfx_idx = 2
+        self.gfx_idx = (4, 5)
         self.gfx_hook = (-130, -120)
         self.drop_amount = 1
         self.skills_lst = [self.skill_volley]
@@ -334,15 +332,15 @@ class Boss_corvette(Bosses):
     def phase_1(self):
 
         Gfx.bg_move = True
-        Gfx.scroll_speed += 2
-        self.speed += 2
+        Gfx.scroll_speed += 1
+        self.speed += 1
         self.angles = angles_360(self.speed)
         self.skills_lst.append(self.skill_jumpdrive)
 
     def phase_2(self):
 
-        self.speed += 2
-        Gfx.scroll_speed += 2
+        self.speed += 1
+        Gfx.scroll_speed += 1
         self.angles = angles_360(self.speed)
         self.fire_rate -= 10
         self.skills_lst.append(self.skill_jumpdrive)
@@ -368,30 +366,34 @@ class Boss_destroyer(Bosses):
         self.speed = 2
         self.fire_rate = 60
         self.move_pattern = (0, 7, 0, 1, 2)
-        self.size = (120, 260)
-        self.gfx_idx = 3
-        self.gfx_hook = (-140, -140)
-        self.skills_lst = [self.skill_volley, self.skill_missile, self.skill_mines]
+        self.size = (150, 230)
+        self.gfx_idx = (6, 7)
+        self.gfx_hook = (-130, -130)
+        self.skills_lst = [self.skill_volley, self.skill_missile]
         self.drop_amount = 1
+        self.turn_angles = (359 - i for i in range(0, 91))
+        self.turn_angle = 359
         super().__init__()
+        self.engine = {"right": (-105, -10), "down": (-19, -153), "up": (-15, 90), "left": (70, -10)}
 
     def phase_1(self):
 
         self.special_attack = True
         self.special_skills_lst.append(self.skill_missile_barrage)
         self.skills_lst.append(self.skill_salvo_alpha)
-        for loc in [(0, 0), (0, -100), (0, 100)]:
-            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.05, self, loc, size=(120, 50)))
+        for loc, size in [((0, 0), (180, 50)), ((0, -100), (80, 50)), ((0, 100), (80, 50))]:
+            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.05, self, loc, size=size))
 
     def phase_2(self):
 
         self.special_attack = True
         self.special_skills_lst.append(self.skill_main_gun_salvo)
         self.skills_lst.append(self.skill_jumpdrive)
-        for loc in [(0, 0), (0, -100), (0, 100)]:
-            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.05, self, loc, size=(120, 50)))
-        for _ in range(10):
-            target = (random.randint(0, winwidth), random.randint(0, winheight))
+        for loc, size in [((0, 0), (180, 50)), ((0, -100), (80, 50)), ((0, 100), (80, 50))]:
+            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.05, self, loc, size=size))
+        data.PLAYER.hitbox.center
+        for _ in range(8):
+            target = random.choice([(random.randint(0, winwidth), random.randint(0, winheight), data.PLAYER.hitbox.center)])
             data.ENEMY_DATA.append(Boss_main_gun_battery(self, target))
 
     def phase_3(self):
@@ -400,11 +402,14 @@ class Boss_destroyer(Bosses):
         self.set_health(-100, (0, 255, 0))
         self.fire_rate -= 25
         self.special_attack = True
-        self.special_skills_lst.append(self.skill_laser_storm)
-        for loc in [(0, 0), (0, -100), (0, 100)]:
-            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.05, self, loc, size=(120, 50)))
+        self.special_skills_lst.append(self.skill_laser_storm_laststand)
         for _ in range(5):
             data.ENEMY_DATA.append(Boss_laser_battery(self))
+
+    def special_gfx_animation(self):
+        if self.timer_trigger(3):
+            self.turn_angle = next(self.turn_angles, 270)
+        win.blit(rot_center(self.sprites[self.gfx_idx[0]], self.turn_angle), (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
 
 
 class Boss_cruiser(Bosses):
@@ -414,10 +419,12 @@ class Boss_cruiser(Bosses):
         self.speed = 2
         self.fire_rate = 50
         self.move_pattern = (8, 9)
-        self.size = (130, 240)
-        self.gfx_idx = 4
-        self.gfx_hook = (-80, -180)
+        self.size = (130, 230)
+        self.gfx_idx = (8, 9)
+        self.gfx_hook = (-130, -130)
         self.skills_lst = [self.skill_volley, self.skill_missile, self.skill_salvo_charlie]  # self.skill_salvo_alpha
+        self.turn_angles = (359 - i for i in range(0, 91))
+        self.turn_angle = 359
         self.drop_amount = 1
         super().__init__()
 
@@ -445,6 +452,11 @@ class Boss_cruiser(Bosses):
         for _ in range(8):
             data.ENEMY_DATA.append(Boss_repair_ship(self))
 
+    def special_gfx_animation(self):
+        if self.timer_trigger(3):
+            self.turn_angle = next(self.turn_angles, 270)
+        win.blit(rot_center(self.sprites[self.gfx_idx[0]], self.turn_angle), (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+
 
 class Boss_battleship(Bosses):
 
@@ -453,14 +465,15 @@ class Boss_battleship(Bosses):
         self.speed = 2
         self.fire_rate = 70
         self.move_pattern = (8, 9)
-        self.size = (140, 360)
-        self.gfx_idx = 5
-        self.gfx_hook = (-80, -220)
+        self.size = (180, 240)
+        self.gfx_idx = (10, 11)
+        self.gfx_hook = (-130, -130)
         self.skills_lst = [self.skill_volley, self.skill_missile, self.skill_salvo_alpha, self.skill_star_shot, self.skill_main_gun]
         self.drop_amount = 1
         self.turn_angles = (359 - i for i in range(0, 91))
         self.turn_angle = 359
         super().__init__()
+        self.engine = {"right": (-105, -10), "down": (-19, -153), "up": (-15, 90), "left": (70, -10)}
 
     def phase_1(self):
 
@@ -478,7 +491,7 @@ class Boss_battleship(Bosses):
     def special_gfx_animation(self):
         if self.timer_trigger(3):
             self.turn_angle = next(self.turn_angles, 270)
-        win.blit(rot_center(self.sprites[self.gfx_idx], self.turn_angle), (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+        win.blit(rot_center(self.sprites[self.gfx_idx[0]], self.turn_angle), (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
 
 
 class Boss_carrier(Bosses):
@@ -642,6 +655,7 @@ class Boss_main_gun_battery(Bosses):
     def tick(self):
         self.hitbox.center = self.location()
         self.skill_main_gun(target=self.target)
+        self.timer_tick()
 
 
 class Boss_laser_battery(Bosses):
@@ -686,7 +700,7 @@ class Boss_laser_battery(Bosses):
 
 
 class Boss_repair_ship(Enemy):
-    #direction, speed, spawn_point, health, size, gfx_idx, gfx_hook, sprites
+    # direction, speed, spawn_point, health, size, gfx_idx, gfx_hook, sprites
 
     def __init__(self, boss):
         self.boss = boss
