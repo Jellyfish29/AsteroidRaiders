@@ -209,3 +209,35 @@ class Timer:
 
     def timer_tick(self):
         self.timer_calls_per_tick = 0
+
+
+class Run_limiter:
+
+    def __init__(self):
+        self.code_block_ran = False
+        self.run_counter = 0
+
+    def run_block_once(self):
+        if not self.code_block_ran:
+            self.code_block_ran = True
+            return True
+        else:
+            return False
+
+    def run_block_for(self, amount):
+        self.run_counter += 1
+        if self.run_counter <= amount:
+            return True
+        else:
+            return False
+
+    def reset(self):
+        self.code_block_ran = False
+
+
+def run_limiter(f):
+    rl = Run_limiter()
+
+    def wrapper(*args, limiter=rl, **kwargs):
+        return f(*args, limiter, **kwargs)
+    return wrapper
