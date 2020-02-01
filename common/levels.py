@@ -26,21 +26,24 @@ class Levels:
     boss_fight = False
     after_boss = False
     elite_fight = False
+    elite_max_spawn_time = 4000
     second_elite_chance = 100
     second_elite = False
+    death_score_panalties = {1: 30, 6: 50, 12: 80, 18: 150, 24: 250, 30: 370, 36: 500, 42: 700}
 
     @classmethod
     def scaling(cls):
         data.ENEMY.health += 0.4
         data.ELITES.health += data.ELITES.health * 0.1
         cls.second_elite_chance -= 1.5
-        if cls.level % 5 == 0:
+        if cls.level % 6 == 0:
             cls.enemy_amount += 1
-        if cls.level % 5 == 0:
+            cls.elite_max_spawn_time -= 100
+        if cls.level % 6 == 0:
             cls.spez_add()
             data.BOSS.create(cls.level)
             cls.boss_fight = True
-            gfx.Gfx.scroll_speed += 1
+            # gfx.Gfx.scroll_speed += 1
             gfx.Gfx.bg_move = False
             cls.save_game()
 
@@ -48,9 +51,9 @@ class Levels:
     @timer
     def elite_spawn(cls, timer):
         if not any((cls.after_boss, cls.boss_fight)):
-            if cls.level not in [i - 1 for i in range(5, 41, 5)]:
+            if cls.level not in [i - 1 for i in range(6, 49, 6)]:
                 if not cls.elite_wait:
-                    cls.elite_spawn_time = 3600
+                    cls.elite_spawn_time = cls.elite_max_spawn_time
                     cls.elite_wait = True
                 if cls.elite_wait:
                     if timer.trigger(int(cls.elite_spawn_time)):
@@ -73,21 +76,24 @@ class Levels:
             data.ENEMY.set_spawn_table(Seeker)
             data.ENEMY.set_spawn_table(Jumper)
             data.PHENOM.set_spawn_table(Planet)
-            # data.PHENOM.set_spawn_table(Gravity_well)
-        if cls.level == 5:
+        if cls.level == 6:
             data.ENEMY.set_spawn_table(Shooter)
             data.PHENOM.set_spawn_table(Gravity_well)
-        elif cls.level == 10:
+        elif cls.level == 12:
             data.ENEMY.set_spawn_table(Mine_layer)
             data.PHENOM.set_spawn_table(Repair_station)
-        elif cls.level == 15:
+        elif cls.level == 18:
             data.ENEMY.set_spawn_table(Strafer)
             data.PHENOM.set_spawn_table(Anti_gravity_well)
-        elif cls.level == 20:
+        elif cls.level == 24:
+            pass
             # data.ENEMY.get_spawn_table().append(en.Miner)
-            data.PHENOM.set_spawn_table(Nabulae_aoe_damage)
-        elif cls.level == 25:
-            data.PHENOM.set_spawn_table(Nebulae_fire_rate_plus)
+            # data.PHENOM.set_spawn_table(Nabulae_aoe_damage)
+        elif cls.level == 30:
+            pass
+            # data.PHENOM.set_spawn_table(Nebulae_fire_rate_plus)
+        elif cls.level == 36:
+            pass
 
     @classmethod
     def spez_event(cls, flag):
@@ -172,6 +178,7 @@ class STAGE_SAVE():
         self.bg_speed = gfx.Gfx.scroll_speed
         self.bg_move = gfx.Gfx.bg_move
         self.overdrive_count = data.TURRET.overdrive_count
+        self.elite_sp_time = Levels.elite_max_spawn_time
 
     def load_save(self):
         data.ENEMY_DATA.clear()
@@ -216,6 +223,7 @@ class STAGE_SAVE():
         gfx.Gfx.scroll_speed = self.bg_speed
         gfx.Gfx.bg_move = self.bg_move
         data.TURRET.overdrive_count = self.overdrive_count
+        Levels.elite_max_spawn_time = self.elite_sp_time
         if self.boss_fight:
             self.spawn_boss()
 

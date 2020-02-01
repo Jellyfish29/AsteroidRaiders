@@ -71,7 +71,7 @@ class Phenomenon(Timer):
     def update(cls, timer):
 
         if not any((data.LEVELS.boss_fight, data.LEVELS.after_boss)):
-            if data.LEVELS.level not in [i - 1 for i in range(5, 41, 5)]:
+            if data.LEVELS.level not in [i - 1 for i in range(6, 49, 6)]:
                 if timer.trigger(Phenomenon.spawn_time):
                     if len(data.PHENOMENON_DATA) < Phenomenon.amount:
                         data.PHENOMENON_DATA.append(random.choice(cls.phenomenon_spawn_table)())
