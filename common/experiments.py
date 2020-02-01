@@ -58,9 +58,13 @@ import time
 # T = Testo
 # if type(T) == "<class 'type'>":
 #     print("oof")
-x = iter([i for i in range(0, 200, int(200 / 10))])
+# x = iter([i for i in range(0, 200, int(200 / 10))])
 
-print([8 * i for i in range(4)])
+# print([8 * i for i in range(4)])
 
-for _ in range(5):
-    print(next(x))
+# for _ in range(5):
+#     print(next(x))
+
+c = [1, 1]
+c += (4, 4)
+print(c)

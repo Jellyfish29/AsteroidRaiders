@@ -19,9 +19,9 @@ def test_mode():
     Levels.display_level += 1
     Levels.level += 1
     Levels.scaling()
-    # Player.max_health += 0 40000
+    # Player.max_health +d= 0 40000
     Player.health += 40000
-    Player.damage += 5
+    Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
     # pygame.mouse.set_visible(True)AAAAAAAAAA
@@ -75,7 +75,7 @@ def main():
         # Items.spawm_all_items_test()
         # print(Clock.get_fps())wwwwwsss
         # print(Items.upgrade_points)
-        # print(len(data.ENEMY_DATA))dd
+        # print(len(data.ENEMY_DATA))ddwww
 
         Gfx.layer_3_update()
 

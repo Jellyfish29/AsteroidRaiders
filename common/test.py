@@ -55,9 +55,10 @@ def item_test():
         it.remove_from_inventory(0)
         assert len(Items.active_flag_lst) == 0
         assert it in Items.dropped_lst
-        assert Items.inventory_dic[0] == None
+        assert Items.inventory_dic[0] is None
     print("Item Test complete")
 
+
 if __name__ == "__main__":
-    # boss_tick_+test()
-    item_test()
+    boss_tick_test()
+    # item_test()

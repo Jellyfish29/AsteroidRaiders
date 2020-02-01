@@ -114,7 +114,7 @@ class Impactor(Projectile):
 
 class Dart(Projectile):
 
-    def __init__(self, start_point=(0, 0), damage=1, gfx_idx=15, target=None, aquisition_delay=60):
+    def __init__(self, start_point=(0, 0), damage=1, gfx_idx=(16, 15), target=None, aquisition_delay=60):
         super().__init__(speed=60, size=(5, 5), start_point=start_point, damage=damage, flag="en_missile", gfx_idx=gfx_idx, target=target)
         self.aquisition_delay = aquisition_delay
         self.angle = None
@@ -127,14 +127,14 @@ class Dart(Projectile):
             if self.angle is None:
                 self.angle = degrees(self.target[0], self.hitbox.center[0], self.target[1], self.hitbox.center[1])
                 self.gfx_angle = degrees(self.target[1], self.hitbox.center[1], self.target[0], self.hitbox.center[0])
-                self.gfx_idx = 11
-            self.hitbox.move_ip(self.angles[self.angle])
+            if self.timer_delay(10):
+                self.hitbox.move_ip(self.angles[self.angle])
 
     def gfx_draw(self):
         if self.aiming:
-            win.blit(gfx_rotate(Projectile.projectile_sprites[self.gfx_idx], degrees(self.target[1], self.hitbox.center[1], self.target[0], self.hitbox.center[0])), (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5))
+            win.blit(gfx_rotate(Projectile.projectile_sprites[self.gfx_idx[0]], degrees(self.target[1], self.hitbox.center[1], self.target[0], self.hitbox.center[0])), (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5))
         else:
-            win.blit(gfx_rotate(Projectile.projectile_sprites[self.gfx_idx], self.gfx_angle), (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5))
+            win.blit(gfx_rotate(Projectile.projectile_sprites[self.gfx_idx[1]], self.gfx_angle), (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5))
 
 
 class Missile(Projectile):
@@ -179,6 +179,7 @@ class Mine(Projectile):
         super().__init__(speed=speed, size=(20, 20), start_point=start_point, damage=damage, flag=flag)
         self.envelope = pygame.Rect(self.hitbox.center[0] - 175, self.hitbox.center[1] - 175, 350, 350)
         self.decay = decay
+        self.draw_envelope = False
 
     def move(self):
         pass
@@ -187,7 +188,8 @@ class Mine(Projectile):
         if self.decay:
             if self.timer_trigger(600):
                 self.kill = True
-        if self.timer_delay(limit=240):  # Fuse Delay
+        if self.timer_delay(limit=180):  # Fuse Delay
+            self.draw_envelope = True
             if self.envelope.colliderect(obj.hitbox):
                 self.angle = degrees(obj.hitbox.center[0], self.hitbox.center[0], obj.hitbox.center[1], self.hitbox.center[1])
                 self.hitbox.move_ip(self.angles[self.angle])
@@ -198,7 +200,8 @@ class Mine(Projectile):
 
     def gfx_draw(self):
         win.blit(Projectile.projectile_sprites[12], (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5))
-        win.blit(Projectile.projectile_sprites[13], (self.envelope.topleft[0] - 27, self.envelope.topleft[1] - 27))
+        if self.draw_envelope:
+            win.blit(Projectile.projectile_sprites[13], (self.envelope.topleft[0] - 27, self.envelope.topleft[1] - 27))
 
     def tick(self):
         self.move()
@@ -211,13 +214,14 @@ class Mine(Projectile):
 
 class Explosion(Projectile):
 
-    def __init__(self, location=(0, 0), explo_size=0, damage=0, explo_delay=0, explosion_effect=None):
+    def __init__(self, location=(0, 0), explo_size=0, damage=0, explo_delay=0, explosion_effect=None, explo_speed=(30, 30)):
         super().__init__(damage=damage, flag="explo", piercing=True)
         self.hitbox = pygame.Rect(location[0], location[1], 1, 1)
         self.explo_size = explo_size
         self.explo_delay = explo_delay
         self.piercing = True
         self.explosion_effect = run_once(explosion_effect)
+        self.explo_speed = explo_speed
 
     def set_location(self, l):
         self.hitbox.center = l
@@ -228,7 +232,7 @@ class Explosion(Projectile):
                 self.run_explosion_effect()
             except TypeError:
                 pass
-            self.hitbox.inflate_ip(30, 30)
+            self.hitbox.inflate_ip(self.explo_speed)
             if abs(self.hitbox.topleft[0] - self.hitbox.center[0]) > self.explo_size:
                 self.kill = True
 

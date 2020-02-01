@@ -83,7 +83,7 @@ class Bosses(Shooter, Boss_skills):
             elif 112 <= self.direction <= 157:
                 # leftdown
                 if self.timer_trigger(20):
-                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=270, x=self.engine["left"][0], y=self.engine["left"][1])
+                    Gfx.create_effect("engine", 3, anchor=self.hitbox, rot=270, x=self.engine["left"][0], y=self.engine["left"][1], layer=3)
                 if self.timer_trigger(20):
                     Gfx.create_effect("engine2", 5, anchor=self.hitbox, rot=360, x=self.engine["down"][0] - 33, y=self.engine["down"][1] - 20, layer=3)
             elif 157 <= self.direction <= 202:
@@ -113,6 +113,12 @@ class Bosses(Shooter, Boss_skills):
         else:
             win.blit(self.sprites[self.gfx_idx[1]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+
+    def guns_gfx_animation(self):
+        pass
+
+    def special_gfx_animation(self):
+        pass
 
     def move(self):
         # self.direction = 96
@@ -164,7 +170,7 @@ class Bosses(Shooter, Boss_skills):
         data.ITEMS.drop(self.hitbox.center, target=Item_heal_crate((0, 255, 0)))
 
         data.ENEMY_PROJECTILE_DATA.clear()
-        Gfx.bg_move = False
+        Gfx.bg_move = True
         data.LEVELS.boss_fight = False
         data.LEVELS.after_boss = True
         self.special_death()
@@ -189,6 +195,7 @@ class Bosses(Shooter, Boss_skills):
             self.gfx_animation()
         else:
             self.special_gfx_animation()
+        self.guns_gfx_animation()
         if self.hitable:
             data.TURRET.missile_aquisition(self)
         if self.__class__.__name__ == "Boss_turret" or self.__class__.__name__ == "Boss_weakspot":
@@ -199,17 +206,17 @@ class Bosses(Shooter, Boss_skills):
 
     @classmethod
     def create(cls, lvl):
-        if lvl == 5:
+        if lvl == 6:
             data.ENEMY_DATA.append(Boss_mine_boat())
-        elif lvl == 10:
+        elif lvl == 12:
             data.ENEMY_DATA.append(Boss_frigatte())
-        elif lvl == 15:
+        elif lvl == 18:
             data.ENEMY_DATA.append(Boss_corvette())
-        elif lvl == 20:
+        elif lvl == 24:
             data.ENEMY_DATA.append(Boss_destroyer())
-        elif lvl == 25:
-            data.ENEMY_DATA.append(Boss_cruiser())
         elif lvl == 30:
+            data.ENEMY_DATA.append(Boss_cruiser())
+        elif lvl == 36:
             data.ENEMY_DATA.append(Boss_battleship())
         # elif lvl == 35:
         #     data.ENEMY_DATA.append(Boss_carrier())
@@ -249,7 +256,7 @@ class Boss_mine_boat(Bosses):
         Gfx.bg_move = True
         self.agles = self.angles = angles_360(7)
         self.fire_rate -= 25
-        self.set_health(-50, (0, 255, 0))
+        self.set_health(-25, (0, 255, 0))
         self.skills_lst.append(self.skill_mines)
 
     # def special_gfx_animation(self):
@@ -433,15 +440,15 @@ class Boss_cruiser(Bosses):
         self.move_pattern = (0, 7, 0, 1, 2)
         # self.angles = angles_360(3)
         self.skills_lst.append(self.skill_dart_missiles)
-        for _ in range(4):
+        for _ in range(2):
             data.ENEMY_DATA.append(Boss_repair_ship(self))
 
     def phase_2(self):
 
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]
         self.angles = angles_360(4)
-        self.skills_lst.append(self.skill_salvo_alpha)
-        for _ in range(6):
+        self.skills_lst.append(self.skill_salvo_charlie)
+        for _ in range(4):
             data.ENEMY_DATA.append(Boss_repair_ship(self))
 
     def phase_3(self):
@@ -449,7 +456,7 @@ class Boss_cruiser(Bosses):
         self.angles = angles_360(4)
         self.special_attack = True
         self.special_skills_lst.append(self.skill_dart_missile_last_stand)
-        for _ in range(8):
+        for _ in range(6):
             data.ENEMY_DATA.append(Boss_repair_ship(self))
 
     def special_gfx_animation(self):
@@ -464,16 +471,18 @@ class Boss_battleship(Bosses):
         self.health = 2400
         self.speed = 2
         self.fire_rate = 70
-        self.move_pattern = (8, 9)
+        self.move_pattern = (0, 7, 0, 1, 2)
         self.size = (180, 240)
         self.gfx_idx = (10, 11)
         self.gfx_hook = (-130, -130)
-        self.skills_lst = [self.skill_volley, self.skill_missile, self.skill_salvo_alpha, self.skill_star_shot, self.skill_main_gun]
+        self.skills_lst = [self.skill_main_gun_fire_position, self.skill_missile, self.skill_main_gun]
         self.drop_amount = 1
-        self.turn_angles = (359 - i for i in range(0, 91))
+        self.turn_angles_1 = (359 - i for i in range(0, 91))
+        self.turn_angles_2 = (270 + i for i in range(0, 91))
         self.turn_angle = 359
         super().__init__()
         self.engine = {"right": (-105, -10), "down": (-19, -153), "up": (-15, 90), "left": (70, -10)}
+        self.gun_position = [-33, 30]  # turned position = [-83, -33]
 
     def phase_1(self):
 
@@ -482,16 +491,29 @@ class Boss_battleship(Bosses):
 
     def phase_2(self):
 
-        pass
+        self.special_gfx = False
+        self.special_attack = False
+        self.angles = angles_360(2)
+        self.special_skills_lst.remove(self.skill_radar_guided_gun)
+        self.special_skills_lst.remove(self.skill_point_defence)
+        self.skills_lst.remove(self.skill_missile)
+        self.skills_lst += [self.skill_dart_missiles, self.skill_salvo_charlie, self.skill_wave_motion_gun]
 
     def phase_3(self):
 
-        pass
+        self.special_attack = True
+        self.special_skills_lst.append(self.skill_death_wave)
+        for loc, size, death_effect in [
+            ((-100, 0), (10, 50), lambda: data.ENEMY_DATA.append(Boss_debris((300, 450), self))),  # left
+            ((100, 0), (10, 50), lambda: data.ENEMY_DATA.append(Boss_debris((1400, 450), self))),  # right
+            ((0, -130), (50, 10), lambda: data.ENEMY_DATA.append(Boss_debris((800, 100), self))),  # top
+            ((0, 130), (50, 10), lambda: data.ENEMY_DATA.append(Boss_debris((1000, 800), self)))  # bot
+        ]:
+            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.05, self, loc, death_effect=death_effect, size=size))
 
-    def special_gfx_animation(self):
-        if self.timer_trigger(3):
-            self.turn_angle = next(self.turn_angles, 270)
-        win.blit(rot_center(self.sprites[self.gfx_idx[0]], self.turn_angle), (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+    def guns_gfx_animation(self):
+        gfx_angle = degrees(data.PLAYER.hitbox.center[1], self.hitbox.center[1], data.PLAYER.hitbox.center[0], self.hitbox.center[0])
+        win.blit(rot_center(data.ENEMY.spez_sprites[19], gfx_angle), (self.hitbox.center[0] + self.gun_position[0], self.hitbox.center[1] + self.gun_position[1]))
 
 
 class Boss_carrier(Bosses):
@@ -586,16 +608,16 @@ class Boss_weakspot(Enemy):
 
     def move(self):
         self.hitbox.center = (self.boss.hitbox.center[0] + self.location[0], self.boss.hitbox.center[1] + self.location[1])
-        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
 
     def death(self):
         if len([wp for wp in data.ENEMY_DATA if wp.__class__.__name__ == "Boss_weakspot"]) == 1:
             self.boss.hitable = True
-            if self.death_effect is not None:
-                self.death_effect()
+        if self.death_effect is not None:
+            self.death_effect()
         self.kill = True
 
     def gfx_animation(self):
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         animation_ticker = self.timer_animation_ticker(8)
         if animation_ticker < 4:
             win.blit(self.sprites[self.gfx_idx[0]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
@@ -707,6 +729,8 @@ class Boss_repair_ship(Enemy):
         self.flag = "boss"
         super().__init__(0, 4, random.randint(1, 4), Enemy.health + 8, (100, 60), (0, 1), (0, 0), Enemy.spez_sprites)
         self.gfx_hook = (-70, -30)
+        self.gfx_idx = (20, 21)
+        self.target = self.boss.hitbox.center
 
     def move(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
@@ -715,3 +739,30 @@ class Boss_repair_ship(Enemy):
             # gfx_effect -->
             self.boss.set_health(-self.boss.max_health * 0.1, (0, 255, 0))
             self.kill = True
+
+
+class Boss_debris(Timer):
+
+    def __init__(self, pos, boss):
+        Timer.__init__(self)
+        self.hitbox = pygame.Rect(pos[0], pos[1], 150, 150)
+        self.hitable = False
+        self.kill = False
+        self.boss = boss
+
+    def hit(self, player):
+        if self.hitbox.colliderect(player.hitbox):
+            player.hitable = False
+        else:
+            player.hitable = True
+
+    def destroy(self):
+        if self.boss.health <= 0:
+            self.kill = True
+        return self.kill
+
+    def tick(self):
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        if self.timer_trigger(17):
+            Gfx.create_effect("shield2", 3, anchor=(self.hitbox.topleft[0] - 25, self.hitbox.topleft[1] - 25))
+        self.timer_tick()
