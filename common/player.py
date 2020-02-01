@@ -20,6 +20,7 @@ class Player:
     raw_max_health = max_health
     heal_amount = 1
     health_limit = 20
+    hitable = True
     # Movement
     speed = 6
     raw_speed = speed
@@ -54,30 +55,32 @@ class Player:
     @classmethod
     @timer
     def take_damage(cls, damage, timer, staggered=0):
-        if timer.trigger(staggered):
-            if damage > 0:
-                if cls.shield.active:
-                    cls.shield_strength -= damage
-                    # cls.gfx_hit_effect()
-                    if cls.shield_strength < 1:
-                        cls.shield.end_active()
-                        cls.shield_strength = cls.max_shield_strength
-                else:  # not cls.shield.active:
-                    cls.health -= damage
-                    cls.gfx_hit_effect()
-                    cls.reset_overdrive()
-                    if int(cls.health) <= 0:
-                        cls.quit_game_WIP()
+        if cls.hitable:
+            if timer.trigger(staggered):
+                if damage > 0:
+                    if cls.shield.active:
+                        cls.shield_strength -= damage
+                        # cls.gfx_hit_effect()
+                        if cls.shield_strength < 1:
+                            cls.shield.end_active()
+                            cls.shield_strength = cls.max_shield_strength
+                    else:  # not cls.shield.active:
+                        cls.health -= damage
+                        cls.gfx_hit_effect()
+                        cls.reset_overdrive()
+                        if int(cls.health) <= 0:
+                            cls.quit_game_WIP()
 
     @classmethod
     def quit_game_WIP(cls):
         state = data.LEVELS.load_game()
         state.load_save()
-        data.LEVELS.display_score -= 50
+        data.LEVELS.display_score -= data.LEVELS.death_score_panalties[data.LEVELS.level]
         if data.LEVELS.display_score < 0:
             quit()
             # reset save
         else:
+            data.LEVELS.save_game()
             data.INTERFACE.pause_menu(True)
 
     @classmethod
@@ -192,16 +195,17 @@ class Player:
             cls.hitbox.move_ip(cls.angles[cls.direction])
 
         if data.LEVELS.after_boss:
-            if cls.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):
-                cls.hitbox.center = (cls.hitbox.center[0], winheight)
-                Gfx.y += 1080
-                data.ITEMS.dropped_lst.clear()
-                data.PHENOMENON_DATA.clear()
+            if timer.timer_delay(120):
+                if cls.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):
+                    cls.hitbox.center = (cls.hitbox.center[0], winheight)
+                    Gfx.y += 1080
+                    data.ITEMS.dropped_lst.clear()
+                    data.PHENOMENON_DATA.clear()
 
-                data.LEVELS.save_game()
+                    data.LEVELS.save_game()
 
-                cls.restart_timer = True
-                Gfx.bg_move = True
+                    cls.restart_timer = True
+                    Gfx.bg_move = True
 
         if cls.restart_timer:
             if timer.trigger(120):

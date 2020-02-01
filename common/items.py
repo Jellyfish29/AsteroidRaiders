@@ -58,7 +58,7 @@ class Items(Timer):
                     Items.inventory_dic[idx] = self
                     break
             else:
-                if isinstance(self, Item_supply_crate) or isinstance(self, Item_heal_crate):
+                if any(isinstance(self, Item_supply_crate), isinstance(self, Item_heal_crate), isinstance(self, Item_upgrade_point_crate)):
                     self.effect()
                 else:
                     Items.dropped_lst.append(self)
@@ -116,18 +116,6 @@ class Items(Timer):
 
     def get_upgrade_desc(self):
         return ""
-
-    # def get_upgrade_desc(self, effects, v):
-        # if v == "cd" or v == "s":
-        #     effects = [int(j / 60) for j in effects]
-        # else:
-        #     effects = [int(j) for j in effects]
-
-        # upgrade_desc = [i for i in zip(["1", "2", "3", "4"], effects)]
-        # desc_str = ""
-        # for d in upgrade_desc:
-        #     desc_str += f"{d[0]}. = {d[1]}{v}  "
-        # return desc_str
 
     @timer
     def tool_tip(self, timer):
@@ -343,8 +331,9 @@ class Active_Items(Items):
         self.end_active()
 
     def end_active(self):
+        if self.active:
+            self.cooldown = True
         self.active = False
-        self.cooldown = True
 
     def toggle(self):
         if not self.active and not self.cooldown:
