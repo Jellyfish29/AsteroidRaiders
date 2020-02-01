@@ -248,8 +248,8 @@ class Boss_mine_boat(Bosses):
         self.skills_lst.append(self.skill_chaser)
 
     def phase_2(self):
-        for loc in [(-50, 50), (50, 50)]:
-            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.2, self, loc, death_effect=lambda: self.skills_lst.remove(self.skill_missile)))
+        for loc, effect in [((-50, 50), None), ((50, 50), lambda: self.skills_lst.remove(self.skill_missile))]:
+            data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.2, self, loc, death_effect=effect))
         self.skills_lst.append(self.skill_missile)
 
     def phase_3(self):
