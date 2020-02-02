@@ -58,7 +58,7 @@ class Items(Timer):
                     Items.inventory_dic[idx] = self
                     break
             else:
-                if any(isinstance(self, Item_supply_crate), isinstance(self, Item_heal_crate), isinstance(self, Item_upgrade_point_crate)):
+                if any([isinstance(self, Item_supply_crate), isinstance(self, Item_heal_crate), isinstance(self, Item_upgrade_point_crate)]):
                     self.effect()
                 else:
                     Items.dropped_lst.append(self)

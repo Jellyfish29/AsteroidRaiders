@@ -1,6 +1,7 @@
 import astraid_data as data
 from astraid_funcs import *
 import time
+import random
 
 
 # class Testo(Timer):
@@ -65,6 +66,11 @@ import time
 # for _ in range(5):
 #     print(next(x))
 
-c = [1, 1]
-c += (4, 4)
-print(c)
+i = 0
+count = 0
+while i < 100:
+    i += 1
+    if random.randint(0, 100) > 95:
+        count += 1
+
+print(count)

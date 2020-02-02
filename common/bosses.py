@@ -559,7 +559,7 @@ class Elites(Bosses):
     def death(self):
         Gfx.create_effect("explosion_3", 3, (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300), explo=True)
         data.LEVELSelite_fight = False
-        if random.randint(0, 100) > 95:
+        if random.randint(0, 100) > 90:
             data.ITEMS.drop((self.hitbox.topleft), amount=1)
         else:
             random.choice([
