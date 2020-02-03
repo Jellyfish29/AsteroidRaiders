@@ -13,8 +13,8 @@ from phenomenon import Black_hole, Gravity_well
 class Turret:
 
     # normal shot vlaues
-    projectile_size = (6, 6)
-    projectile_speed = 20
+    projectile_size = (12, 6)
+    projectile_speed = 25
     firing = False
     direction = None
     base_fire_rate = 1.8
@@ -39,6 +39,8 @@ class Turret:
     # Gfx setup
     projectile_sprites = get_images("projectile")
     explosion_sprites = get_images("explosions")
+    # Special Munitions
+    snare_charge = 0
 
     @classmethod
     def fire(cls, fire):
@@ -302,6 +304,21 @@ class Turret:
                         ))
 
     @classmethod
+    def boss_snare(cls):
+        if cls.snare_charge > 0:
+            cls.snare_charge -= 1
+            data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                speed=40,
+                size=(20, 20),
+                start_point=data.PLAYER.hitbox.center,
+                damage=0,
+                gfx_idx=4,
+                target=pygame.mouse.get_pos(),
+                hit_effect=lambda _: data.ENEMY_DATA[0].set_snared()
+            ))
+            return True
+
+    @classmethod
     @timer
     def normal_fire(cls, timer):
         if timer.trigger(cls.get_fire_rate()):
@@ -322,6 +339,8 @@ class Turret:
                 return
             elif cls.he_rounds():
                 return
+            elif cls.boss_snare():
+                return
 
             Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
             data.PLAYER_PROJECTILE_DATA.append(Projectile(
@@ -329,7 +348,7 @@ class Turret:
                 size=cls.projectile_size,
                 start_point=data.PLAYER.hitbox.center,
                 damage=dmg,
-                gfx_idx=0,
+                gfx_idx=18,
                 target=pygame.mouse.get_pos(),
                 piercing=piercing
             ))

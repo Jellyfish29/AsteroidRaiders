@@ -10,7 +10,23 @@ class Projectile(Timer):
 
     projectile_sprites = get_images("projectile")
 
-    def __init__(self, speed=0, size=(0, 0), start_point=(0, 0), damage=0, flag="player", gfx_idx=0, angle=0, angle_variation=0, target=None, piercing=False, gfx_hit_effect="shot_hit", hit_effect=None, homing=False, spez_gfx=None,):
+    def __init__(
+            self,
+            speed=0,
+            size=(0, 0),
+            start_point=(0, 0),
+            damage=0,
+            flag="player",
+            gfx_idx=0,
+            angle=0,
+            angle_variation=0,
+            target=None,
+            piercing=False,
+            gfx_hit_effect="shot_hit",
+            hit_effect=None,
+            homing=False,
+            spez_gfx=None
+    ):
         Timer.__init__(self)
         self.speed = speed
         self.size = size
@@ -62,9 +78,11 @@ class Projectile(Timer):
 
     def gfx_draw(self):
         # pygame.draw.rect(win, (0, 255, 255), self.hitbox)
-        win.blit(Projectile.projectile_sprites[self.gfx_idx], (self.hitbox.topleft[0] - 8, self.hitbox.topleft[1] - 8))
-        if self.spez_gfx is not None:
-            self.run_spez_gfx(self.hitbox)
+        # win.blit(Projectile.projectile_sprites[self.gfx_idx], (self.hitbox.topleft[0] - 8, self.hitbox.topleft[1] - 8))
+        # if self.spez_gfx is not None:
+        #     self.run_spez_gfx(self.hitbox)
+        gfx_angle = degrees(self.target[1], self.start_point[1], self.target[0], self.start_point[0])
+        win.blit(rot_center(Projectile.projectile_sprites[self.gfx_idx], gfx_angle), (self.hitbox.topleft[0] - 50, self.hitbox.topleft[1] - 50))
 
     def gfx_hit(self):
         Gfx.shot_hit_effect(self.hitbox, effect=self.gfx_hit_effect)
