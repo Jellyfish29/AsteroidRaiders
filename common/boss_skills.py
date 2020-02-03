@@ -6,7 +6,7 @@ from astraid_funcs import *
 from Gfx import Gfx
 from projectiles import Projectile, Mine, Missile, Impactor, Explosion, Dart, Wave
 from phenomenon import Gravity_well, Force_field
-from items import Event_item_boss_snare
+from items_misc import Event_item_boss_snare
 
 
 class Boss_skills(Timer):

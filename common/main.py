@@ -12,6 +12,9 @@ from bosses import *
 from Gfx import *
 from levels import *
 from items import *
+from items_active import *
+from items_passive import *
+from items_misc import *
 from phenomenon import *
 
 

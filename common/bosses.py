@@ -6,7 +6,7 @@ from astraid_funcs import *
 from enemys import Enemy, Shooter
 from projectiles import Impactor, Wave
 from boss_skills import Boss_skills
-from items import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
+from items_misc import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
 from Gfx import Gfx
 import astraid_data as data
 
