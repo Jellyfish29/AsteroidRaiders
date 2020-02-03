@@ -27,10 +27,12 @@ def test_mode():
     # pygame.mouse.set_visible(True)AAAAAAAAAA
     # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
-    # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
+    # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_tabled)())
 
 
 def main():
+
+    # Player.damage += 20
 
     right, left, up, down = [False, False, False, False]
 

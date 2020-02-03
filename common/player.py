@@ -43,7 +43,6 @@ class Player:
     gfx_idx = {
         "up": 0, "down": 2, "right": 4, "left": 6, "right up": 8, "right down": 10, "left up": 12, "left down": 14, "idle": 16}
     ship_sprites = get_images("player_ship")
-    effects_sprites = get_images("hit_effects")
     gfx_ticker = 0
     # Time
     restart_timer = False
@@ -139,7 +138,7 @@ class Player:
     @classmethod
     def gfx_hit_effect(cls):
         pygame.draw.rect(win, (255, 0, 0), pygame.Rect(0, 0, winwidth, winheight))
-        win.blit(cls.effects_sprites[3], (cls.hitbox.topleft[0] - 20, cls.hitbox.topleft[1] - 20))
+        pygame.draw.rect(win, (255, 0, 0), pygame.Rect(0, 0, winwidth, winheight))
 
     @classmethod
     @timer

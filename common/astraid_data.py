@@ -52,6 +52,11 @@ def GAME_UPDATE():
                         if not pd.piercing:
                             pd.kill = True
 
+            if projectile.flag == "shield":
+                for pd in PLAYER_PROJECTILE_DATA:
+                    if pd.hit(projectile):
+                        pd.kill = True
+
     for enemy in ENEMY_DATA:
 
         if enemy.destroy():

@@ -58,7 +58,12 @@ class Items(Timer):
                     Items.inventory_dic[idx] = self
                     break
             else:
-                if any([isinstance(self, Item_supply_crate), isinstance(self, Item_heal_crate), isinstance(self, Item_upgrade_point_crate)]):
+                if any([
+                    isinstance(self, Item_supply_crate),
+                    isinstance(self, Item_heal_crate),
+                    isinstance(self, Item_upgrade_point_crate),
+                    isinstance(self, Event_item_boss_snare)
+                ]):
                     self.effect()
                 else:
                     Items.dropped_lst.append(self)
@@ -450,7 +455,7 @@ class Item_jump_drive(Active_Items):
         super().__init__(color, "Jump Drive (active)", "Jumps the ship to the marked location", (0, 1))
         self.color = color
         self.flag = "jump_drive"
-        self.base_effect = 900  # cooldown time
+        self.base_effect = 600  # cooldown time
         self.cd_len = self.get_lvl_effects()[self.lvl]
         self.active_time = None
         self.engage = False
@@ -1141,3 +1146,32 @@ class Item_heal_crate(Items):
             for key, item in Items.inventory_dic.items():
                 if item == self:
                     Items.inventory_dic[key] = None
+
+### Event Items ###
+
+
+class Event_item_boss_snare(Items):
+
+    def __init__(self, color, start=False):
+        super().__init__("Snare", "", (38, 38))
+        self.color = color
+        self.flag = "boss_snare"
+        self.base_effect = 4
+        self.lvl = 0
+
+    def get_upgrade_desc(self):
+        return f" "
+
+    def effect(self):
+        if "boss_snare" not in Items.active_flag_lst:
+
+            data.TURRET.snare_charge += 1
+
+            for key, item in Items.inventory_dic.items():
+                if item == self:
+                    Items.inventory_dic[key] = None
+
+    def decay(self):
+        self.hitbox.move_ip(0, 8)
+        if rect_not_on_sreen(self.hitbox):
+            Items.dropped_lst.remove(self)

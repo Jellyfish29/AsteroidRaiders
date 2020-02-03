@@ -299,3 +299,38 @@ class Anti_gravity_well(Phenomenon):
             if not self.hitbox.colliderect(obj.hitbox):
                 obj.angles = self.objs[obj]
                 del self.objs[obj]
+
+
+class Force_field(Timer):
+
+    def __init__(self, location=None):
+        Timer.__init__(self)
+        self.hitbox = pygame.Rect(location[0], location[1], 400, 10)
+        self.kill = False
+        self.speed = 8  # random.randint(8, 16)
+        self.flag = "shield"
+        self.sprite_lst = iter([8, 9, 10, 11, 12, 13, 14])
+        self.gfx_idx = 8
+
+    def hit(self, player):
+        if self.hitbox.colliderect(player.hitbox):
+            self.kill = True
+            data.PLAYER.take_damage(3)
+
+    def destroy(self):
+        return self.kill
+
+    def gfx_animation(self):
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        if self.timer_trigger(2):
+            self.gfx_idx = next(self.sprite_lst, 15)
+            if self.gfx_idx == 15:
+                self.sprite_lst = iter([8, 9, 10, 11, 12, 13, 14])
+        win.blit(Phenomenon.phenom_sprites[self.gfx_idx], (self.hitbox.center[0] - 220, self.hitbox.center[1] - 220))
+
+    def tick(self):
+        self.gfx_animation()
+        self.hitbox.move_ip(0, self.speed)
+        if self.hitbox.center[1] > 1200:
+            self.kill = True
+        self.timer_tick()

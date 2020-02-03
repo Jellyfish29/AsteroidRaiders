@@ -5,7 +5,8 @@ from init import *
 from astraid_funcs import *
 from Gfx import Gfx
 from projectiles import Projectile, Mine, Missile, Impactor, Explosion, Dart, Wave
-from phenomenon import Gravity_well
+from phenomenon import Gravity_well, Force_field
+from items import Event_item_boss_snare
 
 
 class Boss_skills(Timer):
@@ -17,6 +18,8 @@ class Boss_skills(Timer):
         self.mg_angle = 0
         self.main_gun_angles = angles_360(35)
         self.salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 10))])
+        self.delta_salvo_limit = (i for i in range(6))
+        self.wave_motion_limit = (i for i in range(5))
         self.dart_salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 5))])
         self.dummy_targets = [[400, 0], [400, winheight / 2], [400, winheight]]
         self.dart_missiles = 6
@@ -24,10 +27,6 @@ class Boss_skills(Timer):
         self.jump_point = 0
         self.jump_chance = 1100
         self.chaser_hit = False
-        self.sinus_target = None
-        self.sinus_direction = 2
-        self.sin_wave_offset = 350
-        self.sinus_delay = 300
         self.pd_envelope = pygame.Rect(1500, 0, winwidth - 1500, winheight)
 
     def skill_mines(self, **kwargs):
@@ -90,11 +89,14 @@ class Boss_skills(Timer):
         if self.timer_key_delay(limit=self.fire_rate * 3, key="salvo_d"):
             if self.timer_trigger(5):
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(15, (6, 6), (self.hitbox.center[0], self.hitbox.center[1]), 1, "bo_salvo", 6, target=data.PLAYER.hitbox))
-                if self.timer_trigger(8):
+                limit = next(self.delta_salvo_limit, "stop")
+                if limit == "stop":
                     self.timer_key_delay(reset=True, key="salvo_d")
+                    self.delta_salvo_limit = (i for i in range(6))
 
     def skill_wave_motion_gun(self):
         if self.timer_key_delay(limit=self.fire_rate * 3, key="laser"):
+            limit = next(self.wave_motion_limit, "stop")
             data.ENEMY_PROJECTILE_DATA.append(Wave(
                 speed=25,
                 size=(5, 5),
@@ -104,7 +106,8 @@ class Boss_skills(Timer):
                 target=data.PLAYER.hitbox,
                 curve_size=1.5,
             ))
-            if self.timer_trigger(10):
+            if limit == "stop":
+                self.wave_motion_limit = (i for i in range(5))
                 self.timer_key_delay(reset=True, key="laser")
 
     def skill_volley(self, **kwargs):
@@ -259,31 +262,12 @@ class Boss_skills(Timer):
 # Destroyer Skills
 
     @run_limiter
-    def skill_main_gun_salvo(self, limiter):
-        self.special_move = True
-        self.hide_health_bar = True
-        self.hitbox.move_ip(self.angles[degrees(1000, self.hitbox.center[0], 500, self.hitbox.center[1])])
-        # if abs(1000 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
-        if self.hitbox.collidepoint((1880, 500)):
-            if limiter.run_block_once():
-                self.angles = angles_360(0)
-        if len([e for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_weakspot"]) == 0:
-            self.special_move = False
-            self.special_attack = False
-            self.hide_health_bar = False
-            self.angles = angles_360(self.speed)
-            self.special_skills_lst.remove(self.skill_main_gun_salvo)
-            for e in data.ENEMY_DATA:
-                if e.__class__.__name__ == "Boss_main_gun_battery":
-                    e.kill = True
-
-    @run_limiter
     def skill_missile_barrage(self, limiter):
         self.special_move = True
         self.hide_health_bar = True
         self.hitbox.move_ip(self.angles[degrees(1000, self.hitbox.center[0], 500, self.hitbox.center[1])])
         # if abs(1000 - self.hitbox.center[0]) < 10 or abs(500 - self.hitbox.center[1]) < 10:
-        if self.hitbox.collidepoint((1880, 500)):
+        if self.hitbox.collidepoint((1000, 500)):
             if limiter.run_block_once():
                 self.angles = angles_360(0)
 
@@ -308,6 +292,25 @@ class Boss_skills(Timer):
             self.hide_health_bar = False
             self.angles = angles_360(self.speed)
             self.special_skills_lst.remove(self.skill_missile_barrage)
+
+    @run_limiter
+    def skill_main_gun_salvo(self, limiter):
+        self.special_move = True
+        self.hide_health_bar = True
+        self.hitbox.move_ip(self.angles[degrees(1000, self.hitbox.center[0], 500, self.hitbox.center[1])])
+        # if abs(1000 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
+        if self.hitbox.collidepoint((1000, 500)):
+            if limiter.run_block_once():
+                self.angles = angles_360(0)
+        if len([e for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_weakspot"]) == 0:
+            self.special_move = False
+            self.special_attack = False
+            self.hide_health_bar = False
+            self.angles = angles_360(self.speed)
+            self.special_skills_lst.remove(self.skill_main_gun_salvo)
+            for e in data.ENEMY_DATA:
+                if e.__class__.__name__ == "Boss_main_gun_battery":
+                    e.kill = True
 
     @run_limiter
     def skill_laser_storm_laststand(self, limiter):
@@ -385,6 +388,37 @@ class Boss_skills(Timer):
                         flag="enemy"
                     ))
                 ))
+
+# Scout skills
+
+    @run_limiter
+    def skill_scout_hunt(self, limiter):
+        self.special_move = True
+        self.hitbox.move_ip(self.angles[degrees(900, self.hitbox.center[0], 150, self.hitbox.center[1])])
+        if self.hitbox.collidepoint((900, 150)):
+            if limiter.run_block_once():
+                self.special_gfx = True
+                self.angles = angles_360(0)
+                Gfx.bg_move = True
+                self.hitable = False
+                self.hide_health_bar = True
+
+    def skill_scout_force_field_fire(self):
+        if self.timer_trigger(self.force_field_rate):
+            location = (random.randint(0, 1600), random.randint(-100, 100))
+            data.ENEMY_PROJECTILE_DATA.append(Impactor(
+                speed=15,
+                size=(6, 6),
+                start_point=self.hitbox.center,
+                damage=0,
+                flag="impactor",
+                target=location,
+                impact_effect=lambda location=location: data.ENEMY_PROJECTILE_DATA.append(Force_field(
+                    location=location,
+                ))
+            ))
+        if self.timer_trigger(1200):
+            data.ITEMS.drop(self.hitbox.center, target=Event_item_boss_snare((100, 100, 200)))
 
 # Battleship skills
 
