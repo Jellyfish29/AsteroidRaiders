@@ -219,7 +219,7 @@ class Items(Timer):
     def get_item(cls, flag=""):
         item = [cls.inventory_dic[i] for i in range(6) if cls.inventory_dic[i] is not None and cls.inventory_dic[i].flag == flag]
         if len(item) == 0:
-            return Placeholder((0, 0, 0))
+            return Item_mock_test((0, 0, 0))
         else:
             return item[0]
 
@@ -348,9 +348,18 @@ class Active_Items(Items):
             cls.cd_reduction = cls.cd_limit
 
 
-class Placeholder(Active_Items):
+class Item_mock_test(Active_Items):
 
     def __init__(self, color):
-        super().__init__("placeholder name", "placeholder discription", (40, 40))
+        super().__init__(color, "Item_mock_test name", "Item_mock_test discription", (40, 40))
         self.color = color
-        self.flag = "placeholder"
+        self.flag = "Item_mock_test"
+        self.active = True
+        self.get_cd_len = 60
+        self.active_time = 60
+        self.lvl = 0
+        self.engage = True
+        self.effect_strength = 1
+
+    def end_active(self):
+        self.engage = True

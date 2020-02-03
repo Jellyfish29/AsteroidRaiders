@@ -272,8 +272,6 @@ class Item_afterburner(Active_Items):
 
 
 Items.set_drop_table([
-    # Active Items
-    # (Item_jump_drive, (0, 100, 0)),
     (Item_pd, (100, 0, 0)),
     (Item_nuke, (0, 0, 100)),
     (Item_missile, (100, 100, 0)),
@@ -281,6 +279,8 @@ Items.set_drop_table([
     (Item_star_fire, (44, 81, 255)),
     (Item_rapid_fire, (255, 45, 12)),
     (Item_piercing_shot, (120, 15, 0)),
-    # (Item_gravity_bomb, (120, 15, 0)),
+    (Item_gravity_bomb, (120, 15, 0)),
     (Item_black_hole_bomb, (120, 15, 0))
 ])
+
+data.ACTIVE_ITEMS = Active_Items

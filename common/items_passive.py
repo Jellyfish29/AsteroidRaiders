@@ -110,12 +110,12 @@ class Item_ammo_racks(Items):
     def effect(self):
         if self.flag not in Items.active_flag_lst:
             Items.active_flag_lst.append(self.flag)
-            Active_Items.set_cd_reduction(self.get_lvl_effects(reverse=True)[self.lvl])
+            data.ACTIVE_ITEMS.set_cd_reduction(self.get_lvl_effects(reverse=True)[self.lvl])
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
             Items.active_flag_lst.remove(self.flag)
-            Active_Items.set_cd_reduction(-self.get_lvl_effects(reverse=True)[self.lvl])
+            data.ACTIVE_ITEMS.set_cd_reduction(-self.get_lvl_effects(reverse=True)[self.lvl])
 
 
 class Item_improved_feeding(Items):
@@ -187,26 +187,6 @@ class Item_hyper_shields(Items):
             Items.active_flag_lst.remove(self.flag)
             data.PLAYER.shield_strength -= int(self.get_lvl_effects(reverse=True)[self.lvl])
             data.PLAYER.max_shield_strength -= int(self.get_lvl_effects(reverse=True)[self.lvl])
-
-
-class Item_expert_damage_control(Items):
-
-    def __init__(self, color):
-        super().__init__("Expert Damage Controll (passiv)", "Increases Damage Control Power Up Efficiency", (24, 25))
-        self.color = color
-        self.flag = "ex_damage_control"
-        # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "Shield HP")
-
-    def get_upgrade_desc(self):
-        return f"Bonus Damage: {self.get_lvl_effects(reverse=True)[self.lvl]}"
-
-    def effect(self):
-        if self.flag not in Items.active_flag_lst:
-            Items.active_flag_lst.append(self.flag)
-
-    def end_effect(self):
-        if self.flag in Items.active_flag_lst:
-            Items.active_flag_lst.remove(self.flag)
 
 
 class Item_fan_shot(Items):
@@ -302,7 +282,6 @@ Items.set_drop_table([
     (Item_ammo_racks, (255, 0, 70)),
     (Item_improved_feeding, (0, 20, 40)),
     (Item_hyper_shields, (99, 99, 230)),
-    # (Item_expert_damage_control, (20, 10, 251)),
     (Item_fan_shot, (12, 64, 1)),
     (Item_hammer_shot, (99, 140, 3)),
     (Item_hyper_velocity_rounds, (1, 169, 201)),

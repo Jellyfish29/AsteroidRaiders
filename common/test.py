@@ -9,6 +9,9 @@ from bosses import *
 from Gfx import *
 from levels import *
 from items import *
+from items_active import *
+from items_passive import *
+from items_misc import *
 from phenomenon import *
 
 win = pygame.display.set_mode((winwidth, winheight))
@@ -16,6 +19,13 @@ win = pygame.display.set_mode((winwidth, winheight))
 Boss_test_lst = [Boss_mine_boat(), Boss_frigatte(), Boss_corvette(), Boss_destroyer(), Boss_cruiser()]  # Boss_battleship(), Boss_carrier()]
 
 fps = 10000
+
+
+class Mock_enemy():
+
+    def __init__(self):
+
+        self.hitbox = pygame.Rect(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], 10, 10)
 
 
 def boss_tick_test():
@@ -31,6 +41,8 @@ def boss_tick_test():
                 boss.phase_2()
             elif j == 7000:
                 boss.phase_3()
+            elif j > 9990:
+                boss.health = 0
             boss.tick()
 
         for event in pygame.event.get():
@@ -44,7 +56,7 @@ def boss_tick_test():
 
 
 def item_test():
-    for item in Items.get_drop_table_absolute():
+    for item in Items.drop_table_absolute:
         it = item[0]((item[1]))
         Items.inventory_dic[0] = it
         it.effect()
@@ -59,6 +71,27 @@ def item_test():
     print("Item Test complete")
 
 
+def turret_test():
+    i = 0
+    for item in Items.drop_table_absolute:
+        it = item[0]((item[1]))
+        Items.inventory_dic[0] = it
+        it.effect()
+        it.active = True
+
+    while i < 1000:
+        i += 1
+        Turret.normal_fire()
+        Turret.star_fire()
+        Turret.rapid_fire()
+        Turret.nuke_fire()
+        Turret.gravity_bomb()
+        Turret.black_hole_bomb()
+        Turret.missile_aquisition(Mock_enemy())
+        Turret.point_defence(pygame.Rect(Player.hitbox.center[0], Player.hitbox.center[1], 10, 10))
+
+
 if __name__ == "__main__":
-    boss_tick_test()
+    # boss_tick_test()
     # item_test()
+    turret_test()

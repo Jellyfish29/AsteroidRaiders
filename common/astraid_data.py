@@ -9,6 +9,7 @@ PHENOMENON_DATA = []
 PLAYER = None
 TURRET = None
 ITEMS = None
+ACTIVE_ITEMS = None
 BOSS = None
 ELITES = None
 PHENOM = None
