@@ -6,7 +6,7 @@ from astraid_funcs import *
 from enemys import Enemy, Shooter
 from projectiles import Impactor, Wave
 from boss_skills import Boss_skills
-from items_misc import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
+from items import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
 from Gfx import Gfx
 import astraid_data as data
 
@@ -219,7 +219,7 @@ class Bosses(Shooter, Boss_skills):
 
     @classmethod
     def create(cls, lvl):
-        if lvl == 36:
+        if lvl == 6:
             data.ENEMY_DATA.append(Boss_mine_boat())
         elif lvl == 12:
             data.ENEMY_DATA.append(Boss_frigatte())
@@ -229,7 +229,7 @@ class Bosses(Shooter, Boss_skills):
             data.ENEMY_DATA.append(Boss_destroyer())
         elif lvl == 30:
             data.ENEMY_DATA.append(Boss_cruiser())
-        elif lvl == 6:
+        elif lvl == 36:
             data.ENEMY_DATA.append(Boss_scout())
         elif lvl == 42:
             data.ENEMY_DATA.append(Boss_battleship())
@@ -679,7 +679,7 @@ class Elites(Bosses):
     @classmethod
     def spawn(cls):
         data.ENEMY_DATA.append(random.choice([
-            lambda: Elites(health=Elites.health, speed=2, fire_rate=170, skill=Boss_skills.skill_mines, gfx_idx=(8, 9)),
+            lambda: Elites(health=Elites.health, speed=2, fire_rate=120, skill=Boss_skills.skill_salvo_charlie, gfx_idx=(8, 9)),
             lambda: Elites(health=Elites.health + Elites.health * 0.2, speed=4, fire_rate=120, skill=Boss_skills.skill_missile, gfx_idx=(2, 3)),
             lambda: Elites(health=Elites.health - Elites.health * 0.2, speed=8, fire_rate=80, skill=Boss_skills.skill_jumpdrive, gfx_idx=(4, 5)),
             lambda: Elites(health=Elites.health + Elites.health, speed=3, fire_rate=100, skill=Boss_skills.skill_salvo_delta, gfx_idx=(6, 7)),
@@ -785,7 +785,7 @@ class Boss_laser_battery(Bosses):
         self.hitbox = self.hitbox = pygame.Rect(winwidth / 2, -250, 0, 0)
         self.kill = False
         self.flag = "boss"
-        self.fire_rate = random.randint(10, 25)
+        self.fire_rate = random.randint(20, 60)
         self.hitable = False
         self.fire = False
         self.target = (random.randint(0, 1800), random.randint(0, 1000))
@@ -802,11 +802,11 @@ class Boss_laser_battery(Bosses):
                     self.fixed_angle = 90
         else:
             data.ENEMY_PROJECTILE_DATA.append(Wave(
-                speed=15,
+                speed=20,
                 size=(5, 5),
                 start_point=self.boss.hitbox.center,
                 damage=1,
-                gfx_idx=1,
+                gfx_idx=16,
                 # target=self.target,
                 curve_size=1.5,
                 fixed_angle=self.fixed_angle

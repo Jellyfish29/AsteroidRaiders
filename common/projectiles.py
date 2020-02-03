@@ -79,9 +79,14 @@ class Projectile(Timer):
     def gfx_draw(self):
         # pygame.draw.rect(win, (0, 255, 255), self.hitbox)
         # win.blit(Projectile.projectile_sprites[self.gfx_idx], (self.hitbox.topleft[0] - 8, self.hitbox.topleft[1] - 8))
-        # if self.spez_gfx is not None:
-        #     self.run_spez_gfx(self.hitbox)
-        gfx_angle = degrees(self.target[1], self.start_point[1], self.target[0], self.start_point[0])
+        if self.spez_gfx is not None:
+            self.run_spez_gfx(self.hitbox)
+        if self.target is not None:
+            gfx_angle = degrees(self.target[1], self.start_point[1], self.target[0], self.start_point[0])
+        else:
+            gfx_angle = self.get_angle() + 90
+            if gfx_angle > 359:
+                gfx_angle -= 359
         win.blit(rot_center(Projectile.projectile_sprites[self.gfx_idx], gfx_angle), (self.hitbox.topleft[0] - 50, self.hitbox.topleft[1] - 50))
 
     def gfx_hit(self):
@@ -109,7 +114,18 @@ class Projectile(Timer):
 
 class Impactor(Projectile):
 
-    def __init__(self, speed=0, size=(0, 0), start_point=(0, 0), damage=0, flag="", gfx_idx=3, target=None, impact_effect=None, trigger_dist=10):
+    def __init__(
+            self,
+            speed=0,
+            size=(0, 0),
+            start_point=(0, 0),
+            damage=0,
+            flag="",
+            gfx_idx=4,
+            target=None,
+            impact_effect=None,
+            trigger_dist=10
+    ):
         super().__init__(speed=speed, size=size, start_point=start_point, damage=damage, flag=flag, gfx_idx=gfx_idx, target=target, homing=True)
         self.trigger_dist = trigger_dist
         self.impact_effect = impact_effect
@@ -132,7 +148,14 @@ class Impactor(Projectile):
 
 class Dart(Projectile):
 
-    def __init__(self, start_point=(0, 0), damage=1, gfx_idx=(16, 15), target=None, aquisition_delay=60):
+    def __init__(
+            self,
+            start_point=(0, 0),
+            damage=1,
+            gfx_idx=(9, 8),
+            target=None,
+            aquisition_delay=60
+    ):
         super().__init__(speed=60, size=(5, 5), start_point=start_point, damage=damage, flag="en_missile", gfx_idx=gfx_idx, target=target)
         self.aquisition_delay = aquisition_delay
         self.angle = None
@@ -157,7 +180,18 @@ class Dart(Projectile):
 
 class Missile(Projectile):
 
-    def __init__(self, speed=0, size=(0, 0), start_point=(0, 0), target=None, damage=0, flag="", gfx_idx=3, aquisition_delay=0, enemy_missile=False):
+    def __init__(
+            self,
+            speed=0,
+            size=(0, 0),
+            start_point=(0, 0),
+            target=None,
+            damage=0,
+            flag="",
+            gfx_idx=1,
+            aquisition_delay=0,
+            enemy_missile=False
+    ):
         super().__init__(speed=speed, size=size, start_point=start_point, damage=damage, flag=flag, gfx_idx=gfx_idx, target=target)
         self.aquisition_delay = aquisition_delay
         self.movement_checker = 0  # check if target is stanionary --> means target is already destroyed
@@ -193,7 +227,14 @@ class Missile(Projectile):
 
 class Mine(Projectile):
 
-    def __init__(self, speed=0, start_point=(0, 0), damage=0, flag="", decay=False):
+    def __init__(
+            self,
+            speed=0,
+            start_point=(0, 0),
+            damage=0,
+        flag="",
+            decay=False
+    ):
         super().__init__(speed=speed, size=(20, 20), start_point=start_point, damage=damage, flag=flag)
         self.envelope = pygame.Rect(self.hitbox.center[0] - 175, self.hitbox.center[1] - 175, 350, 350)
         self.decay = decay
@@ -217,9 +258,9 @@ class Mine(Projectile):
                 return True
 
     def gfx_draw(self):
-        win.blit(Projectile.projectile_sprites[12], (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5))
+        win.blit(Projectile.projectile_sprites[5], (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5))
         if self.draw_envelope:
-            win.blit(Projectile.projectile_sprites[13], (self.envelope.topleft[0] - 27, self.envelope.topleft[1] - 27))
+            win.blit(Projectile.projectile_sprites[6], (self.envelope.topleft[0] - 27, self.envelope.topleft[1] - 27))
 
     def tick(self):
         self.move()
@@ -232,7 +273,15 @@ class Mine(Projectile):
 
 class Explosion(Projectile):
 
-    def __init__(self, location=(0, 0), explo_size=0, damage=0, explo_delay=0, explosion_effect=None, explo_speed=(30, 30)):
+    def __init__(
+            self,
+            location=(0, 0),
+            explo_size=0,
+            damage=0,
+            explo_delay=0,
+            explosion_effect=None,
+            explo_speed=(30, 30)
+    ):
         super().__init__(damage=damage, flag="explo", piercing=True)
         self.hitbox = pygame.Rect(location[0], location[1], 1, 1)
         self.explo_size = explo_size
@@ -264,7 +313,18 @@ class Explosion(Projectile):
 
 class Wave(Projectile):
 
-    def __init__(self, speed=0, size=(0, 0), start_point=(0, 0), damage=0, flag="player", gfx_idx=0, target=None, curve_size=0.1, fixed_angle=None, variation=True):
+    def __init__(self,
+                 speed=0,
+                 size=(0, 0),
+                 start_point=(0, 0),
+                 damage=0,
+                 flag="player",
+                 gfx_idx=0,
+                 target=None,
+                 curve_size=0.1,
+                 fixed_angle=None,
+                 variation=True
+                 ):
         super().__init__(speed, size, start_point, damage, flag, gfx_idx, target=target)
         self.curv_ticker = 0
         self.angle_variation = 0

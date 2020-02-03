@@ -87,12 +87,12 @@ class Turret:
                         size=(4, 4),
                         start_point=data.PLAYER.hitbox.center,
                         damage=0,
-                        gfx_idx=3,
+                        gfx_idx=1,
                         target=pos,
                         impact_effect=lambda loc=pos: data.PLAYER_PROJECTILE_DATA.append(Explosion(
                             location=loc,
                             explo_size=400,
-                            damage=1.5 + data.PLAYER.damage * 0.5,
+                            damage=1.5 + data.PLAYER.damage * 0.5 + int(cls.fire_rate),
                             explosion_effect=lambda loc: Gfx.create_effect("explosion_1", 3, (loc[0] - 400, loc[1] - 400), explo=True)
                         ))
                     ))
@@ -111,7 +111,7 @@ class Turret:
                         size=(4, 4),
                         start_point=data.PLAYER.hitbox.center,
                         damage=0,
-                        gfx_idx=3,
+                        gfx_idx=1,
                         target=pos,
                         impact_effect=lambda loc=pos: data.PLAYER_PROJECTILE_DATA.append(Gravity_well(
                             speed=0,
@@ -137,7 +137,7 @@ class Turret:
                         size=(4, 4),
                         start_point=data.PLAYER.hitbox.center,
                         damage=0,
-                        gfx_idx=3,
+                        gfx_idx=1,
                         target=pos,
                         impact_effect=lambda loc=pos: data.PLAYER_PROJECTILE_DATA.append(Black_hole(
                             speed=0,
@@ -145,7 +145,7 @@ class Turret:
                             decay=data.ITEMS.get_item(flag="black_hole_bomb").active_time,
                             location=loc,
                             flag="player",
-                            damage=1 + data.PLAYER.damage * 0.5))
+                            damage=1 + data.PLAYER.damage * 0.5 + cls.fire_rate))
                     ))
                     data.ITEMS.get_item(flag="black_hole_bomb").engage = False
                     data.ITEMS.get_item(flag="black_hole_bomb").end_active()
@@ -165,7 +165,7 @@ class Turret:
                             start_point=data.PLAYER.hitbox.center,
                             damage=1 + data.PLAYER.damage * 0.1,
                             flag="point_defence",
-                            gfx_idx=10,
+                            gfx_idx=3,
                             angle_variation=random.randint(-2, 2),
                             target=enemy
                         ))
@@ -186,7 +186,7 @@ class Turret:
                             size=(5, 5),
                             start_point=location,
                             target=enemy.hitbox,
-                            damage=data.PLAYER.damage * 3,
+                            damage=data.PLAYER.damage * 3 + int(cls.fire_rate),
                             flag="missile"
                         ))
                     data.ITEMS.get_item(flag="missile").end_active()
@@ -201,13 +201,14 @@ class Turret:
                     size=cls.projectile_size,
                     start_point=data.PLAYER.hitbox.center,
                     damage=data.PLAYER.damage,
-                    gfx_idx=0,
+                    gfx_idx=15,
                     target=pygame.mouse.get_pos(),
                     piercing=False,
                     hit_effect=lambda l: data.PLAYER_PROJECTILE_DATA.append(Explosion(
                         location=l,
                         explo_size=70,
-                        damage=data.PLAYER.damage * 0.2
+                        damage=data.PLAYER.damage * 0.2,
+                        explosion_effect=lambda loc: Gfx.create_effect("explosion_4", 2, (loc[0] - 60, loc[1] - 60), explo=True)
                     ))
                 ))
                 return True
@@ -222,7 +223,7 @@ class Turret:
                         size=cls.projectile_size,
                         start_point=data.PLAYER.hitbox.center,
                         damage=data.PLAYER.damage,
-                        gfx_idx=2,
+                        gfx_idx=11,
                         angle_variation=i,
                         target=pygame.mouse.get_pos(),
                     ))
@@ -239,7 +240,7 @@ class Turret:
                     size=cls.projectile_size,
                     start_point=data.PLAYER.hitbox.center,
                     damage=data.ITEMS.get_item(flag="hammer_shot").effect_strength,
-                    gfx_idx=2,
+                    gfx_idx=15,
                     target=pygame.mouse.get_pos(),
                 ))
                 return True
@@ -263,7 +264,7 @@ class Turret:
                 if timer.trigger(5):
                     Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
                     cls.super_shot_limiter += 1
-                    if cls.super_shot_limiter >= cls.super_shot_ammo:
+                    if cls.super_shot_limiter >= cls.super_shot_ammo + data.LEVELS.level:
                         cls.super_shot_limiter = 0
                         rapid_fire.active = False
                         rapid_fire.cooldown = True
@@ -274,7 +275,7 @@ class Turret:
                         size=cls.projectile_size,
                         start_point=data.PLAYER.hitbox.center,
                         damage=data.PLAYER.damage,
-                        gfx_idx=1,
+                        gfx_idx=15,
                         target=pygame.mouse.get_pos(),
                     ))
 
@@ -287,7 +288,7 @@ class Turret:
                 if timer.trigger(30):
                     cls.star_shot_limiter += 1
                     Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
-                    if cls.star_shot_limiter > cls.star_shot_ammo:
+                    if cls.star_shot_limiter > cls.star_shot_ammo + data.LEVELS.level:
                         cls.star_shot_limiter = 0
                         star_fire.active = False
                         star_fire.cooldown = True
@@ -299,7 +300,7 @@ class Turret:
                             size=cls.projectile_size,
                             start_point=data.PLAYER.hitbox.center,
                             damage=data.PLAYER.damage,
-                            gfx_idx=2,
+                            gfx_idx=17,
                             angle=angle
                         ))
 
@@ -312,7 +313,7 @@ class Turret:
                 size=(20, 20),
                 start_point=data.PLAYER.hitbox.center,
                 damage=0,
-                gfx_idx=4,
+                gfx_idx=19,
                 target=pygame.mouse.get_pos(),
                 hit_effect=lambda _: data.ENEMY_DATA[0].set_snared()
             ))
@@ -348,7 +349,7 @@ class Turret:
                 size=cls.projectile_size,
                 start_point=data.PLAYER.hitbox.center,
                 damage=dmg,
-                gfx_idx=18,
+                gfx_idx=11,
                 target=pygame.mouse.get_pos(),
                 piercing=piercing
             ))
@@ -374,7 +375,7 @@ class Turret:
     def gfx_pd_draw(cls):
         if "point_defence" in data.ITEMS.active_flag_lst:
             if data.ITEMS.get_item(flag="point_defence").active:
-                win.blit(cls.projectile_sprites[14], (data.PLAYER.hitbox.topleft[0] - 190, data.PLAYER.hitbox.topleft[1] - 220))
+                win.blit(cls.projectile_sprites[7], (data.PLAYER.hitbox.topleft[0] - 190, data.PLAYER.hitbox.topleft[1] - 220))
 
     @classmethod
     def update(cls):

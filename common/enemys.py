@@ -241,7 +241,7 @@ class Shooter(Enemy):
                 start_point=self.hitbox.center,
                 damage=1,
                 flag="spez_enemy",
-                gfx_idx=6,
+                gfx_idx=12,
                 target=data.PLAYER.hitbox.center
             ))
 
@@ -278,7 +278,7 @@ class Strafer(Enemy):
                 start_point=self.hitbox.center,
                 damage=1,
                 flag="spez_enemy",
-                gfx_idx=6,
+                gfx_idx=12,
                 angle=self.direction
             ))
 

@@ -34,7 +34,7 @@ class Levels:
     @classmethod
     def scaling(cls):
         data.ENEMY.health += 0.4
-        data.ELITES.health += data.ELITES.health * 0.1
+        data.ELITES.health += data.ELITES.health * 0.05
         cls.second_elite_chance -= 1.5
         if cls.level % 6 == 0:
             cls.enemy_amount += 1

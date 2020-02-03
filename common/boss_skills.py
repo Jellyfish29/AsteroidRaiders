@@ -6,7 +6,7 @@ from astraid_funcs import *
 from Gfx import Gfx
 from projectiles import Projectile, Mine, Missile, Impactor, Explosion, Dart, Wave
 from phenomenon import Gravity_well, Force_field
-from items_misc import Event_item_boss_snare
+from items import Event_item_boss_snare
 
 
 class Boss_skills(Timer):
@@ -48,7 +48,7 @@ class Boss_skills(Timer):
                 target=data.PLAYER.hitbox,
                 damage=2,
                 flag="en_missile",
-                gfx_idx=11,
+                gfx_idx=4,
                 aquisition_delay=self.missile_retarget_trigger,
                 enemy_missile=True
             ))
@@ -56,23 +56,23 @@ class Boss_skills(Timer):
     def skill_star_shot(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 5):
             for i in range(0, 359, 22):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 6, angle=i))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 12, angle=i))
 
     def skill_salvo_alpha(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 3):
             for i in range(0, self.size[1], int(self.size[1] / 10)):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topleft[0], self.hitbox.topleft[1] + i), 1, "bo_salvo", 6, angle=180))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topleft[0], self.hitbox.topleft[1] + i), 1, "bo_salvo", 12, angle=180))
             for i in range(0, self.size[1], int(self.size[1] / 10)):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topright[0], self.hitbox.topright[1] + i), 1, "bo_salvo", 6, angle=0))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topright[0], self.hitbox.topright[1] + i), 1, "bo_salvo", 12, angle=0))
 
     def skill_salvo_bravo(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 5):
             for i in range(135, 226, 9):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 6, angle=i))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 12, angle=i))
             for i in range(0, 45, 9):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 6, angle=i))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 12, angle=i))
             for i in range(315, 360, 9):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 6, angle=i))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 12, angle=i))
 
     def skill_salvo_charlie(self, **kwargs):
         if self.timer_key_delay(limit=self.fire_rate * 3, key="salvo_c"):
@@ -82,13 +82,13 @@ class Boss_skills(Timer):
                     self.salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 10))])
                     self.timer_key_delay(reset=True, key="salvo_c")
                 else:
-                    data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topleft[0], self.hitbox.topleft[1] + shot_sp), 1, "bo_salvo", 6, angle=180))
-                    data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topright[0], self.hitbox.topright[1] + shot_sp), 1, "bo_salvo", 6, angle=0))
+                    data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topleft[0], self.hitbox.topleft[1] + shot_sp), 1, "bo_salvo", 12, angle=180))
+                    data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topright[0], self.hitbox.topright[1] + shot_sp), 1, "bo_salvo", 12, angle=0))
 
     def skill_salvo_delta(self, **kwargs):
         if self.timer_key_delay(limit=self.fire_rate * 3, key="salvo_d"):
             if self.timer_trigger(5):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(15, (6, 6), (self.hitbox.center[0], self.hitbox.center[1]), 1, "bo_salvo", 6, target=data.PLAYER.hitbox))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(15, (6, 6), (self.hitbox.center[0], self.hitbox.center[1]), 1, "bo_salvo", 12, target=data.PLAYER.hitbox))
                 limit = next(self.delta_salvo_limit, "stop")
                 if limit == "stop":
                     self.timer_key_delay(reset=True, key="salvo_d")
@@ -102,7 +102,7 @@ class Boss_skills(Timer):
                 size=(5, 5),
                 start_point=self.hitbox.center,
                 damage=1,
-                gfx_idx=1,
+                gfx_idx=16,
                 target=data.PLAYER.hitbox,
                 curve_size=1.5,
             ))
@@ -113,7 +113,7 @@ class Boss_skills(Timer):
     def skill_volley(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 3):
             for i in [-5, 0, 5]:
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "benemy", 6, angle_variation=i, target=data.PLAYER.hitbox))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "benemy", 12, angle_variation=i, target=data.PLAYER.hitbox))
 
     def skill_jumpdrive(self, **kwargs):
         if not self.jump_charge:
@@ -149,7 +149,7 @@ class Boss_skills(Timer):
                 start_point=self.hitbox.midbottom,
                 damage=0,
                 flag="neutral",
-                gfx_idx=7,
+                gfx_idx=2,
                 target=target,
             ))
             if self.timer_trigger(80):
@@ -159,7 +159,7 @@ class Boss_skills(Timer):
                     start_point=self.hitbox.midbottom,
                     damage=4,
                     flag="enemy",
-                    gfx_idx=8,
+                    gfx_idx=18,
                     target=target
                 ))
                 self.timer_key_delay(reset=True, key="main_gun")
@@ -180,7 +180,7 @@ class Boss_skills(Timer):
                         size=(6, 6),
                         start_point=(self.hitbox.topleft[0], self.hitbox.topleft[1] + shot_sp),
                         flag="boss",
-                        gfx_idx=16,
+                        gfx_idx=9,
                         target=(self.hitbox.topleft[0] - 250, self.hitbox.topleft[1] + shot_sp + 10),
                         impact_effect=lambda shot_sp=shot_sp: data.ENEMY_PROJECTILE_DATA.append(Dart(
                             start_point=(self.hitbox.topright[0] - 250, self.hitbox.topright[1] + shot_sp),
@@ -193,7 +193,7 @@ class Boss_skills(Timer):
                         size=(6, 6),
                         start_point=(self.hitbox.topright[0], self.hitbox.topright[1] + shot_sp),
                         flag="boss",
-                        gfx_idx=16,
+                        gfx_idx=9,
                         target=(self.hitbox.topleft[0] + 250, self.hitbox.topleft[1] + shot_sp + 10),
                         impact_effect=lambda shot_sp=shot_sp: data.ENEMY_PROJECTILE_DATA.append(Dart(
                             start_point=(self.hitbox.topright[0] + 250, self.hitbox.topright[1] + shot_sp),
@@ -212,7 +212,7 @@ class Boss_skills(Timer):
                     start_point=self.hitbox.center,
                     damage=1,
                     flag="boss",
-                    gfx_idx=10,
+                    gfx_idx=3,
                     target=data.PLAYER.hitbox.center
                 ))
 
@@ -283,7 +283,8 @@ class Boss_skills(Timer):
                 impact_effect=lambda loc=target: data.ENEMY_PROJECTILE_DATA.append(Explosion(
                     location=loc,
                     explo_size=100,
-                    damage=3
+                    damage=3,
+                    explosion_effect=lambda loc: Gfx.create_effect("explosion_4", 2, (loc[0] - 60, loc[1] - 60), explo=True)
                 ))
             ))
         if len([e for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_weakspot"]) == 0:
@@ -323,14 +324,6 @@ class Boss_skills(Timer):
                 self.angles = angles_360(0)
                 self.special_gfx = True
                 self.special_skills_lst.append(self.skill_point_defence)
-            # if self.timer_trigger(120):
-            #     self.hitbox = pygame.Rect(self.hitbox.topleft[0], self.hitbox.topleft[1], self.size[1], self.size[0])
-        # if len([e for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_weakspot"]) == 0:
-        #     self.special_move = False
-        #     self.special_attack = False
-        #     self.hide_health_bar = False
-        #     self.angles = angles_360(self.speed)
-        #     self.special_skills_lst.remove(self.skill_laser_storm)
         if self.health <= 0:
             for e in data.ENEMY_DATA:
                 if e.__class__.__name__ == "Boss_laser_battery":
@@ -364,7 +357,7 @@ class Boss_skills(Timer):
                             size=(6, 6),
                             start_point=(self.hitbox.topleft[0], self.hitbox.topleft[1] + shot_sp),
                             flag="boss",
-                            gfx_idx=16,
+                            gfx_idx=9,
                             target=(self.hitbox.topleft[0] - 250, self.hitbox.topleft[1] + shot_sp + 10),
                             impact_effect=lambda shot_sp=shot_sp: data.ENEMY_PROJECTILE_DATA.append(Dart(
                                 start_point=(self.hitbox.topright[0] - 250, self.hitbox.topright[1] + shot_sp),
@@ -380,6 +373,7 @@ class Boss_skills(Timer):
                     start_point=self.hitbox.center,
                     damage=2,
                     flag="en_missile",
+                    gfx_idx=9,
                     target=location,
                     impact_effect=lambda location=location: data.PHENOMENON_DATA.append(Gravity_well(
                         speed=0,
@@ -412,6 +406,7 @@ class Boss_skills(Timer):
                 start_point=self.hitbox.center,
                 damage=0,
                 flag="impactor",
+                gfx_idx=16,
                 target=location,
                 impact_effect=lambda location=location: data.ENEMY_PROJECTILE_DATA.append(Force_field(
                     location=location,
@@ -478,7 +473,7 @@ class Boss_skills(Timer):
                     start_point=self.hitbox.center,
                     damage=0,
                     flag="neutral",
-                    gfx_idx=17,
+                    gfx_idx=20,
                     target=random.choice([data.PLAYER.hitbox.center, self.dummy_targets[random.randint(0, 2)]]),
                     hit_effect=lambda l: data.ENEMY_PROJECTILE_DATA.append(Projectile(
                         speed=100,
@@ -486,7 +481,7 @@ class Boss_skills(Timer):
                         start_point=self.hitbox.center,
                         damage=4,
                         flag="enemy",
-                        gfx_idx=8,
+                        gfx_idx=18,
                         target=data.PLAYER.hitbox.center
                     )),
                     spez_gfx=lambda a: Gfx.create_effect("radar", 10, anchor=a, follow=True, x=-170, y=-30)

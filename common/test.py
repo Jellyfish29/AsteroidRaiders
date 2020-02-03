@@ -43,6 +43,7 @@ def boss_tick_test():
                 boss.phase_3()
             elif j > 9990:
                 boss.health = 0
+                assert boss.destroy() is True
             boss.tick()
 
         for event in pygame.event.get():
@@ -62,8 +63,7 @@ def item_test():
         it.effect()
         Items.update()
         assert it.flag in Items.active_flag_lst
-        it.lvl += 3
-        assert it.get_lvl_effects() == self.base_effect
+        it.lvl = 3
         it.remove_from_inventory(0)
         assert len(Items.active_flag_lst) == 0
         assert it in Items.dropped_lst
@@ -93,5 +93,5 @@ def turret_test():
 
 if __name__ == "__main__":
     # boss_tick_test()
-    # item_test()
+    item_test()
     turret_test()

@@ -363,3 +363,105 @@ class Item_mock_test(Active_Items):
 
     def end_active(self):
         self.engage = True
+
+
+class Item_supply_crate(Items):
+
+    def __init__(self, color, start=False):
+        super().__init__("Supply Container", "Provides New Supplies", (38, 38))
+        self.color = color
+        self.flag = "supply_con"
+        self.base_effect = 4
+        self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
+
+    def get_upgrade_desc(self):
+        return f"Upgrade Points: + {int(self.get_lvl_effects(reverse=True)[self.lvl])}"
+
+    def effect(self):
+        if "supply_con" not in Items.active_flag_lst:
+
+            data.LEVELS.skill_points += int(self.get_lvl_effects(reverse=True)[self.lvl])
+
+            # Gfx.create_effect("con_collected", 25, data.PLAYER.hitbox.topleft, hover=True)
+            for key, item in Items.inventory_dic.items():
+                if item == self:
+                    Items.inventory_dic[key] = None
+
+
+class Item_upgrade_point_crate(Items):
+
+    def __init__(self, color, start=False):
+        super().__init__("Scrap", "Used to updgrade Items", (49, 49))
+        self.color = color
+        self.flag = "upgrade_con"
+        self.base_effect = 4
+        self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
+
+    def get_upgrade_desc(self):
+        return f"Upgrade Points: + {int(self.get_lvl_effects(reverse=True)[self.lvl])}"
+
+    def effect(self):
+        if "upgrade_con" not in Items.active_flag_lst:
+
+            Items.upgrade_points += int(self.get_lvl_effects(reverse=True)[self.lvl])
+
+            # Gfx.create_effect("con_collected", 25, data.PLAYER.hitbox.topleft, hover=True)
+            for key, item in Items.inventory_dic.items():
+                if item == self:
+                    Items.inventory_dic[key] = None
+
+
+class Item_heal_crate(Items):
+
+    def __init__(self, color, start=False):
+        super().__init__("Spare Part Container", "Spare Parts to restore the Ship to full Strength", (39, 39))
+        self.color = color
+        self.flag = "heal_con"
+        self.base_effect = 4
+        self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
+
+    def get_upgrade_desc(self):
+        return f"Health: + {int(self.get_lvl_effects(reverse=True)[self.lvl])} <> Damage Control: + 1"
+
+    def effect(self):
+        if "supply_con" not in Items.active_flag_lst:
+
+            if data.PLAYER.health < data.PLAYER.max_health:
+                data.PLAYER.health += int(self.get_lvl_effects(reverse=True)[self.lvl])
+                if data.PLAYER.health > data.PLAYER.max_health:
+                    data.PLAYER.health = data.PLAYER.max_health
+            data.PLAYER.heal_amount += 1
+
+            # Gfx.create_effect("con_collected", 25, data.PLAYER.hitbox.topleft, hover=True)
+            for key, item in Items.inventory_dic.items():
+                if item == self:
+                    Items.inventory_dic[key] = None
+
+### Event Items ###
+
+
+class Event_item_boss_snare(Items):
+
+    def __init__(self, color, start=False):
+        super().__init__("Snare", "", (38, 38))
+        self.color = color
+        self.flag = "boss_snare"
+        self.base_effect = 4
+        self.lvl = 0
+
+    def get_upgrade_desc(self):
+        return f" "
+
+    def effect(self):
+        if "boss_snare" not in Items.active_flag_lst:
+
+            data.TURRET.snare_charge += 1
+
+            for key, item in Items.inventory_dic.items():
+                if item == self:
+                    Items.inventory_dic[key] = None
+
+    def decay(self):
+        self.hitbox.move_ip(0, 8)
+        if rect_not_on_sreen(self.hitbox):
+            Items.dropped_lst.remove(self)
