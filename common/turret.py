@@ -27,13 +27,14 @@ class Turret:
     overdrive_count = 0
     # ammunition = normal_fire_rate[1]
     fire_limiter = 0
-    # super shot values
+    # special fire
     super_shot_ammo = 30
     super_shot_limiter = 0
-    # star shot values
     star_shot_limiter = 0
     star_shot_ammo = 25
     star_shot_tubes = 12
+    burts_limiter = 0
+    scatter_limter = 0
     # pd values
     pd_ticker = 0
     # Gfx setup
@@ -47,19 +48,20 @@ class Turret:
         cls.firing = fire
 
     @classmethod
-    def shots(cls):
+    def on_mouse_click_actions(cls):
         if cls.firing:
             cls.normal_fire()
             cls.star_fire()
             cls.rapid_fire()
             # cls.test_sin()
-            # cls.he_rounds()
 
     @classmethod
-    def bombs(cls):
+    def on_item_button_click_actions(cls):
         cls.nuke_fire()
         cls.gravity_bomb()
         cls.black_hole_bomb()
+        cls.burst_fire()
+        cls.scatter_fire()
 
     @classmethod
     @timer
@@ -180,8 +182,6 @@ class Turret:
                 aa_target_area = pygame.Rect(m_pos[0] - 100, m_pos[1] - 100, 200, 200)
                 # pygame.draw.rect(win, (255, 255, 0), aa_target_area)
                 if aa_target_area.colliderect(enemy.hitbox):
-                    # for x in [-18, 60]:
-                        # Gfx.create_effect("missilemuzzle", 3, data.PLAYER.hitbox, follow=True, x=x, y=8)
                     for location in [data.PLAYER.hitbox.topleft, data.PLAYER.hitbox.topright]:
                         data.PLAYER_PROJECTILE_DATA.append(Missile(
                             speed=15,
@@ -293,8 +293,7 @@ class Turret:
                     Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
                     if cls.star_shot_limiter > cls.star_shot_ammo + data.LEVELS.level:
                         cls.star_shot_limiter = 0
-                        star_fire.active = False
-                        star_fire.cooldown = True
+                        star_fire.end_active()
                         del star_fire
 
                     for angle in range(0, 360, int(360 / cls.star_shot_tubes)):
@@ -306,6 +305,48 @@ class Turret:
                             gfx_idx=11,
                             angle=angle
                         ))
+
+    @classmethod
+    @timer
+    def burst_fire(cls, timer):
+        if "burst_fire" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="burst_fire").active:
+                if timer.trigger(3):
+                    cls.burts_limiter += 1
+                    if cls.burts_limiter <= data.ITEMS.get_item(flag="burst_fire").effect_strength:
+                        data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                            speed=cls.projectile_speed,
+                            size=cls.projectile_size,
+                            start_point=data.PLAYER.hitbox.center,
+                            damage=data.PLAYER.damage,
+                            gfx_idx=11,
+                            target=pygame.mouse.get_pos()
+                        ))
+                    else:
+                        cls.burts_limiter = 0
+                        data.ITEMS.get_item(flag="burst_fire").end_active()
+
+    @classmethod
+    @timer
+    def scatter_fire(cls, timer):
+        if "scatter_fire" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="scatter_fire").active:
+                if timer.trigger(10):
+                    cls.scatter_limter += 1
+                    if cls.scatter_limter <= data.ITEMS.get_item(flag="scatter_fire").effect_strength:
+                        for i in range(-40, 41, 10):
+                            data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                                speed=cls.projectile_speed,
+                                size=cls.projectile_size,
+                                start_point=data.PLAYER.hitbox.center,
+                                damage=data.PLAYER.damage,
+                                gfx_idx=11,
+                                target=pygame.mouse.get_pos(),
+                                angle_variation=i
+                            ))
+                    else:
+                        cls.scatter_limter = 0
+                        data.ITEMS.get_item(flag="scatter_fire").end_active()
 
     @classmethod
     def boss_snare(cls):
@@ -337,25 +378,23 @@ class Turret:
                 if data.ITEMS.get_item(flag="piercing_shot").active:
                     dmg = data.PLAYER.damage * data.ITEMS.get_item(flag="piercing_shot").effect_strength
                     piercing = True
-            if cls.hammer_shot():
-                return
-            elif cls.fan_shot():
-                return
-            elif cls.he_rounds():
-                return
-            elif cls.boss_snare():
-                return
 
-            Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
-            data.PLAYER_PROJECTILE_DATA.append(Projectile(
-                speed=cls.projectile_speed,
-                size=cls.projectile_size,
-                start_point=data.PLAYER.hitbox.center,
-                damage=dmg,
-                gfx_idx=11,
-                target=pygame.mouse.get_pos(),
-                piercing=piercing
-            ))
+            if not any([
+                cls.hammer_shot(),
+                cls.fan_shot(),
+                cls.he_rounds(),
+                cls.boss_snare()
+            ]):
+                Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
+                data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                    speed=cls.projectile_speed,
+                    size=cls.projectile_size,
+                    start_point=data.PLAYER.hitbox.center,
+                    damage=dmg,
+                    gfx_idx=11,
+                    target=pygame.mouse.get_pos(),
+                    piercing=piercing
+                ))
 
     @classmethod
     def get_fire_rate(cls):
@@ -392,8 +431,8 @@ class Turret:
     def update(cls):
         cls.gfx_gun_draw()
         cls.gfx_pd_draw()
-        cls.shots()
-        cls.bombs()
+        cls.on_mouse_click_actions()
+        cls.on_item_button_click_actions()
 
 
 data.TURRET = Turret

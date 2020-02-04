@@ -33,7 +33,7 @@ def boss_tick_test():
     data.PLAYER.health = 1000000
     while j < 10000:
         j += 1
-        print(j)
+        # print(j)
         for boss in Boss_test_lst:
             if j == 2000:
                 boss.phase_1()
@@ -89,9 +89,17 @@ def turret_test():
         Turret.black_hole_bomb()
         Turret.missile_aquisition(Mock_enemy())
         Turret.point_defence(pygame.Rect(Player.hitbox.center[0], Player.hitbox.center[1], 10, 10))
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+
+        Clock.tick(fps)
+        pygame.display.update()
+    print("Turret Test complete")
 
 
 if __name__ == "__main__":
     # boss_tick_test()
-    item_test()
+    # item_test()
     turret_test()

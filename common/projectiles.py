@@ -272,9 +272,8 @@ class Missile(Projectile):
                     self.kill = True
         self.movement_checker = self.target.center
         if self.timer_trigger(self.aquisition_delay):
-            if abs(
-                    self.hitbox.center[0] - self.target.center[0]) > 10 or abs(
-                    self.hitbox.center[1] - self.target.center[1]) > 10:
+            if any([abs(self.hitbox.center[0] - self.target.center[0]) > 10,
+                    abs(self.hitbox.center[1] - self.target.center[1]) > 10]):
                 self.angle = degrees(
                     self.target.center[0],
                     self.hitbox.center[0],
@@ -314,7 +313,7 @@ class Mine(Projectile):
             speed=0,
             start_point=(0, 0),
             damage=0,
-        flag="",
+            flag="",
             decay=False
     ):
         super().__init__(
@@ -414,18 +413,19 @@ class Explosion(Projectile):
 
 class Wave(Projectile):
 
-    def __init__(self,
-                 speed=0,
-                 size=(0, 0),
-                 start_point=(0, 0),
-                 damage=0,
-                 flag="player",
-                 gfx_idx=0,
-                 target=None,
-                 curve_size=0.1,
-                 fixed_angle=None,
-                 variation=True
-                 ):
+    def __init__(
+        self,
+        speed=0,
+        size=(0, 0),
+        start_point=(0, 0),
+        damage=0,
+        flag="player",
+        gfx_idx=0,
+        target=None,
+        curve_size=0.1,
+        fixed_angle=None,
+        variation=True
+    ):
         super().__init__(speed, size, start_point, damage, flag, gfx_idx, target=target)
         self.curv_ticker = 0
         self.angle_variation = 0

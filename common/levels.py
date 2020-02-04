@@ -29,7 +29,16 @@ class Levels:
     elite_max_spawn_time = 4000
     second_elite_chance = 100
     second_elite = False
-    death_score_panalties = {1: 30, 6: 50, 12: 80, 18: 150, 24: 250, 30: 370, 36: 500, 42: 700}
+    death_score_panalties = {
+        1: 30,
+        6: 50,
+        12: 80,
+        18: 150,
+        24: 250,
+        30: 370,
+        36: 500,
+        42: 700
+    }
 
     @classmethod
     def scaling(cls):
@@ -134,7 +143,7 @@ class Levels:
             cls.event_trigger_time = (cls.event_trigger_time[0] - 50, cls.event_trigger_time[1] - 75)
             cls.level += 1
             cls.display_level += 1
-            cls.level_interval += 4
+            cls.level_interval += 3
             cls.skill_points += 1
             cls.scaling()
             cls.interval_score = 0

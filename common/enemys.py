@@ -243,8 +243,8 @@ class Asteroid(Enemy):
         #     self.animation_speed = 6
 
     def gfx_animation(self):
-        # Weil die Bilder in eine beschissenne reinfolge sind
-        # muss der schmutz hier gemacht werden Big OOF
+        """Weil die Bilder in eine beschissenne reinfolge sind
+           muss der schmutz hier gemacht werden Big OOF"""
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         win.blit(
             Enemy.asteroid_sprites[self.gfx_idx + self.gfx_offset[self.frame_counter]],
