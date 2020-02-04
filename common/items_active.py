@@ -192,10 +192,6 @@ class Item_gravity_bomb(Active_Items):
     def set_effect_strength(self):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
-    def end_activation(self):
-        if not self.cooldown:
-            self.engage = True
-
 
 class Item_black_hole_bomb(Active_Items):
 
@@ -215,10 +211,6 @@ class Item_black_hole_bomb(Active_Items):
     def set_effect_strength(self):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
-    def end_activation(self):
-        if not self.cooldown:
-            self.engage = True
-
 
 class Item_rail_gun(Active_Items):
 
@@ -236,10 +228,6 @@ class Item_rail_gun(Active_Items):
 
     def set_effect_strength(self):
         self.effect_strength = self.get_lvl_effects()[self.lvl]
-
-    def end_activation(self):
-        if not self.cooldown:
-            self.engage = True
 
     def get_active_str(self):
         return f"{int(data.TURRET.rail_gun_charge * 100)}/100"
@@ -268,10 +256,6 @@ class Item_jump_drive(Active_Items):
 
     def get_active_str(self):
         return "Charging"
-
-    def end_activation(self):
-        if not self.cooldown:
-            self.engage = True
 
     def get_inventory_key(self):
         return 0

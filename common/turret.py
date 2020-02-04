@@ -101,7 +101,6 @@ class Turret:
                                 "explosion_1", 3, (loc[0] - 400, loc[1] - 400), explo=True)
                         ))
                     ))
-                    data.ITEMS.get_item(flag="nuke").engage = False
                     data.ITEMS.get_item(flag="nuke").end_active()
 
     @classmethod
@@ -127,7 +126,6 @@ class Turret:
                             location=loc,
                             flag="player"))
                     ))
-                    data.ITEMS.get_item(flag="gravity_bomb").engage = False
                     data.ITEMS.get_item(flag="gravity_bomb").end_active()
 
     @classmethod
@@ -152,7 +150,6 @@ class Turret:
                             flag="player",
                             damage=1 + data.PLAYER.damage * 0.5 + cls.fire_rate))
                     ))
-                    data.ITEMS.get_item(flag="black_hole_bomb").engage = False
                     data.ITEMS.get_item(flag="black_hole_bomb").end_active()
 
     @classmethod
@@ -180,7 +177,6 @@ class Turret:
 
                     data.PLAYER.angles = directions(data.PLAYER.speed)
                     cls.rail_gun_charge = 0
-                    # data.ITEMS.get_item(flag="rail_gun").engage = False
                     data.ITEMS.get_item(flag="rail_gun").end_active()
 
     @classmethod

@@ -321,6 +321,10 @@ class Active_Items(Items):
             if self.active:
                 Gfx.create_effect(self.effect_name, 25, data.PLAYER.hitbox.topleft, hover=True)
 
+    def end_activation(self):
+        if not self.cooldown:
+            self.engage = True
+
     def get_cd_str(self):
         return str(int((self.get_cd_len() - self.ticker["cd"]) / 60) + 1)
 
