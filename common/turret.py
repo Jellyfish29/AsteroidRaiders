@@ -300,7 +300,7 @@ class Turret:
                             size=cls.projectile_size,
                             start_point=data.PLAYER.hitbox.center,
                             damage=data.PLAYER.damage,
-                            gfx_idx=17,
+                            gfx_idx=11,
                             angle=angle
                         ))
 

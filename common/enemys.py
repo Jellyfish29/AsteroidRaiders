@@ -19,21 +19,37 @@ class Enemy(Timer):
     ttk_ticker = 100
     spez_spawn_time = 480
 
-    def __init__(self, direction, speed, spawn_point, health, size, gfx_idx, gfx_hook, sprites):
+    def __init__(self, direction, speed, spawn_point, health,
+                 size, gfx_idx, gfx_hook, sprites):
         self.spawn_points = {
-            1: [random.randint(100, winwidth - 100), random.randint(-150, -100)],  # Top
-            2: [random.randint(100, winwidth - 100), random.randint(winheight + 100, winheight + 100)],  # Bot
-            3: [random.randint(-150, -100), random.randint(0, winheight)],  # random.random.randint(0, winheight)),  # Left
-            4: [random.randint(winwidth, winwidth + 100), random.randint(0, winheight)]  # Right
+            # Top
+            1: [random.randint(100, winwidth - 100),
+                random.randint(-150, -100)],
+            # Bot
+            2: [random.randint(100, winwidth - 100),
+                random.randint(winheight + 100, winheight + 100)],
+            # Left
+            3: [random.randint(-150, -100),
+                random.randint(0, winheight)],
+            # Right
+            4: [random.randint(winwidth, winwidth + 100),
+                random.randint(0, winheight)]
         }
         self.targets = {1: 2, 2: 1, 3: 4, 4: 3}
         self.spawn_point = spawn_point
         self.target = self.spawn_points[self.targets[self.spawn_point]]
         Timer.__init__(self)
-        self.direction = degrees(self.target[0], self.spawn_points[self.spawn_point][0], self.target[1], self.spawn_points[self.spawn_point][1])
+        self.direction = degrees(
+            self.target[0], self.spawn_points[self.spawn_point][0],
+            self.target[1], self.spawn_points[self.spawn_point][1]
+        )
         self.angles = angles_360(speed)
         self.orig_angles = self.angles
-        self.hitbox = pygame.Rect(self.spawn_points[spawn_point][0], self.spawn_points[spawn_point][1], size[0], size[1])
+        self.hitbox = pygame.Rect(
+            self.spawn_points[spawn_point][0],
+            self.spawn_points[spawn_point][1],
+            size[0], size[1]
+        )
         self.health = health
         self.max_health = self.health
         self.healthbar_len = 70
@@ -53,7 +69,7 @@ class Enemy(Timer):
         self.fire_rate = 0
 
     def move(self):
-        self.hitbox.move_ip(self.angles[self.direction])  # self.angles[int(self.direction)])
+        self.hitbox.move_ip(self.angles[self.direction])
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
 
     def border_collide(self):
@@ -87,7 +103,12 @@ class Enemy(Timer):
     def set_health(self, hp, color):
         self.health -= hp
         self.healthbar_len -= (self.healthbar_max_len / (self.max_health / hp))
-        Gfx.create_effect("dmg_txt", 4, (self.hitbox.center[0] + random.randint(-10, 10), self.hitbox.center[1] + random.randint(-10, 10)), hover=True, follow=True, dmg_text=hp, text_color=color)
+        Gfx.create_effect(
+            "dmg_txt", 4,
+            (self.hitbox.center[0] + random.randint(-10, 10),
+             self.hitbox.center[1] + random.randint(-10, 10)),
+            hover=True, follow=True, dmg_text=hp, text_color=color
+        )
         if self.health > self.max_health:
             self.health = self.max_health
 
@@ -105,29 +126,58 @@ class Enemy(Timer):
 
     def gfx_health_bar(self):
         if self.health < self.max_health:
-            pygame.draw.rect(win, (200, 0, 0), (pygame.Rect(self.hitbox.topleft[0], self.hitbox.topleft[1] - 30, self.healthbar_max_len, self.healthbar_height)))
+            pygame.draw.rect(win, (200, 0, 0),
+                             (pygame.Rect(self.hitbox.topleft[0],
+                                          self.hitbox.topleft[1] - 30,
+                                          self.healthbar_max_len,
+                                          self.healthbar_height
+                                          )))
             if not self.healthbar_len < 0:
-                pygame.draw.rect(win, (0, 200, 0), (pygame.Rect(self.hitbox.topleft[0], self.hitbox.topleft[1] - 30, self.healthbar_len, self.healthbar_height)))
+                pygame.draw.rect(win, (0, 200, 0),
+                                 (pygame.Rect(self.hitbox.topleft[0],
+                                              self.hitbox.topleft[1] - 30,
+                                              self.healthbar_len,
+                                              self.healthbar_height
+                                              )))
 
     def gfx_animation(self):
         animation_ticker = self.timer_animation_ticker(8)
-        gfx_angle = degrees(self.target[1], self.spawn_points[self.spawn_point][1], self.target[0], self.spawn_points[self.spawn_point][0])
+        gfx_angle = degrees(
+            self.target[1],
+            self.spawn_points[self.spawn_point][1],
+            self.target[0],
+            self.spawn_points[self.spawn_point][0]
+        )
         if animation_ticker < 4:
-            win.blit(gfx_rotate(self.sprites[self.gfx_idx[0]], gfx_angle), (self.hitbox.topleft[0] + self.gfx_hook[0], self.hitbox.topleft[1] + self.gfx_hook[1]))
+            win.blit(gfx_rotate(
+                self.sprites[self.gfx_idx[0]], gfx_angle),
+                (self.hitbox.topleft[0] + self.gfx_hook[0],
+                 self.hitbox.topleft[1] + self.gfx_hook[1])
+            )
         else:
-            win.blit(gfx_rotate(self.sprites[self.gfx_idx[1]], gfx_angle), (self.hitbox.topleft[0] + self.gfx_hook[0], self.hitbox.topleft[1] + self.gfx_hook[1]))
+            win.blit(gfx_rotate(
+                self.sprites[self.gfx_idx[1]], gfx_angle),
+                (self.hitbox.topleft[0] + self.gfx_hook[0],
+                 self.hitbox.topleft[1] + self.gfx_hook[1])
+            )
 
     def gfx_hit(self):
-        Gfx.create_effect("explosion_2", 2, (self.hitbox.topleft[0] - 120, self.hitbox.topleft[1] - 130), explo=True)
+        Gfx.create_effect(
+            "explosion_2", 2,
+            (self.hitbox.topleft[0] - 120, self.hitbox.topleft[1] - 130),
+            explo=True
+        )
 
     def drops(self):
-        it.Items.drop((self.hitbox.topleft), target=it.Item_upgrade_point_drop((100, 100, 100)))
+        it.Items.drop(
+            (self.hitbox.topleft), target=it.Item_upgrade_point_drop((100, 100, 100))
+        )
 
     def death(self):
         data.LEVELS.elite_spawn_time -= Enemy.ttk_ticker + self.ttk_bonus
         Enemy.ttk_ticker = 100
         data.TURRET.overdrive()
-        self.gfx_hit()  # Gfx.create_effect("enexplo", 5, (self.hitbox.topleft[0] - 20, self.hitbox.topleft[1] - 30))
+        self.gfx_hit()
         data.LEVELS.interval_score += self.score_amount
         data.LEVELS.display_score += self.score_amount
 
@@ -157,13 +207,13 @@ class Enemy(Timer):
         if Enemy.ttk_ticker > 0:
             Enemy.ttk_ticker -= 0.4
 
-        if not any((data.LEVELS.boss_fight, data.LEVELS.elite_fight, data.LEVELS.after_boss)):
-            # if len(data.ENEMY_DATA) == 0:
-            #     data.ENEMY_DATA.append(Asteroid())
+        if not any((
+            data.LEVELS.boss_fight,
+            data.LEVELS.elite_fight,
+            data.LEVELS.after_boss
+        )):
             if len(data.ENEMY_DATA) < data.LEVELS.enemy_amount:
                 data.ENEMY_DATA.append(Asteroid())
-                # data.ENEMY_DATA.append(*random.random.choices([Asteroid(), Jumper(), Shooter(), Seeker(), Strafer(), Miner(), Mine_layer()], weights=[70, c, c, c, c, c, c]))
-                # data.ENEMY_DATA.append(Shooter())
             if timer.trigger(Enemy.spez_spawn_time):
                 data.ENEMY_DATA.append(random.choice(cls.spez_spawn_table)())
 
@@ -173,10 +223,17 @@ data.ENEMY = Enemy
 
 class Asteroid(Enemy):
 
-    # direction, speed, spawn_point, health, size, gfx_idx, gfx_hook
     def __init__(self, event=False):
-        super().__init__(random.randint(0, 360), random.randint(2, 8), random.randint(1, 4), Enemy.health, (80, 80), 0, (0, 0), Enemy.asteroid_sprites)
-        # self.animation_speed = {self.speed + 1 - i: i * 15 for i in range(1, self.speed + 1)}[self.speed]
+        super().__init__(
+            random.randint(0, 360),
+            random.randint(2, 8),
+            random.randint(1, 4),
+            Enemy.health,
+            (80, 80),
+            0,
+            (0, 0),
+            Enemy.asteroid_sprites
+        )
         self.gfx_offset = [8 * i for i in range(8)]
         self.gfx_idx = random.choice([0, 4, 64, 68])
         self.orig_gfx_idx = self.gfx_idx
@@ -186,9 +243,13 @@ class Asteroid(Enemy):
         #     self.animation_speed = 6
 
     def gfx_animation(self):
-        # Weil die Bilder in eine beschissenne reinfolge sind muss der schmutz hier gemacht werden Big OOF
+        # Weil die Bilder in eine beschissenne reinfolge sind
+        # muss der schmutz hier gemacht werden Big OOF
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
-        win.blit(Enemy.asteroid_sprites[self.gfx_idx + self.gfx_offset[self.frame_counter]], (self.hitbox.topleft[0] - 25, self.hitbox.topleft[1] - 25))
+        win.blit(
+            Enemy.asteroid_sprites[self.gfx_idx + self.gfx_offset[self.frame_counter]],
+            (self.hitbox.topleft[0] - 25, self.hitbox.topleft[1] - 25)
+        )
         if self.trigger(self.animation_speed):
             self.frame_counter += 1
             if self.frame_counter == 8:
@@ -201,20 +262,37 @@ class Asteroid(Enemy):
 class Jumper(Enemy):
 
     def __init__(self):
-        super().__init__(random.randint(0, 360), random.randint(2, 8), random.randint(1, 4), Enemy.health, (70, 70), 0, (0, 0), Enemy.asteroid_sprites)
+        super().__init__(
+            random.randint(0, 360),
+            random.randint(2, 8),
+            random.randint(1, 4),
+            Enemy.health,
+            (70, 70),
+            0,
+            (0, 0),
+            Enemy.asteroid_sprites
+        )
         self.score_amount = 7
         self.ttk_bonus = 30
-        self.animation_speed = {self.speed + 1 - i: i * 15 for i in range(1, self.speed + 1)}[self.speed]
+        self.animation_speed = {
+            self.speed + 1 - i: i * 15 for i in range(1, self.speed + 1)
+        }[self.speed]
 
     def gfx_animation(self):
-        animation_ticker = self.timer_animation_ticker(self.animation_speed * len(Enemy.asteroid_sprites))
+        animation_ticker = self.timer_animation_ticker(
+            self.animation_speed * len(Enemy.asteroid_sprites)
+        )
         if animation_ticker == (self.animation_speed * len(Enemy.asteroid_sprites)):  # 480
             self.gfx_idx = 0
         if animation_ticker % self.animation_speed == 0:
             self.gfx_idx += 1
             if self.gfx_idx == len(Enemy.asteroid_sprites):
                 self.gfx_idx = 0
-        win.blit(Enemy.asteroid_sprites[self.gfx_idx], (self.hitbox.topleft[0] - 8, self.hitbox.topleft[1] - 15))
+        win.blit(
+            Enemy.asteroid_sprites[self.gfx_idx],
+            (self.hitbox.topleft[0] - 8,
+             self.hitbox.topleft[1] - 15)
+        )
         if self.timer_trigger(60):
             Gfx.create_effect("lightning", 8, anchor=self.hitbox, follow=True, x=-30, y=-30)
 
@@ -226,7 +304,16 @@ class Jumper(Enemy):
 class Shooter(Enemy):
 
     def __init__(self):
-        super().__init__(random.randint(0, 359), random.randint(4, 6), random.randint(1, 4), Enemy.health + 2, (80, 80), (2, 3), (0, 0), Enemy.spez_sprites)
+        super().__init__(
+            random.randint(0, 359),
+            random.randint(4, 6),
+            random.randint(1, 4),
+            Enemy.health + 2,
+            (80, 80),
+            (2, 3),
+            (0, 0),
+            Enemy.spez_sprites
+        )
         self.score_amount = 8
         self.shot_angles = angles_360(8)
         self.fire_rate = random.randint(80, 140)
@@ -249,14 +336,29 @@ class Shooter(Enemy):
 class Seeker(Enemy):
 
     def __init__(self):
-        super().__init__(random.randint(0, 360), 4, random.randint(1, 4), Enemy.health + 2, (80, 80), (8, 9), (-40, -30), Enemy.spez_sprites)
+        super().__init__(
+            random.randint(0, 360),
+            4,
+            random.randint(1, 4),
+            Enemy.health + 2,
+            (80, 80),
+            (8, 9),
+            (-40, -30),
+            Enemy.spez_sprites
+        )
         self.score_amount = 6
         self.ttk_bonus = 20
         self.target = data.PLAYER.hitbox
 
     def skill(self):
-        self.direction = degrees(data.PLAYER.hitbox.center[0], self.spawn_points[self.spawn_point][0], data.PLAYER.hitbox.center[1], self.spawn_points[self.spawn_point][1])
-        if abs(data.PLAYER.hitbox.center[0] - self.hitbox.center[0]) > 20 or abs(data.PLAYER.hitbox.center[1] - self.hitbox.center[1]) > 20:
+        self.direction = degrees(
+            data.PLAYER.hitbox.center[0],
+            self.spawn_points[self.spawn_point][0],
+            data.PLAYER.hitbox.center[1],
+            self.spawn_points[self.spawn_point][1]
+        )
+        if any([abs(data.PLAYER.hitbox.center[0] - self.hitbox.center[0]) > 20,
+                abs(data.PLAYER.hitbox.center[1] - self.hitbox.center[1]) > 20]):
             self.spawn_points[self.spawn_point][0] = self.hitbox.center[0]
             self.spawn_points[self.spawn_point][1] = self.hitbox.center[1]
 
@@ -264,7 +366,16 @@ class Seeker(Enemy):
 class Strafer(Enemy):
 
     def __init__(self):
-        super().__init__(random.randint(0, 360), 8, random.randint(1, 4), Enemy.health + 2, (80, 80), (15, 16), (0, 0), Enemy.spez_sprites)
+        super().__init__(
+            random.randint(0, 360),
+            8,
+            random.randint(1, 4),
+            Enemy.health + 2,
+            (80, 80),
+            (15, 16),
+            (0, 0),
+            Enemy.spez_sprites
+        )
         self.score_amount = 10
         self.shot_angles = angles_360(12)
         self.fire_rate = 20
@@ -286,7 +397,16 @@ class Strafer(Enemy):
 class Miner(Enemy):
 
     def __init__(self):
-        super().__init__(0, 5, random.randint(1, 4), Enemy.health + 2, (80, 80), 0, (0, 0), Enemy.spez_sprites)
+        super().__init__(
+            0,
+            5,
+            random.randint(1, 4),
+            Enemy.health + 2,
+            (80, 80),
+            0,
+            (0, 0),
+            Enemy.spez_sprites
+        )
         self.score_amount = 8
         self.fire_rate = 100
         self.ttk_bonus = 50
@@ -305,7 +425,16 @@ class Miner(Enemy):
 class Mine_layer(Enemy):
 
     def __init__(self):
-        super().__init__(0, 4, random.randint(1, 4), Enemy.health + 2, (80, 80), (17, 18), (0, 0), Enemy.spez_sprites)
+        super().__init__(
+            0,
+            4,
+            random.randint(1, 4),
+            Enemy.health + 2,
+            (80, 80),
+            (17, 18),
+            (0, 0),
+            Enemy.spez_sprites
+        )
         self.score_amount = 8
         self.fire_rate = 150
         self.ttk_bonus = 50

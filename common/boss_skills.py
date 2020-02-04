@@ -17,10 +17,14 @@ class Boss_skills(Timer):
         self.missile_retarget_trigger = 90
         self.mg_angle = 0
         self.main_gun_angles = angles_360(35)
-        self.salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 10))])
+        self.salvo_start_point = iter(
+            [i for i in range(0, self.size[1], int(self.size[1] / 10))]
+        )
         self.delta_salvo_limit = (i for i in range(6))
         self.wave_motion_limit = (i for i in range(5))
-        self.dart_salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 5))])
+        self.dart_salvo_start_point = iter(
+            [i for i in range(0, self.size[1], int(self.size[1] / 5))]
+        )
         self.dummy_targets = [[400, 0], [400, winheight / 2], [400, winheight]]
         self.dart_missiles = 6
         self.jump_charge = False
@@ -56,39 +60,73 @@ class Boss_skills(Timer):
     def skill_star_shot(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 5):
             for i in range(0, 359, 22):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 12, angle=i))
+                data.ENEMY_PROJECTILE_DATA.append(
+                    Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 12, angle=i)
+                )
 
     def skill_salvo_alpha(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 3):
             for i in range(0, self.size[1], int(self.size[1] / 10)):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topleft[0], self.hitbox.topleft[1] + i), 1, "bo_salvo", 12, angle=180))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                    10, (6, 6),
+                    (self.hitbox.topleft[0], self.hitbox.topleft[1] + i),
+                    1, "bo_salvo", 12, angle=180)
+                )
             for i in range(0, self.size[1], int(self.size[1] / 10)):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topright[0], self.hitbox.topright[1] + i), 1, "bo_salvo", 12, angle=0))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                    10, (6, 6),
+                    (self.hitbox.topright[0], self.hitbox.topright[1] + i),
+                    1, "bo_salvo", 12, angle=0)
+                )
 
     def skill_salvo_bravo(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 5):
             for i in range(135, 226, 9):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 12, angle=i))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                    10, (6, 6), self.hitbox.center, 1,
+                    "enemy", 12, angle=i)
+                )
             for i in range(0, 45, 9):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 12, angle=i))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                    10, (6, 6), self.hitbox.center, 1,
+                    "enemy", 12, angle=i)
+                )
             for i in range(315, 360, 9):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "enemy", 12, angle=i))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                    10, (6, 6), self.hitbox.center,
+                    1, "enemy", 12, angle=i)
+                )
 
     def skill_salvo_charlie(self, **kwargs):
         if self.timer_key_delay(limit=self.fire_rate * 3, key="salvo_c"):
             if self.timer_trigger(5):
                 shot_sp = next(self.salvo_start_point, "stop")
                 if shot_sp == "stop":
-                    self.salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 10))])
+                    self.salvo_start_point = iter(
+                        [i for i in range(0, self.size[1], int(self.size[1] / 10))]
+                    )
                     self.timer_key_delay(reset=True, key="salvo_c")
                 else:
-                    data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topleft[0], self.hitbox.topleft[1] + shot_sp), 1, "bo_salvo", 12, angle=180))
-                    data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), (self.hitbox.topright[0], self.hitbox.topright[1] + shot_sp), 1, "bo_salvo", 12, angle=0))
+                    data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                        10, (6, 6),
+                        (self.hitbox.topleft[0], self.hitbox.topleft[1] + shot_sp),
+                        1, "bo_salvo", 12, angle=180)
+                    )
+                    data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                        10, (6, 6),
+                        (self.hitbox.topright[0], self.hitbox.topright[1] + shot_sp),
+                        1, "bo_salvo", 12, angle=0)
+                    )
 
     def skill_salvo_delta(self, **kwargs):
         if self.timer_key_delay(limit=self.fire_rate * 3, key="salvo_d"):
             if self.timer_trigger(5):
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(15, (6, 6), (self.hitbox.center[0], self.hitbox.center[1]), 1, "bo_salvo", 12, target=data.PLAYER.hitbox))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                    15, (6, 6),
+                    (self.hitbox.center[0], self.hitbox.center[1]),
+                    1, "bo_salvo", 12,
+                    target=data.PLAYER.hitbox)
+                )
                 limit = next(self.delta_salvo_limit, "stop")
                 if limit == "stop":
                     self.timer_key_delay(reset=True, key="salvo_d")
@@ -113,7 +151,11 @@ class Boss_skills(Timer):
     def skill_volley(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 3):
             for i in [-5, 0, 5]:
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(10, (6, 6), self.hitbox.center, 1, "benemy", 12, angle_variation=i, target=data.PLAYER.hitbox))
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                    10, (6, 6), self.hitbox.center,
+                    1, "benemy", 12,
+                    angle_variation=i, target=data.PLAYER.hitbox)
+                )
 
     def skill_jumpdrive(self, **kwargs):
         if not self.jump_charge:
@@ -133,7 +175,9 @@ class Boss_skills(Timer):
             elif self.__class__.__name__ == "Elite":
                 pygame.draw.rect(win, (0, 0, 100), pygame.Rect(self.jump_point, self.size))
             if self.timer_trigger(60):
-                Gfx.create_effect("jump", 2, (self.hitbox.topleft[0] - 40, self.hitbox.topleft[1] - 40))
+                Gfx.create_effect(
+                    "jump", 2, (self.hitbox.topleft[0] - 40, self.hitbox.topleft[1] - 40)
+                )
                 self.hitbox.topleft = self.jump_point
                 self.jump_charge = False
 
@@ -164,14 +208,20 @@ class Boss_skills(Timer):
                 ))
                 self.timer_key_delay(reset=True, key="main_gun")
                 if target is not data.PLAYER.hitbox:
-                    self.target = random.choice([(random.randint(0, winwidth), random.randint(0, winheight), data.PLAYER.hitbox.center)])
+                    self.target = random.choice([
+                        (random.randint(0, winwidth),
+                         random.randint(0, winheight),
+                         data.PLAYER.hitbox.center)
+                    ])
 
     def skill_dart_missiles(self):
         if self.timer_key_delay(limit=self.fire_rate * 15, key="darts"):
             if self.trigger(60):
                 shot_sp = next(self.dart_salvo_start_point, "stop")
                 if shot_sp == "stop":
-                    self.dart_salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / 5))])
+                    self.dart_salvo_start_point = iter(
+                        [i for i in range(0, self.size[1], int(self.size[1] / 5))]
+                    )
                     print(self.timer_calls_per_tick)
                     self.timer_key_delay(reset=True, key="darts")
                 else:
@@ -221,7 +271,12 @@ class Boss_skills(Timer):
 
     def skill_chaser(self):
         if not self.chaser_hit:
-            self.hitbox.move_ip(self.angles[degrees(data.PLAYER.hitbox.center[0], self.hitbox.center[0], data.PLAYER.hitbox.center[1], self.hitbox.center[1])])
+            self.hitbox.move_ip(self.angles[degrees(
+                data.PLAYER.hitbox.center[0],
+                self.hitbox.center[0],
+                data.PLAYER.hitbox.center[1],
+                self.hitbox.center[1]
+            )])
         else:
             if self.timer_trigger(300):
                 self.chaser_hit = False
@@ -240,9 +295,13 @@ class Boss_skills(Timer):
 # Frigatte Skills
 
     def skill_turret_defence_matrix(self):
-        turret_amount = len([e.set_sp_dmg() for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_turret"])
+        turret_amount = len([
+            e.set_sp_dmg() for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_turret"
+        ])
         if turret_amount > 0:
-            self.special_take_damage = lambda dmg, a=turret_amount: [e.set_health((dmg / a), (200, 0, 200)) for e in data.ENEMY_DATA]
+            self.special_take_damage = lambda dmg, a=turret_amount: [
+                e.set_health((dmg / a), (200, 0, 200)) for e in data.ENEMY_DATA
+            ]
         if self.timer_delay(limit=600):
             if turret_amount == 0:
                 self.skills_lst.remove(self.skill_turret_defence_matrix)
@@ -265,7 +324,9 @@ class Boss_skills(Timer):
     def skill_missile_barrage(self, limiter):
         self.special_move = True
         self.hide_health_bar = True
-        self.hitbox.move_ip(self.angles[degrees(1000, self.hitbox.center[0], 500, self.hitbox.center[1])])
+        self.hitbox.move_ip(self.angles[
+            degrees(1000, self.hitbox.center[0], 500, self.hitbox.center[1])
+        ])
         # if abs(1000 - self.hitbox.center[0]) < 10 or abs(500 - self.hitbox.center[1]) < 10:
         if self.hitbox.collidepoint((1000, 500)):
             if limiter.run_block_once():
@@ -284,7 +345,9 @@ class Boss_skills(Timer):
                     location=loc,
                     explo_size=100,
                     damage=3,
-                    explosion_effect=lambda loc: Gfx.create_effect("explosion_4", 2, (loc[0] - 60, loc[1] - 60), explo=True)
+                    explosion_effect=lambda loc: Gfx.create_effect(
+                        "explosion_4", 2, (loc[0] - 60, loc[1] - 60), explo=True
+                    )
                 ))
             ))
         if len([e for e in data.ENEMY_DATA if e.__class__.__name__ == "Boss_weakspot"]) == 0:
@@ -298,7 +361,9 @@ class Boss_skills(Timer):
     def skill_main_gun_salvo(self, limiter):
         self.special_move = True
         self.hide_health_bar = True
-        self.hitbox.move_ip(self.angles[degrees(1000, self.hitbox.center[0], 500, self.hitbox.center[1])])
+        self.hitbox.move_ip(self.angles[degrees(
+            1000, self.hitbox.center[0], 500, self.hitbox.center[1]
+        )])
         # if abs(1000 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
         if self.hitbox.collidepoint((1000, 500)):
             if limiter.run_block_once():
@@ -317,7 +382,9 @@ class Boss_skills(Timer):
     def skill_laser_storm_laststand(self, limiter):
         self.special_move = True
         # self.hide_health_bar = True
-        self.hitbox.move_ip(self.angles[degrees(1850, self.hitbox.center[0], 500, self.hitbox.center[1])])
+        self.hitbox.move_ip(self.angles[degrees(
+            1850, self.hitbox.center[0], 500, self.hitbox.center[1]
+        )])
         # if abs(1850 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
         if self.hitbox.collidepoint((1880, 500)):
             if limiter.run_block_once():
@@ -334,7 +401,9 @@ class Boss_skills(Timer):
     @run_limiter
     def skill_dart_missile_last_stand(self, limiter):
         self.special_move = True
-        self.hitbox.move_ip(self.angles[degrees(1880, self.hitbox.center[0], 500, self.hitbox.center[1])])
+        self.hitbox.move_ip(self.angles[degrees(
+            1880, self.hitbox.center[0], 500, self.hitbox.center[1]
+        )])
         # if abs(1880 - self.hitbox.center[0]) < 30 or abs(500 - self.hitbox.center[1]) < 30:
         if self.hitbox.collidepoint((1880, 500)):
             if limiter.run_block_once():
@@ -348,7 +417,9 @@ class Boss_skills(Timer):
                     if shot_sp == "stop":
                         if self.dart_missiles <= 40:
                             self.dart_missiles += 4
-                        self.dart_salvo_start_point = iter([i for i in range(0, self.size[1], int(self.size[1] / self.dart_missiles))])
+                        self.dart_salvo_start_point = iter(
+                            [i for i in range(0, self.size[1], int(self.size[1] / self.dart_missiles))]
+                        )
                         print(self.timer_calls_per_tick)
                         self.timer_key_delay(reset=True, key="darts2")
                     else:
@@ -427,7 +498,11 @@ class Boss_skills(Timer):
                 if self.turn_angle != 359:  # 91 ticks zum drehen
                     self.gun_position[0] += 0.54
                     self.gun_position[1] += 0.73
-            win.blit(rot_center(self.sprites[self.gfx_idx[0]], self.turn_angle), (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+            win.blit(rot_center(self.sprites[
+                self.gfx_idx[0]], self.turn_angle),
+                (self.hitbox.center[0] + self.gfx_hook[0],
+                 self.hitbox.center[1] + self.gfx_hook[1])
+            )
         else:
             self.special_gfx = False
 
@@ -457,7 +532,11 @@ class Boss_skills(Timer):
                 if self.turn_angle != 270:  # 91 ticks zum drehen
                     self.gun_position[0] -= 0.54
                     self.gun_position[1] -= 0.73
-            win.blit(rot_center(self.sprites[self.gfx_idx[0]], self.turn_angle), (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+            win.blit(rot_center(self.sprites[
+                self.gfx_idx[0]], self.turn_angle),
+                (self.hitbox.center[0] + self.gfx_hook[0],
+                 self.hitbox.center[1] + self.gfx_hook[1])
+            )
 
             if self.timer_trigger(30):
                 for dummy in self.dummy_targets:

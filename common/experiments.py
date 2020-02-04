@@ -66,11 +66,5 @@ import random
 # for _ in range(5):
 #     print(next(x))
 
-i = 0
-count = 0
-while i < 100:
-    i += 1
-    if random.randint(0, 100) > 95:
-        count += 1
-
-print(count)
+if any([True == False, True == True]):
+    print("oof")
