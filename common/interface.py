@@ -38,27 +38,45 @@ class Interface:
 
     def draw(self, item=False, key=0):
         if item:
-            win.blit(Interface.item_sprites[self.icon_idx], (self.rect.topleft[0] - 50, self.rect.topleft[1] - 8))
-            win.blit(Interface.item_lvl_sprites[self.item_lvl_gfx_idx[Items.inventory_dic[key].lvl]], (self.rect.topleft[0] - 53, self.rect.topleft[1] - 16))
+            win.blit(
+                Interface.item_sprites[self.icon_idx],
+                (self.rect.topleft[0] - 50,
+                 self.rect.topleft[1] - 8)
+            )
+            win.blit(
+                Interface.item_lvl_sprites[self.item_lvl_gfx_idx[Items.inventory_dic[key].lvl]],
+                (self.rect.topleft[0] - 53,
+                 self.rect.topleft[1] - 16)
+            )
         else:
-            win.blit(Interface.icon_sprites[self.icon_idx], (self.rect.topleft[0] - 50, self.rect.topleft[1] - 8))
+            win.blit(
+                Interface.icon_sprites[self.icon_idx],
+                (self.rect.topleft[0] - 50,
+                 self.rect.topleft[1] - 8)
+            )
         self.text_render = self.font.render(self.text, True, self.color)
         win.blit(self.text_render, self.rect)
 
     @classmethod
     def update_inter_item(cls):
         if Items.inventory_dic[0] is not None:
-            Interface((255, 255, 255), (65, 150), Items.inventory_dic[0].gfx_idx[0], 20, Items.inventory_dic[0].text).draw(item=True, key=0)
+            Interface((255, 255, 255), (65, 150), Items.inventory_dic[0].gfx_idx[0],
+                      20, Items.inventory_dic[0].text).draw(item=True, key=0)
         if Items.inventory_dic[1] is not None:
-            Interface((255, 255, 255), (65, 200), Items.inventory_dic[1].gfx_idx[0], 20, Items.inventory_dic[1].text).draw(item=True, key=1)
+            Interface((255, 255, 255), (65, 200), Items.inventory_dic[1].gfx_idx[0],
+                      20, Items.inventory_dic[1].text).draw(item=True, key=1)
         if Items.inventory_dic[2] is not None:
-            Interface((255, 255, 255), (65, 250), Items.inventory_dic[2].gfx_idx[0], 20, Items.inventory_dic[2].text).draw(item=True, key=2)
+            Interface((255, 255, 255), (65, 250), Items.inventory_dic[2].gfx_idx[0],
+                      20, Items.inventory_dic[2].text).draw(item=True, key=2)
         if Items.inventory_dic[3] is not None:
-            Interface((255, 255, 255), (65, 300), Items.inventory_dic[3].gfx_idx[0], 20, Items.inventory_dic[3].text).draw(item=True, key=3)
+            Interface((255, 255, 255), (65, 300), Items.inventory_dic[3].gfx_idx[0],
+                      20, Items.inventory_dic[3].text).draw(item=True, key=3)
         if Items.inventory_dic[4] is not None:
-            Interface((255, 255, 255), (65, 350), Items.inventory_dic[4].gfx_idx[0], 20, Items.inventory_dic[4].text).draw(item=True, key=4)
+            Interface((255, 255, 255), (65, 350), Items.inventory_dic[4].gfx_idx[0],
+                      20, Items.inventory_dic[4].text).draw(item=True, key=4)
         if Items.inventory_dic[5] is not None:
-            Interface((255, 255, 255), (65, 400), Items.inventory_dic[5].gfx_idx[0], 20, Items.inventory_dic[5].text).draw(item=True, key=5)
+            Interface((255, 255, 255), (65, 400), Items.inventory_dic[5].gfx_idx[0],
+                      20, Items.inventory_dic[5].text).draw(item=True, key=5)
 
     @classmethod
     def update_inter(cls):
@@ -124,8 +142,12 @@ class Interface:
                 f"{int(Active_Items.cd_reduction * 100)} %  ++ Cooldown reduction"
 
             ]
-            rects = [pygame.Rect(winwidth / 2 - 350 / 2, (winheight - 300) / 2 + i, 350, 30) for i in range(0, len(texts) * 30 + 1, 30)]
-            render_lst = [(idx, font.render(text, False, (255, 255, 255)), rect) for idx, rect, text in zip([i for i in range(len(rects))], rects, texts)]
+            rects = [
+                pygame.Rect(winwidth / 2 - 350 / 2, (winheight - 300) / 2 + i, 350, 30) for i in range(0, len(texts) * 30 + 1, 30)
+            ]
+            render_lst = [
+                (idx, font.render(text, False, (255, 255, 255)), rect) for idx, rect, text in zip([i for i in range(len(rects))], rects, texts)
+            ]
 
             win.blit(Interface.icon_sprites[14], (700, 250))
             for event in pygame.event.get():
@@ -139,7 +161,11 @@ class Interface:
                         upgrades_pressed = False
                         # return
 
-            for standart_item, loc in [(data.PLAYER.shield, (65, 900)), (data.PLAYER.jumpdrive, (65, 800)), (data.PLAYER.afterburner, (65, 700))]:
+            for standart_item, loc in [
+                (data.PLAYER.shield, (65, 900)),
+                (data.PLAYER.jumpdrive, (65, 800)),
+                (data.PLAYER.afterburner, (65, 700))
+            ]:
                 standart_item.hitbox.center = loc
                 standart_item.draw()
                 standart_item.gfx_draw()
@@ -189,7 +215,9 @@ class Interface:
 
             # Items
 
-            win.blit(font.render(f"Upgrade Points: {Items.upgrade_points}", False, (255, 255, 255)), (250, 250))
+            win.blit(font.render(
+                f"Upgrade Points: {Items.upgrade_points}", False, (255, 255, 255)), (250, 250)
+            )
 
             for slot in Interface.inventory_grid_lst:
                 pygame.draw.rect(win, (40, 40, 40), slot)
@@ -238,9 +266,12 @@ class Interface:
         pygame.mouse.set_visible(True)
         # Interface(color, location, icon_idx, font_size)
         menu_buttons = [
-            Interface((255, 255, 255), (800, 300), 15, 70, text="Start Game", button_size=(400, 80)),
-            Interface((255, 255, 255), (800, 500), 15, 70, text="Highscore(WIP)", button_size=(400, 80)),
-            Interface((255, 255, 255), (800, 700), 15, 70, text="Options(WIP)", button_size=(400, 80))
+            Interface((255, 255, 255), (800, 300), 15, 70,
+                      text="Start Game", button_size=(400, 80)),
+            Interface((255, 255, 255), (800, 500), 15, 70,
+                      text="Highscore(WIP)", button_size=(400, 80)),
+            Interface((255, 255, 255), (800, 700), 15, 70,
+                      text="Options(WIP)", button_size=(400, 80))
         ]
 
         while menu_pressed:

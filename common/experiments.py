@@ -65,6 +65,3 @@ import random
 
 # for _ in range(5):
 #     print(next(x))
-
-if any([True == False, True == True]):
-    print("oof")

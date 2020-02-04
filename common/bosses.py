@@ -63,7 +63,12 @@ class Bosses(Shooter, Boss_skills):
         self.special_move = False
         self.special_gfx = False
         self.hide_health_bar = False
-        self.engine = {"right": (-105, -10), "down": (-19, -153), "up": (-15, 90), "left": (70, -10)}
+        self.engine = {
+            "right": (-105, -10),
+            "down": (-19, -153),
+            "up": (-15, 90),
+            "left": (70, -10)
+        }
 
     def gfx_animation(self):
         if self.angles[0][0] > 0:
@@ -546,6 +551,12 @@ class Boss_cruiser(Bosses):
         self.turn_angle = 359
         self.drop_amount = 1
         super().__init__()
+        self.engine = {
+            "right": (-105, -10),
+            "down": (-19, -153),
+            "up": (-15, 90),
+            "left": (70, -10)
+        }
 
     def phase_1(self):
 
@@ -704,11 +715,12 @@ class Boss_battleship(Bosses):
         self.turn_angles_2 = (270 + i for i in range(0, 91))
         self.turn_angle = 359
         super().__init__()
-        self.engine = {"right": (-105, -10),
-                       "down": (-19, -153),
-                       "up": (-15, 90),
-                       "left": (70, -10)
-                       }
+        self.engine = {
+            "right": (-105, -10),
+            "down": (-19, -153),
+            "up": (-15, 90),
+            "left": (70, -10)
+        }
         self.gun_position = [-33, 30]  # turned position = [-83, -33]
 
     def phase_1(self):

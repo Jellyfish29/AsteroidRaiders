@@ -44,9 +44,17 @@ class Phenomenon(Timer):
     def gfx_draw(self):
         animation_ticker = self.timer_animation_ticker(10)
         if animation_ticker < 5:
-            win.blit(Phenomenon.phenom_sprites[self.gfx_idx[0]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+            win.blit(
+                Phenomenon.phenom_sprites[self.gfx_idx[0]],
+                (self.hitbox.center[0] + self.gfx_hook[0],
+                 self.hitbox.center[1] + self.gfx_hook[1])
+            )
         else:
-            win.blit(Phenomenon.phenom_sprites[self.gfx_idx[1]], (self.hitbox.center[0] + self.gfx_hook[0], self.hitbox.center[1] + self.gfx_hook[1]))
+            win.blit(
+                Phenomenon.phenom_sprites[self.gfx_idx[1]],
+                (self.hitbox.center[0] + self.gfx_hook[0],
+                 self.hitbox.center[1] + self.gfx_hook[1])
+            )
 
     def destroy(self):
         return self.kill
@@ -75,7 +83,6 @@ class Phenomenon(Timer):
                 if timer.trigger(Phenomenon.spawn_time):
                     if len(data.PHENOMENON_DATA) < Phenomenon.amount:
                         data.PHENOMENON_DATA.append(random.choice(cls.phenomenon_spawn_table)())
-# Anti_gravity_well(),Planet(), Gravity_well(), Nebulae_fire_rate_plus(), Repair_station(), Nabulae_aoe_damage()
 
 
 data.PHENOM = Phenomenon
@@ -112,7 +119,16 @@ class Wormhole(Phenomenon):
 
 class Gravity_well(Phenomenon):
 
-    def __init__(self, speed=1, size=(500, 500), gfx_idx=(1, 1), gfx_hook=(-300, -300), decay=None, location=None, flag="phenom"):
+    def __init__(
+            self,
+            speed=1,
+            size=(500, 500),
+            gfx_idx=(1, 1),
+            gfx_hook=(-300, -300),
+            decay=None,
+            location=None,
+            flag="phenom"
+    ):
         super().__init__(speed, size, gfx_idx, gfx_hook, flag=flag, decay=decay)
         self.new_d = directions(2)
         self.new_a = angles_360(2)
@@ -144,7 +160,17 @@ class Gravity_well(Phenomenon):
 
 class Black_hole(Phenomenon):
 
-    def __init__(self, speed=0, size=(300, 300), gfx_idx=(0, 0), gfx_hook=(-150, -150), decay=300, location=None, flag="phenom", damage=1):
+    def __init__(
+            self,
+            speed=0,
+            size=(300, 300),
+            gfx_idx=(0, 0),
+            gfx_hook=(-150, -150),
+            decay=300,
+            location=None,
+            flag="phenom",
+            damage=1
+    ):
         super().__init__(speed, size, gfx_idx, gfx_hook, flag=flag, decay=decay)
         # self.new_d = directions(2)
         self.new_a = angles_360(6)
@@ -165,8 +191,14 @@ class Black_hole(Phenomenon):
                         pass
                     else:
                         obj.angles = self.new_a
-                        obj.direction = degrees(self.hitbox.center[0], obj.hitbox.center[0], self.hitbox.center[1], obj.hitbox.center[1])
-                if abs(obj.hitbox.center[0] - self.hitbox.center[0]) < 5 or abs(obj.hitbox.center[1] - self.hitbox.center[1]) < 5:
+                        obj.direction = degrees(
+                            self.hitbox.center[0],
+                            obj.hitbox.center[0],
+                            self.hitbox.center[1],
+                            obj.hitbox.center[1]
+                        )
+                if any([abs(obj.hitbox.center[0] - self.hitbox.center[0]) < 5,
+                        abs(obj.hitbox.center[1] - self.hitbox.center[1]) < 5]):
                     try:
                         obj.take_damage(self.damage, staggered=True)
                     except AttributeError:

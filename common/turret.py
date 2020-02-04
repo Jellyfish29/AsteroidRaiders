@@ -93,7 +93,8 @@ class Turret:
                             location=loc,
                             explo_size=400,
                             damage=1.5 + data.PLAYER.damage * 0.5 + int(cls.fire_rate),
-                            explosion_effect=lambda loc: Gfx.create_effect("explosion_1", 3, (loc[0] - 400, loc[1] - 400), explo=True)
+                            explosion_effect=lambda loc: Gfx.create_effect(
+                                "explosion_1", 3, (loc[0] - 400, loc[1] - 400), explo=True)
                         ))
                     ))
                     data.ITEMS.get_item(flag="nuke").engage = False
@@ -155,7 +156,8 @@ class Turret:
     def point_defence(cls, enemy, timer):
         if "point_defence" in data.ITEMS.active_flag_lst:
             if data.ITEMS.get_item(flag="point_defence").active:
-                pd_envelope = pygame.Rect(data.PLAYER.hitbox.center[0] - 200, data.PLAYER.hitbox.center[1] - 200, 400, 400)
+                pd_envelope = pygame.Rect(
+                    data.PLAYER.hitbox.center[0] - 200, data.PLAYER.hitbox.center[1] - 200, 400, 400)
                 # pygame.draw.rect(win, (255, 255, 0), pd_envelope)
                 if pd_envelope.colliderect(enemy):
                     if timer.trigger(6):
@@ -208,7 +210,8 @@ class Turret:
                         location=l,
                         explo_size=70,
                         damage=data.PLAYER.damage * 0.2,
-                        explosion_effect=lambda loc: Gfx.create_effect("explosion_4", 2, (loc[0] - 90, loc[1] - 90), explo=True)
+                        explosion_effect=lambda loc: Gfx.create_effect(
+                            "explosion_4", 2, (loc[0] - 90, loc[1] - 90), explo=True)
                     ))
                 ))
                 return True
@@ -368,14 +371,22 @@ class Turret:
     @classmethod
     def gfx_gun_draw(cls):
         win.blit(rot_center(
-            data.PLAYER.ship_sprites[18], degrees(pygame.mouse.get_pos()[1], data.PLAYER.hitbox.center[1], pygame.mouse.get_pos()[0], data.PLAYER.hitbox.center[0])),
+            data.PLAYER.ship_sprites[18], degrees(
+                pygame.mouse.get_pos()[1],
+                 data.PLAYER.hitbox.center[1],
+                 pygame.mouse.get_pos()[0],
+                 data.PLAYER.hitbox.center[0])
+        ),
             (data.PLAYER.hitbox.center[0] - 17, data.PLAYER.hitbox.center[1] - 6))
 
     @classmethod
     def gfx_pd_draw(cls):
         if "point_defence" in data.ITEMS.active_flag_lst:
             if data.ITEMS.get_item(flag="point_defence").active:
-                win.blit(cls.projectile_sprites[7], (data.PLAYER.hitbox.topleft[0] - 190, data.PLAYER.hitbox.topleft[1] - 220))
+                win.blit(
+                    cls.projectile_sprites[7],
+                    (data.PLAYER.hitbox.topleft[0] - 190, data.PLAYER.hitbox.topleft[1] - 220)
+                )
 
     @classmethod
     def update(cls):

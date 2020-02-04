@@ -41,7 +41,16 @@ class Player:
     max_shield_strength = 2
     # Gfx
     gfx_idx = {
-        "up": 0, "down": 2, "right": 4, "left": 6, "right up": 8, "right down": 10, "left up": 12, "left down": 14, "idle": 16}
+        "up": 0,
+        "down": 2,
+        "right": 4,
+        "left": 6,
+        "right up": 8,
+        "right down": 10,
+        "left up": 12,
+        "left down": 14,
+        "idle": 16
+    }
     ship_sprites = get_images("player_ship")
     gfx_ticker = 0
     # Time
@@ -96,7 +105,8 @@ class Player:
     @classmethod
     def use_heal(cls):
         if cls.heal_amount > 0 and cls.health < cls.max_health:
-            Gfx.create_effect("heal", 20, (cls.hitbox.topleft[0] - 25, cls.hitbox.topleft[1] - 25), hover=True)
+            Gfx.create_effect(
+                "heal", 20, (cls.hitbox.topleft[0] - 25, cls.hitbox.topleft[1] - 25), hover=True)
             cls.heal_amount -= 1
             cls.health = cls.max_health
 
@@ -106,9 +116,11 @@ class Player:
         if cls.jumpdrive.active:
             cls.draw_jump_dest()
             if cls.jumpdrive.engage:
-                Gfx.create_effect("jump", 2, (cls.hitbox.topleft[0] - 40, cls.hitbox.topleft[1] - 40))
+                Gfx.create_effect(
+                    "jump", 2, (cls.hitbox.topleft[0] - 40, cls.hitbox.topleft[1] - 40))
                 cls.hitbox.center = pygame.mouse.get_pos()
-                Gfx.create_effect("jumpa", 2, (cls.hitbox.topleft[0] - 60, cls.hitbox.topleft[1] - 60))
+                Gfx.create_effect(
+                    "jumpa", 2, (cls.hitbox.topleft[0] - 60, cls.hitbox.topleft[1] - 60))
                 cls.jumpdrive.end_active()
                 cls.jumpdrive.engage = False
 
@@ -122,15 +134,18 @@ class Player:
 
     @classmethod
     def draw_jump_dest(cls):
-        win.blit(cls.ship_sprites[20], (pygame.mouse.get_pos()[0] - 41, pygame.mouse.get_pos()[1] - 50))
+        win.blit(
+            cls.ship_sprites[20], (pygame.mouse.get_pos()[0] - 41, pygame.mouse.get_pos()[1] - 50))
 
     @classmethod
     def gfx_animation(cls, idx):
         if cls.gfx_ticker < 3:
-            win.blit(cls.ship_sprites[cls.gfx_idx[idx]], (cls.hitbox.topleft[0] - 6, cls.hitbox.topleft[1] - 25))
+            win.blit(
+                cls.ship_sprites[cls.gfx_idx[idx]], (cls.hitbox.topleft[0] - 6, cls.hitbox.topleft[1] - 25))
             cls.gfx_ticker += 1
         else:
-            win.blit(cls.ship_sprites[cls.gfx_idx[idx] + 1], (cls.hitbox.topleft[0] - 6, cls.hitbox.topleft[1] - 25))
+            win.blit(
+                cls.ship_sprites[cls.gfx_idx[idx] + 1], (cls.hitbox.topleft[0] - 6, cls.hitbox.topleft[1] - 25))
             cls.gfx_ticker += 1
         if cls.gfx_ticker == 6:
             cls.gfx_ticker = 0
