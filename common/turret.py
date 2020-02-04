@@ -334,7 +334,7 @@ class Turret:
                 if timer.trigger(10):
                     cls.scatter_limter += 1
                     if cls.scatter_limter <= data.ITEMS.get_item(flag="scatter_fire").effect_strength:
-                        for i in range(-40, 41, 10):
+                        for i in range(-20, 21, 5):
                             data.PLAYER_PROJECTILE_DATA.append(Projectile(
                                 speed=cls.projectile_speed,
                                 size=cls.projectile_size,
