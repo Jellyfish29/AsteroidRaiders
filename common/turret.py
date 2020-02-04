@@ -17,7 +17,7 @@ class Turret:
     projectile_speed = 25
     firing = False
     direction = None
-    base_fire_rate = 1.8
+    base_fire_rate = 2.4
     fire_rate = base_fire_rate  # attacks per second
     raw_fire_rate = fire_rate
     fire_rate_limit = 6
@@ -35,6 +35,7 @@ class Turret:
     star_shot_tubes = 12
     burts_limiter = 0
     scatter_limter = 0
+    rail_gun_charge = 0
     # pd values
     pd_ticker = 0
     # Gfx setup
@@ -62,6 +63,7 @@ class Turret:
         cls.black_hole_bomb()
         cls.burst_fire()
         cls.scatter_fire()
+        cls.rail_gun()
 
     @classmethod
     @timer
@@ -152,6 +154,34 @@ class Turret:
                     ))
                     data.ITEMS.get_item(flag="black_hole_bomb").engage = False
                     data.ITEMS.get_item(flag="black_hole_bomb").end_active()
+
+    @classmethod
+    @timer
+    def rail_gun(cls, timer):
+        if "rail_gun" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="rail_gun").active:
+                # aim effect
+                if timer.trigger(data.ITEMS.get_item(flag="rail_gun").effect_strength):
+                    if cls.rail_gun_charge < 1:
+                        cls.rail_gun_charge += 0.01
+
+                data.PLAYER.angles = directions(4)
+
+                if data.ITEMS.get_item(flag="rail_gun").engage:
+                    data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                        speed=30 * cls.rail_gun_charge + 10,
+                        size=(40, 40),
+                        start_point=data.PLAYER.hitbox.center,
+                        damage=(data.PLAYER.damage * 5) * cls.rail_gun_charge,
+                        gfx_idx=18,
+                        target=pygame.mouse.get_pos(),
+                        piercing=True
+                    ))
+
+                    data.PLAYER.angles = directions(data.PLAYER.speed)
+                    cls.rail_gun_charge = 0
+                    # data.ITEMS.get_item(flag="rail_gun").engage = False
+                    data.ITEMS.get_item(flag="rail_gun").end_active()
 
     @classmethod
     @timer
@@ -318,7 +348,7 @@ class Turret:
                             speed=cls.projectile_speed,
                             size=cls.projectile_size,
                             start_point=data.PLAYER.hitbox.center,
-                            damage=data.PLAYER.damage,
+                            damage=data.PLAYER.damage + 0.5,
                             gfx_idx=11,
                             target=pygame.mouse.get_pos()
                         ))
@@ -339,7 +369,7 @@ class Turret:
                                 speed=cls.projectile_speed,
                                 size=cls.projectile_size,
                                 start_point=data.PLAYER.hitbox.center,
-                                damage=data.PLAYER.damage,
+                                damage=data.PLAYER.damage + 0.5,
                                 gfx_idx=11,
                                 target=pygame.mouse.get_pos(),
                                 angle_variation=i

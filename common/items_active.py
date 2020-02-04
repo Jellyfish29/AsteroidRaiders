@@ -30,7 +30,7 @@ class Item_missile(Active_Items):
         super().__init__(color, "Heat seeking Missiles (acive)", "Fires two heat seeking Missile at the Target", (6, 7))
         self.color = color
         self.flag = "missile"
-        self.base_effect = 1000  # cooldown time
+        self.base_effect = 600  # cooldown time
         self.cd_len = self.get_lvl_effects()[self.lvl]
         self.active_time = 1
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
@@ -106,7 +106,7 @@ class Item_rapid_fire(Active_Items):
         super().__init__(color, "Rapid Fire (active)", "On Activation massivly increases Fire Rate", (41, 42))
         self.color = color
         self.flag = "rapid_fire"
-        self.base_effect = 5400   # cooldown time
+        self.base_effect = 3600   # cooldown time
         self.cd_len = self.get_lvl_effects()[self.lvl]
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
 
@@ -117,7 +117,7 @@ class Item_rapid_fire(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
     def get_active_str(self):
-        return str((data.TURRET.super_shot_ammo - data.TURRET.super_shot_limiter))
+        return str((data.TURRET.super_shot_ammo + data.LEVELS.level - data.TURRET.super_shot_limiter))
 
 
 class Item_star_fire(Active_Items):
@@ -137,7 +137,7 @@ class Item_star_fire(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
     def get_active_str(self):
-        return str((data.TURRET.star_shot_ammo - data.TURRET.star_shot_limiter))
+        return str((data.TURRET.star_shot_ammo + data.LEVELS.level - data.TURRET.star_shot_limiter))
 
 
 class Item_burst_fire(Active_Items):
@@ -193,7 +193,8 @@ class Item_gravity_bomb(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
     def end_activation(self):
-        self.engage = True
+        if not self.cooldown:
+            self.engage = True
 
 
 class Item_black_hole_bomb(Active_Items):
@@ -215,7 +216,33 @@ class Item_black_hole_bomb(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
     def end_activation(self):
-        self.engage = True
+        if not self.cooldown:
+            self.engage = True
+
+
+class Item_rail_gun(Active_Items):
+
+    def __init__(self, color, start=False):
+        super().__init__(color, "Rail Gun (active)", "Drains Energy from the Ship to Fire One massive Rail Gun Round", (40, 40))
+        self.color = color
+        self.flag = "rail_gun"
+        self.base_effect = 4
+        self.cd_len = 600
+        self.effect_strength = self.get_lvl_effects()[self.lvl]
+        self.engage = False
+
+    def get_upgrade_desc(self):
+        return f"Charge Speed: {int(100 / (60 / self.effect_strength) )}s <> Cooldown: {int(self.get_cd_len() / 60) + 1}s"
+
+    def set_effect_strength(self):
+        self.effect_strength = self.get_lvl_effects()[self.lvl]
+
+    def end_activation(self):
+        if not self.cooldown:
+            self.engage = True
+
+    def get_active_str(self):
+        return f"{int(data.TURRET.rail_gun_charge * 100)}/100"
 
 
 ### Standart Items ###
@@ -243,7 +270,8 @@ class Item_jump_drive(Active_Items):
         return "Charging"
 
     def end_activation(self):
-        self.engage = True
+        if not self.cooldown:
+            self.engage = True
 
     def get_inventory_key(self):
         return 0
@@ -317,7 +345,10 @@ Items.set_drop_table([
     (Item_rapid_fire, (255, 45, 12)),
     (Item_piercing_shot, (120, 15, 0)),
     (Item_gravity_bomb, (120, 15, 0)),
-    (Item_black_hole_bomb, (120, 15, 0))
+    (Item_black_hole_bomb, (120, 15, 0)),
+    (Item_scatter_fire, (0, 0, 0)),
+    (Item_burst_fire, (0, 0, 0)),
+    (Item_rail_gun, (0, 0, 0))
 ])
 
 data.ACTIVE_ITEMS = Active_Items

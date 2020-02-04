@@ -197,13 +197,13 @@ class Interface:
                                         data.LEVELS.skill_points += 1
                                         data.PLAYER.health -= 1
                                 elif idx == 3:
-                                    data.PLAYER.damage += data.PLAYER.base_damage * 0.1
+                                    data.PLAYER.damage += 0.1  # data.PLAYER.base_damage * 0.1
                                 elif idx == 4:
                                     data.PLAYER.set_player_crit_chance(1)
                                     if data.PLAYER.crit_chance == data.PLAYER.crit_limit:
                                         data.LEVELS.skill_points += 1
                                 elif idx == 5:
-                                    data.TURRET.set_fire_rate(data.TURRET.base_fire_rate * 0.075)
+                                    data.TURRET.set_fire_rate(data.TURRET.base_fire_rate * 0.05)
                                     if data.TURRET.fire_rate == data.TURRET.fire_rate_limit:
                                         data.LEVELS.skill_points += 1
                                 elif idx == 6:

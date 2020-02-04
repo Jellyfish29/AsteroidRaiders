@@ -183,7 +183,7 @@ class Items(Timer):
 
     @classmethod
     def start_item_generator(cls):
-        table = cls.drop_table_absolute[:8]
+        table = cls.drop_table_absolute[:12]
         return table[random.randint(0, len(table) - 1)][0]
 
     @classmethod
@@ -272,6 +272,7 @@ class Active_Items(Items):
         self.text = "/"
         self.active_time = None
         self.effect_name = None
+        self.engage = False
 
     def effect(self):
         if self.get_inventory_key() < 3:
@@ -307,6 +308,8 @@ class Active_Items(Items):
     def end_active(self):
         if self.active:
             self.cooldown = True
+        if self.engage:
+            self.engage = False
         self.active = False
 
     def toggle(self):
