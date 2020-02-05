@@ -163,7 +163,7 @@ class Black_hole(Phenomenon):
     def __init__(
             self,
             speed=0,
-            size=(300, 300),
+            size=(400, 400),
             gfx_idx=(0, 0),
             gfx_hook=(-150, -150),
             decay=300,
@@ -187,7 +187,7 @@ class Black_hole(Phenomenon):
             if not issubclass(obj.__class__, Phenomenon):
                 if obj not in self.objs:
                     self.objs.update({obj: obj.angles})
-                    if isinstance(obj, type):
+                    if isinstance(obj, type):  # Player check
                         pass
                     else:
                         obj.angles = self.new_a

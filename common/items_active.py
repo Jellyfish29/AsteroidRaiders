@@ -174,6 +174,24 @@ class Item_scatter_fire(Active_Items):
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
 
 
+class Item_fragmentation_rounds(Active_Items):
+
+    def __init__(self, color, start=False):
+        super().__init__(color, "Fragmentation Rounds (active)", "On Activation fires Powerful Frag Rounds that fragment on impact", (40, 40))
+        self.color = color
+        self.flag = "frag_rounds"
+        self.cd_len = 1200
+        self.active_time = 600
+        self.base_effect = 10  # active time
+        self.effect_strength = int(self.get_lvl_effects(reverse=True)[self.lvl])
+
+    def get_upgrade_desc(self):
+        return f"Fragments: {int(self.effect_strength)}<> Cooldown: {int(self.get_cd_len() / 60) + 1}s"
+
+    def set_effect_strength(self):
+        self.effect_strength = int(self.get_lvl_effects(reverse=True)[self.lvl])
+
+
 class Item_gravity_bomb(Active_Items):
 
     def __init__(self, color, start=False):
@@ -199,7 +217,7 @@ class Item_black_hole_bomb(Active_Items):
         super().__init__(color, "Balck Hole Bomb (active)", "Fires a Missile that upon Impact creates a micro singularity", (40, 40))
         self.color = color
         self.flag = "black_hole_bomb"
-        self.base_effect = 2700  # cooldwon time
+        self.base_effect = 60  # 2700  # cooldwon time
         self.cd_len = self.get_lvl_effects()[self.lvl]
         self.active_time = 300
         self.engage = False

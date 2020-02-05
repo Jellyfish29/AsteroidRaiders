@@ -38,6 +38,7 @@ class Bosses(Shooter, Boss_skills):
         self.orig_gfx_idx = self.gfx_idx
         self.sprites = data.ENEMY.boss_sprites
         self.rotate = False
+        self.buffer_hp = 0
         # Shooting
         self.shot_angle = 0
         self.shot_angles = angles_360(8)  # projectilespeed

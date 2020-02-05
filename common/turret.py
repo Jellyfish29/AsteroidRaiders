@@ -23,6 +23,7 @@ class Turret:
     fire_rate_limit = 6
     shot_count = 0
     gfx_idx = 0
+    hit_locations = []
     # Overdrive
     overdrive_count = 0
     # ammunition = normal_fire_rate[1]
@@ -64,6 +65,7 @@ class Turret:
         cls.burst_fire()
         cls.scatter_fire()
         cls.rail_gun()
+        cls.fragmentation_rounds()
 
     @classmethod
     @timer
@@ -117,7 +119,7 @@ class Turret:
                         damage=0,
                         gfx_idx=1,
                         target=pos,
-                        impact_effect=lambda loc=pos: data.PLAYER_PROJECTILE_DATA.append(Gravity_well(
+                        impact_effect=lambda loc=pos: data.PHENOMENON_DATA.append(Gravity_well(
                             speed=0,
                             size=(500, 500),
                             gfx_idx=(1, 1),
@@ -142,13 +144,13 @@ class Turret:
                         damage=0,
                         gfx_idx=1,
                         target=pos,
-                        impact_effect=lambda loc=pos: data.PLAYER_PROJECTILE_DATA.append(Black_hole(
+                        impact_effect=lambda loc=pos: data.PHENOMENON_DATA.append(Black_hole(
                             speed=0,
                             size=(300, 300),
                             decay=data.ITEMS.get_item(flag="black_hole_bomb").active_time,
                             location=loc,
                             flag="player",
-                            damage=1 + data.PLAYER.damage * 0.5 + cls.fire_rate))
+                            damage=data.PLAYER.damage * 0.5 + cls.fire_rate))
                     ))
                     data.ITEMS.get_item(flag="black_hole_bomb").end_active()
 
@@ -166,10 +168,10 @@ class Turret:
 
                 if data.ITEMS.get_item(flag="rail_gun").engage:
                     data.PLAYER_PROJECTILE_DATA.append(Projectile(
-                        speed=30 * cls.rail_gun_charge + 10,
+                        speed=25 * cls.rail_gun_charge + 10,
                         size=(40, 40),
                         start_point=data.PLAYER.hitbox.center,
-                        damage=(data.PLAYER.damage * 5) * cls.rail_gun_charge,
+                        damage=(data.PLAYER.damage * 6) * cls.rail_gun_charge,
                         gfx_idx=18,
                         target=pygame.mouse.get_pos(),
                         piercing=True
@@ -241,6 +243,26 @@ class Turret:
                     ))
                 ))
                 return True
+
+    @classmethod
+    @timer
+    def fragmentation_rounds(cls, timer):
+        if "frag_rounds" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="frag_rounds").active:
+                for projectile in cls.hit_locations:
+                    for _ in range(data.ITEMS.get_item(flag="frag_rounds").effect_strength + 1):
+                        angle = angle_switcher(projectile.angle + (random.randint(-35, 35)))
+                        data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                            speed=20,
+                            size=cls.projectile_size,
+                            start_point=projectile.hitbox.center,
+                            damage=data.PLAYER.damage * 0.1,
+                            flag="secondary",
+                            gfx_idx=3,
+                            angle=angle,
+                            piercing=True,
+                            decay=30
+                        ))
 
     @classmethod
     def fan_shot(cls):
@@ -409,7 +431,7 @@ class Turret:
                 cls.hammer_shot(),
                 cls.fan_shot(),
                 cls.he_rounds(),
-                cls.boss_snare()
+                cls.boss_snare(),
             ]):
                 Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
                 data.PLAYER_PROJECTILE_DATA.append(Projectile(
@@ -459,6 +481,7 @@ class Turret:
         cls.gfx_pd_draw()
         cls.on_mouse_click_actions()
         cls.on_item_button_click_actions()
+        cls.hit_locations.clear()
 
 
 data.TURRET = Turret

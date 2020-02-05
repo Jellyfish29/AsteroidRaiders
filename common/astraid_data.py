@@ -20,6 +20,16 @@ INTERFACE = None
 
 def GAME_UPDATE():
 
+    for phenom in PHENOMENON_DATA:
+
+        if phenom.destroy():
+            PHENOMENON_DATA.remove(phenom)
+        else:
+            phenom.tick()
+
+            if phenom.flag != "player":
+                phenom.hit(PLAYER)
+
     for projectile in PLAYER_PROJECTILE_DATA:
 
         if projectile.destroy():
@@ -99,13 +109,3 @@ def GAME_UPDATE():
                     if phenom.hit(pl_obj):
                         if phenom.hitable:
                             pl_obj.take_damage(phenom.apply_damage())
-
-    for phenom in PHENOMENON_DATA:
-
-        if phenom.destroy():
-            PHENOMENON_DATA.remove(phenom)
-        else:
-            phenom.tick()
-
-            if phenom.flag != "player":
-                phenom.hit(PLAYER)

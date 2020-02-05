@@ -28,6 +28,14 @@ def angles_360(speed, n=360):
     return {idx: i for idx, i in enumerate([(math.cos(2 * math.pi / n * x) * speed, math.sin(2 * math.pi / n * x) * speed) for x in range(0, n + 1)])}
 
 
+def angle_switcher(a):
+    if a > 359:
+        a -= 359
+    elif a < 0:
+        a += 359
+    return a
+
+
 def get_sin(i, a):
     d = math.degrees(math.sin(i))
     if d + a > 359:

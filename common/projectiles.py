@@ -25,7 +25,9 @@ class Projectile(Timer):
             gfx_hit_effect="shot_hit",
             hit_effect=None,
             homing=False,
-            spez_gfx=None
+            spez_gfx=None,
+            fuse_delay=None,
+            decay=None
     ):
         self.speed = speed
         self.size = size
@@ -45,6 +47,8 @@ class Projectile(Timer):
         self.hit_effect = hit_effect
         self.homing = homing
         self.spez_gfx = spez_gfx
+        self.fuse_delay = fuse_delay
+        self.decay = decay
 
         Timer.__init__(self)
         self.run_limiter = Run_limiter()
@@ -53,7 +57,7 @@ class Projectile(Timer):
         self.offset_angles = angles_360(10000)
         self.run_spez_gfx = run_once(spez_gfx)
         self.kill = False
-        self.has_been_called = False
+        self.hit_event = False
 
     def move(self):
         self.hitbox.move_ip(self.angles[self.get_angle()])
@@ -74,12 +78,20 @@ class Projectile(Timer):
         return angle
 
     def hit(self, obj):
-        if self.hitbox.colliderect(obj.hitbox):
-            if self.hit_effect is not None:
-                self.hit_effect(self.hitbox.center)
-            if self.damage > 0:
-                self.gfx_hit()
-                return True
+        if self.fuse_delay is not None:
+            delay = self.fuse_delay
+        else:
+            delay = 0
+        if self.timer_delay(limit=delay):
+            if self.hitbox.colliderect(obj.hitbox):
+                if self.flag != "secondary" and not self.hit_event:
+                    self.gfx_hit()
+                    data.TURRET.hit_locations.append(self)
+                    self.hit_event = True
+                if self.hit_effect is not None:
+                    self.hit_effect(self.hitbox.center)
+                if self.damage > 0:
+                    return True
 
     def gfx_draw(self):
         # pygame.draw.rect(win, (0, 255, 255), self.hitbox)
@@ -115,6 +127,9 @@ class Projectile(Timer):
         return self.kill
 
     def tick(self):
+        if self.decay is not None:
+            if self.timer_trigger(self.decay):
+                self.kill = True
         self.move()
         self.gfx_draw()
         if self.out_of_bounds():
@@ -260,7 +275,7 @@ class Missile(Projectile):
             target=target
         )
         self.aquisition_delay = aquisition_delay
-        self.movement_checker = 0  # check if target is stanionary --> means target is already destroyed
+        self.movement_checker = 0
         self.enemy_missile = enemy_missile
 
     def move(self):
@@ -389,6 +404,7 @@ class Explosion(Projectile):
         self.piercing = True
         self.explosion_effect = run_once(explosion_effect)
         self.explo_speed = explo_speed
+        self.flag = "secondary"
 
     def set_location(self, l):
         self.hitbox.center = l
