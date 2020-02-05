@@ -228,7 +228,7 @@ class Bosses(Shooter, Boss_skills):
         data.ITEMS.drop((800, 500), target=Item_heal_crate((0, 255, 0)))
 
         data.ENEMY_PROJECTILE_DATA.clear()
-        Gfx.bg_move = True
+        Background.bg_move = True
         data.LEVELS.boss_fight = False
         data.LEVELS.after_boss = True
         self.special_death()
@@ -277,7 +277,7 @@ class Bosses(Shooter, Boss_skills):
 
     @classmethod
     def create(cls, lvl):
-        if lvl == 6:
+        if lvl == 66:
             data.ENEMY_DATA.append(Boss_mine_boat())
         elif lvl == 12:
             data.ENEMY_DATA.append(Boss_frigatte())
@@ -285,7 +285,7 @@ class Bosses(Shooter, Boss_skills):
             data.ENEMY_DATA.append(Boss_corvette())
         elif lvl == 24:
             data.ENEMY_DATA.append(Boss_destroyer())
-        elif lvl == 30:
+        elif lvl == 6:
             data.ENEMY_DATA.append(Boss_cruiser())
         elif lvl == 36:
             data.ENEMY_DATA.append(Boss_scout())
@@ -339,7 +339,7 @@ class Boss_mine_boat(Bosses):
         self.skills_lst.append(self.skill_missile)
 
     def phase_3(self):
-        Gfx.bg_move = True
+        Background.bg_move = True
         self.agles = self.angles = angles_360(7)
         self.fire_rate -= 25
         self.set_health(-25, (0, 255, 0))
@@ -352,7 +352,7 @@ class Boss_frigatte(Bosses):
         self.health = 700
         self.speed = 3
         self.fire_rate = 60
-        self.move_pattern = (0, 1, 2, 3)
+        self.move_pattern = [0, 1, 2, 3]
         self.size = (120, 220)
         self.gfx_idx = (2, 3)
         self.gfx_hook = (-130, -120)
@@ -433,8 +433,8 @@ class Boss_corvette(Bosses):
 
     def phase_1(self):
 
-        Gfx.bg_move = True
-        Gfx.scroll_speed = 1
+        Background.bg_move = True
+        Background.scroll_speed = 1
         self.speed += 1
         self.angles = angles_360(self.speed)
         self.skills_lst.append(self.skill_jumpdrive)
@@ -442,7 +442,7 @@ class Boss_corvette(Bosses):
     def phase_2(self):
 
         self.speed += 1
-        Gfx.scroll_speed = 2
+        Background.scroll_speed = 2
         self.angles = angles_360(self.speed)
         self.fire_rate -= 10
         self.skills_lst.append(self.skill_jumpdrive)
@@ -450,15 +450,15 @@ class Boss_corvette(Bosses):
 
     def phase_3(self):
 
-        Gfx.scroll_speed = 3
+        Background.scroll_speed = 3
         self.speed += 2
         self.angles = angles_360(self.speed)
         self.fire_rate -= 10
         self.skills_lst.append(self.skill_jumpdrive)
 
     def special_death(self):
-        Gfx.bg_move = False
-        Gfx.scroll_speed = 1
+        Background.bg_move = False
+        Background.scroll_speed = 1
 
 
 class Boss_destroyer(Bosses):
@@ -467,7 +467,7 @@ class Boss_destroyer(Bosses):
         self.health = 1200
         self.speed = 2
         self.fire_rate = 60
-        self.move_pattern = (0, 7, 0, 1, 2)
+        self.move_pattern = [0, 7, 0, 1, 2]
         self.size = (150, 230)
         self.gfx_idx = (6, 7)
         self.gfx_hook = (-130, -130)
@@ -543,7 +543,7 @@ class Boss_cruiser(Bosses):
         self.health = 2500
         self.speed = 2
         self.fire_rate = 50
-        self.move_pattern = (8, 9)
+        self.move_pattern = [8, 9]
         self.size = (130, 230)
         self.gfx_idx = (8, 9)
         self.gfx_hook = (-130, -130)
@@ -561,7 +561,7 @@ class Boss_cruiser(Bosses):
 
     def phase_1(self):
 
-        self.move_pattern = (0, 7, 0, 1, 2)
+        self.move_pattern = [0, 7, 0, 1, 2]
         # self.angles = angles_360(3)
         self.skills_lst.append(self.skill_dart_missiles)
         for _ in range(2):
@@ -655,7 +655,7 @@ class Boss_scout(Bosses):
         if self.gfx_angle == 180:
             if limiter.run_block_once():
                 self.special_skills_lst.append(self.skill_scout_force_field_fire)
-                Gfx.scroll_speed = 8
+                Background.scroll_speed = 8
                 self.gfx_idx = (12, 13)
         elif self.gfx_angle > 180:
             if self.timer_trigger(1):
@@ -684,18 +684,18 @@ class Boss_scout(Bosses):
         if self.snared:
             self.hitable = True
             self.hide_health_bar = False
-            Gfx.bg_move = False
+            Background.bg_move = False
             self.gfx_idx = (14, 14)
             if self.timer_key_trigger(300, key="snare"):
                 self.hitable = False
                 self.hide_health_bar = True
-                Gfx.bg_move = True
+                Background.bg_move = True
                 self.gfx_idx = (12, 13)
                 self.snared = False
 
     def special_death(self):
-        Gfx.bg_move = False
-        Gfx.scroll_speed = 1
+        Background.bg_move = False
+        Background.scroll_speed = 1
 
 
 class Boss_battleship(Bosses):
@@ -704,7 +704,7 @@ class Boss_battleship(Bosses):
         self.health = 3200
         self.speed = 2
         self.fire_rate = 70
-        self.move_pattern = (0, 7, 0, 1, 2)
+        self.move_pattern = [0, 7, 0, 1, 2]
         self.size = (180, 240)
         self.gfx_idx = (10, 11)
         self.gfx_hook = (-130, -130)
@@ -1043,13 +1043,14 @@ class Boss_repair_ship(Enemy):
         self.boss = boss
         self.flag = "boss"
         super().__init__(0, 4, random.randint(1, 4), Enemy.health + 8,
-                         (100, 60), (0, 1), (0, 0), Enemy.spez_sprites)
-        self.gfx_hook = (-70, -30)
+                         (80, 80), (0, 1), (0, 0), Enemy.spez_sprites)
+        self.gfx_hook = (-10, -20)
         self.gfx_idx = (20, 21)
         self.target = self.boss.hitbox.center
 
     def move(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        self.target = self.boss.hitbox.center
         self.hitbox.move_ip(self.angles[degrees(
             self.boss.hitbox.center[0],
             self.hitbox.center[0],

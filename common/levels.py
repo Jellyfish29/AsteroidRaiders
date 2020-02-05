@@ -46,6 +46,7 @@ class Levels:
     def scaling(cls):
         data.ENEMY.health += 0.4
         data.ELITES.health += data.ELITES.health * 0.1
+        cls.event_trigger_time = (cls.event_trigger_time[0] - 50, cls.event_trigger_time[1] - 75)
         cls.second_elite_chance -= 1.5
         if cls.level % 6 == 0:
             cls.enemy_amount += 1
@@ -54,8 +55,8 @@ class Levels:
             cls.spez_add()
             data.BOSS.create(cls.level)
             cls.boss_fight = True
-            # gfx.Gfx.scroll_speed += 1
-            gfx.Gfx.bg_move = False
+            # gfx.Background.scroll_speed += 1
+            gfx.Background.bg_move = False
             cls.save_game()
 
     @classmethod
@@ -149,7 +150,6 @@ class Levels:
         cls.elite_spawn()
 
         if cls.interval_score > cls.level_interval:
-            cls.event_trigger_time = (cls.event_trigger_time[0] - 50, cls.event_trigger_time[1] - 75)
             cls.level += 1
             cls.display_level += 1
             cls.level_interval += 3
@@ -193,8 +193,8 @@ class STAGE_SAVE():
         self.second_elite_chance = Levels.second_elite_chance
         self.enemy_table = data.ENEMY.spez_spawn_table
         self.phenomenon_spawn_table = data.PHENOM.phenomenon_spawn_table
-        self.bg_speed = gfx.Gfx.scroll_speed
-        self.bg_move = gfx.Gfx.bg_move
+        self.bg_speed = gfx.Background.scroll_speed
+        self.bg_move = gfx.Background.bg_move
         self.overdrive_count = data.TURRET.overdrive_count
         self.elite_sp_time = Levels.elite_max_spawn_time
 
@@ -238,8 +238,8 @@ class STAGE_SAVE():
         Levels.second_elite_chance = self.second_elite_chance
         data.ENEMY.spez_spawn_table = self.enemy_table
         data.PHENOM.phenomenon_spawn_table = self.phenomenon_spawn_table
-        gfx.Gfx.scroll_speed = self.bg_speed
-        gfx.Gfx.bg_move = self.bg_move
+        gfx.Background.scroll_speed = self.bg_speed
+        gfx.Background.bg_move = self.bg_move
         data.TURRET.overdrive_count = self.overdrive_count
         Levels.elite_max_spawn_time = self.elite_sp_time
         if self.boss_fight:

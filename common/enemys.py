@@ -111,6 +111,13 @@ class Enemy(Timer):
                  self.hitbox.center[1] + random.randint(-10, 10)),
                 hover=True, follow=True, dmg_text=hp, text_color=color
             )
+        elif hp < 0:
+            Gfx.create_effect(
+                "dmg_txt", 4,
+                (self.hitbox.center[0] + random.randint(-10, 10),
+                 self.hitbox.center[1] + random.randint(-10, 10)),
+                hover=True, follow=True, dmg_text=hp, text_color=color
+            )
         else:
             self.dmg_text_buffer(hp)
         if self.health > self.max_health:

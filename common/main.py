@@ -24,7 +24,7 @@ def test_mode():
     Levels.scaling()
     # Player.max_health +d= 0 40000
     Player.health += 40000
-    # Player.damage += 10
+    Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
     # pygame.mouse.set_visible(True)AAAAAAAAAA
@@ -45,19 +45,22 @@ def main():
         else:
             Player.move(str_3)
 
-    Gfx.background()
+    Background.update()
     Interface.create()
 
     components = [Player, Turret, Enemy, Phenomenon, Interface, Levels, Items]
 
-    Items.drop((winwidth / 2, 400), target=Item_fragmentation_rounds((100, 100, 200)))
-    Items.drop((winwidth / 2, 400), target=Items.start_item_generator()((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_fragmentation_rounds((100, 100, 200)))
+    Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
     Interface.main_menu(True)
     Levels.spez_add()
 
     while True:
-        Gfx.background()
+
+        win.fill(Gfx.bg_color)
+
+        Background.update()
 
         Gfx.layer_3_update()
 

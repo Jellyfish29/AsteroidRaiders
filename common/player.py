@@ -3,7 +3,7 @@ from pygame.locals import *
 
 from init import *
 from astraid_funcs import *
-from Gfx import Gfx
+from Gfx import Gfx, Background
 import astraid_data as data
 from projectiles import Projectile, Missile
 from items_active import Item_shield, Item_jump_drive, Item_afterburner
@@ -212,14 +212,14 @@ class Player:
             if timer.timer_delay(120):
                 if cls.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):
                     cls.hitbox.center = (cls.hitbox.center[0], winheight)
-                    Gfx.y += 1080
+                    Background.y += 1080
                     data.ITEMS.dropped_lst.clear()
                     data.PHENOMENON_DATA.clear()
 
                     data.LEVELS.save_game()
 
                     cls.restart_timer = True
-                    Gfx.bg_move = True
+                    Background.bg_move = True
 
         if cls.restart_timer:
             if timer.trigger(120):

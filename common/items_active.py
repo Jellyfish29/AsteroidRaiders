@@ -338,7 +338,7 @@ class Item_afterburner(Active_Items):
         return ""
 
 
-Items.set_drop_table([
+active_item_drop_table = [
     (Item_pd, (100, 0, 0)),
     (Item_nuke, (0, 0, 100)),
     (Item_missile, (100, 100, 0)),
@@ -350,7 +350,14 @@ Items.set_drop_table([
     (Item_black_hole_bomb, (120, 15, 0)),
     (Item_scatter_fire, (0, 0, 0)),
     (Item_burst_fire, (0, 0, 0)),
-    (Item_rail_gun, (0, 0, 0))
-])
+    (Item_rail_gun, (0, 0, 0)),
+    (Item_fragmentation_rounds, (0, 0, 0))
+]
+
+Items.set_drop_table(active_item_drop_table)
 
 data.ACTIVE_ITEMS = Active_Items
+
+
+def start_item_generator():
+    return active_item_drop_table[random.randint(0, len(active_item_drop_table) - 1)][0]

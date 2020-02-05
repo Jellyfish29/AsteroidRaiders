@@ -13,10 +13,11 @@ class Gfx(Timer):
     effect_sprites = get_images("effects")
     cursor_sprites = get_images("cursor")
     explosion_sprites = get_images("explosions")
-    bg = get_images("background")
-    y = 0
-    scroll_speed = 1
-    bg_move = True
+    # bg = get_images("background")
+    # y = 0
+    # scroll_speed = 1
+    # bg_move = True
+    bg_color = (0, 0, 15)
     font = pygame.font.SysFont("arial", 20)
 
     def __init__(
@@ -169,18 +170,27 @@ class Gfx(Timer):
         rect = pygame.Rect(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], 0, 0)
         win.blit(Gfx.cursor_sprites[2], (rect.topleft[0] - 9, rect.topleft[1] - 10))
 
+    # @classmethod
+    # def background(cls):
+    #     if Gfx.bg_move:
+    #         Gfx.y += Gfx.scroll_speed
+    #     win.blit(Gfx.bg[0], (0, Gfx.y - winheight * 6))
+    #     win.blit(Gfx.bg[3], (0, Gfx.y - winheight * 5))
+    #     win.blit(Gfx.bg[0], (0, Gfx.y - winheight * 4))
+    #     win.blit(Gfx.bg[2], (0, Gfx.y - winheight * 3))
+    #     win.blit(Gfx.bg[0], (0, Gfx.y - winheight * 2))
+    #     win.blit(Gfx.bg[1], (0, Gfx.y - winheight))
+    #     win.blit(Gfx.bg[0], (0, Gfx.y))
+    #     if Gfx.y >= 6480:
+    #         Gfx.y = 0
+
     @classmethod
-    def background(cls):
+    def update(cls):
         if Gfx.bg_move:
             Gfx.y += Gfx.scroll_speed
-        win.blit(Gfx.bg[0], (0, Gfx.y - winheight * 6))
-        win.blit(Gfx.bg[3], (0, Gfx.y - winheight * 5))
-        win.blit(Gfx.bg[0], (0, Gfx.y - winheight * 4))
-        win.blit(Gfx.bg[2], (0, Gfx.y - winheight * 3))
-        win.blit(Gfx.bg[0], (0, Gfx.y - winheight * 2))
-        win.blit(Gfx.bg[1], (0, Gfx.y - winheight))
-        win.blit(Gfx.bg[0], (0, Gfx.y))
-        if Gfx.y >= 6480:
+        win.blit(Gfx.bg[8], (0, Gfx.y - 4040))
+        win.blit(Gfx.bg[8], (0, Gfx.y - 1480))
+        if Gfx.y >= 4040:
             Gfx.y = 0
 
     @classmethod
@@ -203,3 +213,24 @@ class Gfx(Timer):
             if effect.draw():  # if animation over
                 Gfx.gfx_layer_3_lst.remove(effect)
             effect.timer_tick()
+
+
+class Background:
+
+    bg_sprites = get_images("background")
+    y = 0
+    scroll_speed = 1
+    bg_move = True
+    bg_color = (0, 0, 20)
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def update(cls):
+        if cls.bg_move:
+            cls.y += cls.scroll_speed
+        win.blit(cls.bg_sprites[8], (0, cls.y - 4040))
+        win.blit(cls.bg_sprites[8], (0, cls.y - 1480))
+        if cls.y >= 4040:
+            cls.y = 0

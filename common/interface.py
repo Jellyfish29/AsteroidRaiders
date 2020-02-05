@@ -5,7 +5,7 @@ from init import *
 from astraid_funcs import *
 import astraid_data as data
 from items import Items, Active_Items
-from Gfx import Gfx
+from Gfx import Gfx, Background
 
 
 class Interface:
@@ -131,7 +131,9 @@ class Interface:
 
         while upgrades_pressed:
 
-            Gfx.background()
+            win.fill(Gfx.bg_color)
+
+            Background.update()
             texts = [
                 f"Skill Points = {data.LEVELS.skill_points}",
                 f"{int(data.PLAYER.speed)}      ++    Speed",  # len 57
@@ -197,7 +199,7 @@ class Interface:
                                         data.LEVELS.skill_points += 1
                                         data.PLAYER.health -= 1
                                 elif idx == 3:
-                                    data.PLAYER.damage += 0.1  # data.PLAYER.base_damage * 0.1
+                                    data.PLAYER.damage += 0.11  # data.PLAYER.base_damage * 0.1
                                 elif idx == 4:
                                     data.PLAYER.set_player_crit_chance(1)
                                     if data.PLAYER.crit_chance == data.PLAYER.crit_limit:
