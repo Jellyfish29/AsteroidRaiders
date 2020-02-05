@@ -77,10 +77,10 @@ def main():
 
             if event.type == KEYDOWN:
                 if event.key == K_TAB:
-                    scrollspeed_temp = Gfx.scroll_speed
-                    # Gfx.scroll_speed = 0
+                    scrollspeed_temp = Background.scroll_speed
+                    # Background.scroll_speed = 0
                     Interface.upgrades_menu(True)
-                    Gfx.scroll_speed = scrollspeed_temp
+                    Background.scroll_speed = scrollspeed_temp
                     right, left, up, down = [False, False, False, False]
                 elif event.key == K_d:
                     right = True

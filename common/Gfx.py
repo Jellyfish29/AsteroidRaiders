@@ -215,19 +215,32 @@ class Gfx(Timer):
             effect.timer_tick()
 
 
-class Background:
+class Background(Timer):
 
     bg_sprites = get_images("background")
     y = 0
     scroll_speed = 1
     bg_move = True
     bg_color = (0, 0, 20)
+    bg_objs = []
+    bg_obj_spawn_rate = 600
 
     def __init__(self):
-        pass
+        self.gfx_idx = random.randint(9, 13)
+        self.x = random.randint(100, 1800)
+
+    def gfx_animation(self):
+        win.blit(Background.bg_sprites[self.gfx_idx], (self.x, Background.y - 2000))
 
     @classmethod
-    def update(cls):
+    @timer
+    def update(cls, timer):
+        if timer.trigger(cls.bg_obj_spawn_rate):
+            cls.bg_objs.append(Background())
+
+        for bg_obj in cls.bg_objs:
+            bg_obj.gfx_animation()
+
         if cls.bg_move:
             cls.y += cls.scroll_speed
         win.blit(cls.bg_sprites[8], (0, cls.y - 4040))
