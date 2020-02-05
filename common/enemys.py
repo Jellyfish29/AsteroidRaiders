@@ -238,11 +238,11 @@ data.ENEMY = Enemy
 
 class Asteroid(Enemy):
 
-    def __init__(self, event=False):
+    def __init__(self, spawn=random.randint(1, 4)):
         super().__init__(
             random.randint(0, 360),
             random.randint(2, 8),
-            random.randint(1, 4),
+            spawn,
             Enemy.health,
             (80, 80),
             0,
@@ -276,11 +276,11 @@ class Asteroid(Enemy):
 
 class Jumper(Enemy):
 
-    def __init__(self):
+    def __init__(self, spawn=random.randint(1, 4)):
         super().__init__(
             random.randint(0, 360),
             random.randint(2, 8),
-            random.randint(1, 4),
+            spawn,
             Enemy.health,
             (70, 70),
             0,
@@ -318,11 +318,11 @@ class Jumper(Enemy):
 
 class Shooter(Enemy):
 
-    def __init__(self):
+    def __init__(self, spawn=random.randint(1, 4)):
         super().__init__(
             random.randint(0, 359),
             random.randint(4, 6),
-            random.randint(1, 4),
+            spawn,
             Enemy.health + 2,
             (80, 80),
             (2, 3),
@@ -350,11 +350,11 @@ class Shooter(Enemy):
 
 class Seeker(Enemy):
 
-    def __init__(self):
+    def __init__(self, spawn=random.randint(1, 4)):
         super().__init__(
             random.randint(0, 360),
             4,
-            random.randint(1, 4),
+            spawn,
             Enemy.health + 2,
             (80, 80),
             (8, 9),
@@ -380,11 +380,11 @@ class Seeker(Enemy):
 
 class Strafer(Enemy):
 
-    def __init__(self):
+    def __init__(self, spawn=random.randint(1, 4)):
         super().__init__(
             random.randint(0, 360),
             8,
-            random.randint(1, 4),
+            spawn,
             Enemy.health + 2,
             (80, 80),
             (15, 16),
@@ -439,11 +439,11 @@ class Miner(Enemy):
 
 class Mine_layer(Enemy):
 
-    def __init__(self):
+    def __init__(self, spawn=random.randint(1, 4)):
         super().__init__(
             0,
             4,
-            random.randint(1, 4),
+            spawn,
             Enemy.health + 2,
             (80, 80),
             (17, 18),
@@ -451,7 +451,7 @@ class Mine_layer(Enemy):
             Enemy.spez_sprites
         )
         self.score_amount = 8
-        self.fire_rate = 150
+        self.fire_rate = 180
         self.ttk_bonus = 50
 
     def skill(self):

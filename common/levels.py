@@ -1,5 +1,6 @@
 import random
 import pickle
+# import pygame
 
 from astraid_funcs import *
 import astraid_data as data
@@ -18,11 +19,9 @@ class Levels:
     level_interval = 35
     enemy_amount = 3  # at Start
     skill_points = 1
-    spez_event_trigger = 0
     # elite/Elites
     elite_wait = False
     elite_spawn_time = 0
-    event_trigger_time = (3600, 5000)
     boss_fight = False
     after_boss = False
     elite_fight = False
@@ -39,6 +38,9 @@ class Levels:
         36: 500,
         42: 700
     }
+    # Events
+    event_trigger_time = (3600, 5000)
+    event_id = 0
 
     @classmethod
     def scaling(cls):
@@ -105,20 +107,26 @@ class Levels:
             pass
 
     @classmethod
-    def spez_event(cls, flag):
-        cls.spez_event_trigger = 0
-        if flag == "wave":
+    def execute_event(cls, event_id):
+        spawn = random.randint(1, 4)
+        if event_id == 1:
             for i in range(4 + int(cls.level / 2)):
-                data.ENEMY_DATA.append(Asteroid())
-        elif flag == "jumper":
+                data.ENEMY_DATA.append(Asteroid(spawn=spawn))
+        elif event_id == 2:
             for i in range(2 + int(cls.level / 2)):
-                data.ENEMY_DATA.append(Jumper())
-        elif flag == "shooter":
+                data.ENEMY_DATA.append(Jumper(spawn=spawn))
+        elif event_id == 3:
             for i in range(2 + int(cls.level / 10)):
-                data.ENEMY_DATA.append(Shooter())
-        elif flag == "seeker":
+                data.ENEMY_DATA.append(Shooter(spawn=spawn))
+        elif event_id == 4:
             for i in range(2 + int(cls.level / 10)):
-                data.ENEMY_DATA.append(Seeker())
+                data.ENEMY_DATA.append(Seeker(spawn=spawn))
+        elif event_id == 5:
+            for i in range(3 + int(cls.level / 10)):
+                data.ENEMY_DATA.append(Strafer(spawn=spawn))
+        elif event_id == 6:
+            for i in range(3 + int(cls.level / 10)):
+                data.ENEMY_DATA.append(Mine_layer(spawn=spawn))
 
     @classmethod
     def save_game(cls):
@@ -133,9 +141,10 @@ class Levels:
     @classmethod
     @timer
     def update(cls, timer):
+
         if not any((cls.boss_fight, cls.after_boss, cls.elite_fight)):
             if timer.trigger(random.randint(cls.event_trigger_time[0], cls.event_trigger_time[1])):
-                cls.spez_event_trigger = random.randint(1, 4)
+                cls.execute_event(random.randint(1, 6))  # choices
 
         cls.elite_spawn()
 

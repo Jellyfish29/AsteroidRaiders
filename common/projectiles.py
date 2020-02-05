@@ -63,11 +63,7 @@ class Projectile(Timer):
         self.hitbox.move_ip(self.angles[self.get_angle()])
 
     def get_angle(self):
-        angle = self.angle + self.angle_variation
-        if angle > 359:
-            angle -= 359
-        elif angle < 0:
-            angle += 359
+        angle = angle_switcher(self.angle + self.angle_variation)
         if self.homing:
             self.angle = degrees(
                 self.target[0],
@@ -86,7 +82,8 @@ class Projectile(Timer):
             if self.hitbox.colliderect(obj.hitbox):
                 if self.flag != "secondary" and not self.hit_event:
                     self.gfx_hit()
-                    data.TURRET.hit_locations.append(self)
+                    if not isinstance(obj, type):
+                        data.TURRET.hit_locations.append(self)
                     self.hit_event = True
                 if self.hit_effect is not None:
                     self.hit_effect(self.hitbox.center)
@@ -349,11 +346,12 @@ class Mine(Projectile):
 
     def hit(self, obj):
         if self.decay:
-            if self.timer_trigger(600):
+            if self.timer_trigger(300):
                 self.kill = True
         if self.timer_delay(limit=180):  # Fuse Delay
             self.draw_envelope = True
-            if self.envelope.colliderect(obj.hitbox):
+            # if self.envelope.colliderect(obj.hitbox):
+            if self.envelope.collidepoint(obj.hitbox.center):
                 self.angle = degrees(
                     obj.hitbox.center[0],
                     self.hitbox.center[0],
@@ -362,9 +360,9 @@ class Mine(Projectile):
                 )
                 self.hitbox.move_ip(self.angles[self.angle])
                 self.envelope.move_ip(self.angles[self.angle])
-            if self.hitbox.colliderect(obj.hitbox):
-                Gfx.shot_hit_effect(self.hitbox, effect=self.gfx_hit_effect)
-                return True
+                if self.hitbox.collidepoint(obj.hitbox.center):
+                    Gfx.shot_hit_effect(self.hitbox, effect=self.gfx_hit_effect)
+                    return True
 
     def gfx_draw(self):
         win.blit(

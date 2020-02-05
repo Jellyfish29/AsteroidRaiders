@@ -62,6 +62,3 @@ import random
 # x = iter([i for i in range(0, 200, int(200 / 10))])
 
 # print([8 * i for i in range(4)])
-
-# for _ in range(5):
-#     print(next(x))

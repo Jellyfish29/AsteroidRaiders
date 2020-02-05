@@ -35,8 +35,6 @@ def test_mode():
 
 def main():
 
-    # Player.damage += 20
-
     right, left, up, down = [False, False, False, False]
 
     def move_condition(bool_1, str_1, bool_2, str_2, str_3):
@@ -47,40 +45,19 @@ def main():
         else:
             Player.move(str_3)
 
-    shooter_event, jumper_event, seeker_event, wave_event = [pygame.USEREVENT + i for i in range(1, 5)]
-
-    event_conditions = [
-        (lambda: Levels.spez_event_trigger == 1, pygame.event.Event(shooter_event)),
-        (lambda: Levels.spez_event_trigger == 2, pygame.event.Event(jumper_event)),
-        (lambda: Levels.spez_event_trigger == 3, pygame.event.Event(seeker_event)),
-        (lambda: Levels.spez_event_trigger == 4, pygame.event.Event(wave_event))
-    ]
-
     Gfx.background()
     Interface.create()
 
     components = [Player, Turret, Enemy, Phenomenon, Interface, Levels, Items]
 
-    # # # # Levels.skill_points += 100
-    # Items.drop((winwidth / 2, 400), target=Item_nuke((100, 100, 100)))
-    # Items.drop((winwidth / 2, 400), target=Item_he_rounds((100, 100, 150)))
     Items.drop((winwidth / 2, 400), target=Item_fragmentation_rounds((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=Items.start_item_generator()((100, 100, 200)))
-    # Items.drop((winwidth / 2, 400), amount=1)
     Levels.after_boss = True
     Interface.main_menu(True)
     Levels.spez_add()
 
-    # print(Player.shield.__class__.__bases__[0].__name__)
-
     while True:
-        # print(data.PLAYER, data.TURRET, data.ITEMS, data.BOSS, data.ELITES, data.PHENOM, data.LEVELS, data.ENEMY)
         Gfx.background()
-        # print(type(pl.Player))
-        # Items.spawm_all_items_test()
-        # print(Clock.get_fps())wwwwwsss
-        # print(Items.upgrade_points)
-        # print(len(data.ENEMY_DATA))ddwww
 
         Gfx.layer_3_update()
 
@@ -93,25 +70,15 @@ def main():
 
         Gfx.layer_1_update()
 
-        for spez_event in map(pygame.event.post, [event for (condition, event) in event_conditions if condition()]):
-            spez_event
-
         for event in pygame.event.get():
-            for typ, kind in [
-                (shooter_event, "shooter"),
-                (jumper_event, "jumper"),
-                (seeker_event, "seeker"),
-                (wave_event, "wave")
-            ]:
-                if event.type == typ:
-                    Levels.spez_event(kind)
+
             if event.type == KEYDOWN:
                 if event.key == K_TAB:
                     scrollspeed_temp = Gfx.scroll_speed
                     # Gfx.scroll_speed = 0
                     Interface.upgrades_menu(True)
                     Gfx.scroll_speed = scrollspeed_temp
-                    right, left, up, down = [False, False, False, False]  # damit palyer nicht moved nach verlassen von menu
+                    right, left, up, down = [False, False, False, False]
                 elif event.key == K_d:
                     right = True
                     move_condition(up, "right up", down, "right down", "right")

@@ -192,7 +192,7 @@ class Boss_skills(Timer):
                 size=(4, 4),
                 start_point=self.hitbox.midbottom,
                 damage=0,
-                flag="neutral",
+                flag="secondary",
                 gfx_idx=2,
                 target=target,
             ))

@@ -71,7 +71,7 @@ class Item_he_rounds(Active_Items):
         self.color = color
         self.flag = "he_rounds"
         self.cd_len = 1800
-        self.base_effect = 900  # active time
+        self.base_effect = 1100  # active time
         self.active_time = self.get_lvl_effects(reverse=True)[self.lvl]
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "s")
 
