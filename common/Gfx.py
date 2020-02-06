@@ -13,11 +13,6 @@ class Gfx(Timer):
     effect_sprites = get_images("effects")
     cursor_sprites = get_images("cursor")
     explosion_sprites = get_images("explosions")
-    # bg = get_images("background")
-    # y = 0
-    # scroll_speed = 1
-    # bg_move = True
-    bg_color = (0, 0, 15)
     font = pygame.font.SysFont("arial", 20)
 
     def __init__(
@@ -170,20 +165,6 @@ class Gfx(Timer):
         rect = pygame.Rect(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], 0, 0)
         win.blit(Gfx.cursor_sprites[2], (rect.topleft[0] - 9, rect.topleft[1] - 10))
 
-    # @classmethod
-    # def background(cls):
-    #     if Gfx.bg_move:
-    #         Gfx.y += Gfx.scroll_speed
-    #     win.blit(Gfx.bg[0], (0, Gfx.y - winheight * 6))
-    #     win.blit(Gfx.bg[3], (0, Gfx.y - winheight * 5))
-    #     win.blit(Gfx.bg[0], (0, Gfx.y - winheight * 4))
-    #     win.blit(Gfx.bg[2], (0, Gfx.y - winheight * 3))
-    #     win.blit(Gfx.bg[0], (0, Gfx.y - winheight * 2))
-    #     win.blit(Gfx.bg[1], (0, Gfx.y - winheight))
-    #     win.blit(Gfx.bg[0], (0, Gfx.y))
-    #     if Gfx.y >= 6480:
-    #         Gfx.y = 0
-
     @classmethod
     def update(cls):
         if Gfx.bg_move:
@@ -221,29 +202,58 @@ class Background(Timer):
     y = 0
     scroll_speed = 1
     bg_move = True
-    bg_color = (0, 0, 20)
+    bg_color = [0, 0, 30]
     bg_objs = []
-    bg_obj_spawn_rate = 600
+    bg_obj_spawn_rate = 1200
 
-    def __init__(self):
-        self.gfx_idx = random.randint(9, 13)
+    def __init__(self, y=-1000):
+        self.gfx_idx = random.randint(2, 9)
         self.x = random.randint(100, 1800)
+        self.y = y
+        self.kill = False
 
     def gfx_animation(self):
-        win.blit(Background.bg_sprites[self.gfx_idx], (self.x, Background.y - 2000))
+        win.blit(Background.bg_sprites[self.gfx_idx], (self.x, self.y))
+
+        if Background.bg_move:
+            self.y += Background.scroll_speed
+            if self.y > 1600:
+                self.kill = True
+
+    @classmethod
+    @timer
+    def bg_color_change(cls, timer, color=0, c_value=0, speed=1, sub=False):
+        if timer.trigger(5):
+            if sub:
+                cls.bg_color[color] -= speed
+                if cls.bg_color[color] <= c_value:
+                    cls.bg_color[color] = c_value
+                    return True
+            else:
+                cls.bg_color[color] += speed
+                if cls.bg_color[color] >= c_value:
+                    cls.bg_color[color] = c_value
+                    return True
 
     @classmethod
     @timer
     def update(cls, timer):
-        if timer.trigger(cls.bg_obj_spawn_rate):
-            cls.bg_objs.append(Background())
+        if not data.LEVELS.boss_fight:
+            if timer.trigger(cls.bg_obj_spawn_rate):
+                cls.bg_objs.append(Background())
 
         for bg_obj in cls.bg_objs:
             bg_obj.gfx_animation()
+            if bg_obj.kill:
+                cls.bg_objs.remove(bg_obj)
+
+        if data.LEVELS.after_boss:
+            cls.bg_color_change(sub=True)
+            cls.bg_color_change(color=2, c_value=30)
 
         if cls.bg_move:
             cls.y += cls.scroll_speed
-        win.blit(cls.bg_sprites[8], (0, cls.y - 4040))
-        win.blit(cls.bg_sprites[8], (0, cls.y - 1480))
-        if cls.y >= 4040:
+        win.blit(cls.bg_sprites[0], (0, cls.y - 1080))  # 4040
+        win.blit(cls.bg_sprites[0], (0, cls.y - 0))  # 1480
+        if cls.y >= 1080:
             cls.y = 0
