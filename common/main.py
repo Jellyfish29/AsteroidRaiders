@@ -52,7 +52,7 @@ def main():
     Background.bg_objs += [Background(y=0), Background(y=1000)]
 
     # Item Setup
-    Items.drop((winwidth / 2, 400), target=Item_burst_fire((100, 100, 200)))
+    Items.drop((winwidth / 2, 400), target=Item_he_rounds((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
 

@@ -239,7 +239,7 @@ class Turret:
                         explo_size=70,
                         damage=data.PLAYER.damage * 0.2,
                         explosion_effect=lambda loc: Gfx.create_effect(
-                            "explosion_4", 2, (loc[0] - 90, loc[1] - 90), explo=True)
+                            "explosion_4", 1, (loc[0] - 90, loc[1] - 90), explo=True)
                     ))
                 ))
                 return True

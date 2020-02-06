@@ -122,10 +122,12 @@ class Enemy(Timer):
             self.dmg_text_buffer(hp)
         if self.health > self.max_health:
             self.health = self.max_health
+            if self.buffer_hp > 0:
+                self.dmg_text_buffer(0, force=True)
 
-    def dmg_text_buffer(self, hp):
+    def dmg_text_buffer(self, hp, force=False):
         self.buffer_hp += hp
-        if self.buffer_hp > 1:
+        if self.buffer_hp >= 1.5 or force:
             Gfx.create_effect(
                 "dmg_txt", 4,
                 (self.hitbox.center[0] + random.randint(-10, 10),

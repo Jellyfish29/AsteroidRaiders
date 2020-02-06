@@ -219,7 +219,7 @@ class Bosses(Shooter, Boss_skills):
             skill()
 
     def death(self):
-        Gfx.create_effect("explosion_3", 3,
+        Gfx.create_effect("explosion_3", 2,
                           (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300),
                           explo=True)
 
@@ -836,7 +836,7 @@ class Elites(Bosses):
         pass
 
     def death(self):
-        Gfx.create_effect("explosion_3", 3,
+        Gfx.create_effect("explosion_3", 2,
                           (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300),
                           explo=True)
         data.LEVELSelite_fight = False
