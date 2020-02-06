@@ -65,6 +65,8 @@ def main():
 
     while True:
 
+        # print(Clock.get_fps())
+
         win.fill(Background.bg_color)
         Background.update()
 

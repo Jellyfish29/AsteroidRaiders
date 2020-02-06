@@ -88,6 +88,7 @@ class Interface:
             f"{data.PLAYER.shield.text}",
             f"{data.PLAYER.heal_amount}",
             f"{int(data.PLAYER.health)}/{data.PLAYER.max_health}",
+            f"{Clock.get_fps()}",
         ]):
             setattr(inter, "text", text)
             inter.draw()
@@ -102,6 +103,7 @@ class Interface:
                 ((255, 255, 255), (65, 860), 8, 25),  # shield
                 ((255, 255, 255), (65, 920), 7, 25),  # repair
                 ((255, 255, 255), (65, 1000), 3, 30),  # health
+                ((255, 255, 255), (1800, 900), 11, 25)
         ]:
             Interface.inter_lst.append(Interface(color, location, icon_idx, font_size))
 
