@@ -44,10 +44,14 @@ class Levels:
 
     @classmethod
     def scaling(cls):
-        data.ENEMY.health += 0.4
+        data.ENEMY.health += 0.5
         data.ELITES.health += data.ELITES.health * 0.1
-        cls.event_trigger_time = (cls.event_trigger_time[0] - 50, cls.event_trigger_time[1] - 75)
+        cls.event_trigger_time = (cls.event_trigger_time[0] - 60, cls.event_trigger_time[1] - 75)
+        if cls.event_trigger_time[0] <= 200:
+            cls.event_trigger_time = (200, 500)
         cls.second_elite_chance -= 1.5
+        if cls.second_elite_chance < 40:
+            cls.second_elite_chance = 40
         if cls.level % 6 == 0:
             cls.enemy_amount += 1
             cls.elite_max_spawn_time -= 100
@@ -55,7 +59,6 @@ class Levels:
             cls.spez_add()
             data.BOSS.create(cls.level)
             cls.boss_fight = True
-            # gfx.Background.scroll_speed += 1
             gfx.Background.bg_move = False
             cls.save_game()
 
@@ -80,7 +83,7 @@ class Levels:
 
     @classmethod
     def spez_add(cls):
-        data.ENEMY.spez_spawn_time -= 15
+        data.ENEMY.spez_spawn_time -= 18
         data.PHENOM.spawn_time -= 15
         if data.ENEMY.spez_spawn_time < 60:
             data.ENEMY.spez_spawn_time = 60
@@ -90,13 +93,13 @@ class Levels:
             data.PHENOM.set_spawn_table(Planet)
         if cls.level == 6:
             data.ENEMY.set_spawn_table(Shooter)
-            data.PHENOM.set_spawn_table(Gravity_well)
+            # data.PHENOM.set_spawn_table(Gravity_well)
         elif cls.level == 12:
             data.ENEMY.set_spawn_table(Mine_layer)
             data.PHENOM.set_spawn_table(Repair_station)
         elif cls.level == 18:
             data.ENEMY.set_spawn_table(Strafer)
-            data.PHENOM.set_spawn_table(Anti_gravity_well)
+            # data.PHENOM.set_spawn_table(Anti_gravity_well)
         elif cls.level == 24:
             pass
             # data.ENEMY.get_spawn_table().append(en.Miner)
@@ -126,7 +129,7 @@ class Levels:
             for i in range(3 + int(cls.level / 10)):
                 data.ENEMY_DATA.append(Strafer(spawn=spawn))
         elif event_id == 6:
-            for i in range(3 + int(cls.level / 10)):
+            for i in range(3):
                 data.ENEMY_DATA.append(Mine_layer(spawn=spawn))
 
     @classmethod

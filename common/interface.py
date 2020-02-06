@@ -131,7 +131,7 @@ class Interface:
 
         while upgrades_pressed:
 
-            win.fill(Gfx.bg_color)
+            win.fill(Background.bg_color)
 
             Background.update()
             texts = [

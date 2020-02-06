@@ -212,14 +212,18 @@ class Player:
             if timer.timer_delay(120):
                 if cls.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):
                     cls.hitbox.center = (cls.hitbox.center[0], winheight)
+
+                    Background.bg_move = True
                     Background.y += 1080
+                    for bg_obj in Background.bg_objs:
+                        bg_obj.y += 1080
+
                     data.ITEMS.dropped_lst.clear()
                     data.PHENOMENON_DATA.clear()
 
                     data.LEVELS.save_game()
 
                     cls.restart_timer = True
-                    Background.bg_move = True
 
         if cls.restart_timer:
             if timer.trigger(120):

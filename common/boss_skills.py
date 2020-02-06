@@ -3,7 +3,7 @@ import random
 import astraid_data as data
 from init import *
 from astraid_funcs import *
-from Gfx import Gfx
+from Gfx import Gfx, Background
 from projectiles import Projectile, Mine, Missile, Impactor, Explosion, Dart, Wave
 from phenomenon import Gravity_well, Force_field
 from items import Event_item_boss_snare
@@ -234,7 +234,7 @@ class Boss_skills(Timer):
                         target=(self.hitbox.topleft[0] - 250, self.hitbox.topleft[1] + shot_sp + 10),
                         impact_effect=lambda shot_sp=shot_sp: data.ENEMY_PROJECTILE_DATA.append(Dart(
                             start_point=(self.hitbox.topright[0] - 250, self.hitbox.topright[1] + shot_sp),
-                            damage=3,
+                            damage=4,
                             target=data.PLAYER.hitbox
                         ))
                     ))
@@ -247,7 +247,7 @@ class Boss_skills(Timer):
                         target=(self.hitbox.topleft[0] + 250, self.hitbox.topleft[1] + shot_sp + 10),
                         impact_effect=lambda shot_sp=shot_sp: data.ENEMY_PROJECTILE_DATA.append(Dart(
                             start_point=(self.hitbox.topright[0] + 250, self.hitbox.topright[1] + shot_sp),
-                            damage=2,
+                            damage=4,
                             target=data.PLAYER.hitbox
                         ))
                     ))
@@ -429,7 +429,7 @@ class Boss_skills(Timer):
                             target=(self.hitbox.topleft[0] - 250, self.hitbox.topleft[1] + shot_sp + 10),
                             impact_effect=lambda shot_sp=shot_sp: data.ENEMY_PROJECTILE_DATA.append(Dart(
                                 start_point=(self.hitbox.topright[0] - 250, self.hitbox.topright[1] + shot_sp),
-                                damage=3,
+                                damage=4,
                                 target=data.PLAYER.hitbox
                             ))
                         ))
@@ -461,7 +461,7 @@ class Boss_skills(Timer):
             if limiter.run_block_once():
                 self.special_gfx = True
                 self.angles = angles_360(0)
-                Gfx.bg_move = True
+                Background.bg_move = True
                 self.hitable = False
                 self.hide_health_bar = True
 

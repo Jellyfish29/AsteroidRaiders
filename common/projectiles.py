@@ -196,7 +196,7 @@ class Dart(Projectile):
             aquisition_delay=60
     ):
         super().__init__(
-            speed=60,
+            speed=80,
             size=(5, 5),
             start_point=start_point,
             damage=damage,
@@ -346,7 +346,7 @@ class Mine(Projectile):
 
     def hit(self, obj):
         if self.decay:
-            if self.timer_trigger(300):
+            if self.timer_trigger(500):
                 self.kill = True
         if self.timer_delay(limit=180):  # Fuse Delay
             self.draw_envelope = True

@@ -146,7 +146,7 @@ class Item_burst_fire(Active_Items):
         super().__init__(color, "Burst Fire (active)", "Fires a short Burst at the target location", (40, 40))
         self.color = color
         self.flag = "burst_fire"
-        self.base_effect = 8
+        self.base_effect = 10
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
         self.cd_len = 360
 

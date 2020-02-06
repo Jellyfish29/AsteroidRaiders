@@ -45,21 +45,27 @@ def main():
         else:
             Player.move(str_3)
 
-    Background.update()
-    Interface.create()
-
     components = [Player, Turret, Enemy, Phenomenon, Interface, Levels, Items]
 
-    # Items.drop((winwidth / 2, 400), target=Item_fragmentation_rounds((100, 100, 200)))
+    # Background Setup
+    Background.update()
+    Background.bg_objs += [Background(y=0), Background(y=1000)]
+
+    # Item Setup
+    Items.drop((winwidth / 2, 400), target=Item_burst_fire((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
+
+    # Interface Setup
+    Interface.create()
     Interface.main_menu(True)
+
+    # Enemy Setup
     Levels.spez_add()
 
     while True:
 
-        win.fill(Gfx.bg_color)
-
+        win.fill(Background.bg_color)
         Background.update()
 
         Gfx.layer_3_update()
@@ -191,7 +197,8 @@ def main():
                 exit()
         Gfx.cursor()
         Clock.tick(fps)
-        pygame.display.update()
+        # pygame.display.update()
+        pygame.display.flip()
 
 
 if __name__ == "__main__":

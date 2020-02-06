@@ -100,6 +100,6 @@ def turret_test():
 
 
 if __name__ == "__main__":
-    # boss_tick_test()
-    # item_test()
+    boss_tick_test()
+    item_test()
     turret_test()

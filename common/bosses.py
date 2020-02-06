@@ -7,7 +7,7 @@ from enemys import Enemy, Shooter
 from projectiles import Impactor, Wave
 from boss_skills import Boss_skills
 from items import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
-from Gfx import Gfx
+from Gfx import Gfx, Background
 import astraid_data as data
 
 
@@ -39,6 +39,7 @@ class Bosses(Shooter, Boss_skills):
         self.sprites = data.ENEMY.boss_sprites
         self.rotate = False
         self.buffer_hp = 0
+        self.bg_change = True
         # Shooting
         self.shot_angle = 0
         self.shot_angles = angles_360(8)  # projectilespeed
@@ -221,6 +222,9 @@ class Bosses(Shooter, Boss_skills):
         Gfx.create_effect("explosion_3", 3,
                           (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300),
                           explo=True)
+
+        if self.__class__.__name__ == "Elites":
+            data.LEVELS.interval_score += data.LEVELS.level
         data.LEVELS.display_score += self.score_amount
 
         data.ITEMS.drop((800, 500), amount=self.drop_amount)
@@ -273,11 +277,19 @@ class Bosses(Shooter, Boss_skills):
             data.TURRET.point_defence(self.hitbox)
         if self.health <= 0:
             self.death()
+
+        if not any([self.__class__.__name__ == "Boss_turret",
+                    self.__class__.__name__ == "Boss_weakspot",
+                    self.__class__.__name__ == "Elites"]):
+            if self.bg_change:
+                if Background.bg_color_change(color=0, c_value=40):
+                    self.bg_change = False
+
         self.timer_tick()
 
     @classmethod
     def create(cls, lvl):
-        if lvl == 66:
+        if lvl == 6:
             data.ENEMY_DATA.append(Boss_mine_boat())
         elif lvl == 12:
             data.ENEMY_DATA.append(Boss_frigatte())
@@ -285,7 +297,7 @@ class Bosses(Shooter, Boss_skills):
             data.ENEMY_DATA.append(Boss_corvette())
         elif lvl == 24:
             data.ENEMY_DATA.append(Boss_destroyer())
-        elif lvl == 6:
+        elif lvl == 30:
             data.ENEMY_DATA.append(Boss_cruiser())
         elif lvl == 36:
             data.ENEMY_DATA.append(Boss_scout())
@@ -414,7 +426,7 @@ class Boss_corvette(Bosses):
 
     def __init__(self):
 
-        self.health = 700
+        self.health = 800
         self.speed = 4
         self.fire_rate = 30
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]
@@ -464,7 +476,7 @@ class Boss_corvette(Bosses):
 class Boss_destroyer(Bosses):
 
     def __init__(self):
-        self.health = 1200
+        self.health = 2400
         self.speed = 2
         self.fire_rate = 60
         self.move_pattern = [0, 7, 0, 1, 2]
@@ -540,7 +552,7 @@ class Boss_destroyer(Bosses):
 class Boss_cruiser(Bosses):
 
     def __init__(self):
-        self.health = 2500
+        self.health = 5000
         self.speed = 2
         self.fire_rate = 50
         self.move_pattern = [8, 9]
@@ -596,7 +608,7 @@ class Boss_cruiser(Bosses):
 class Boss_scout(Bosses):
 
     def __init__(self):
-        self.health = 1000
+        self.health = 2000
         self.speed = 6
         self.fire_rate = 70
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]
@@ -606,7 +618,7 @@ class Boss_scout(Bosses):
         self.skills_lst = [self.skill_salvo_delta]
         self.drop_amount = 1
         self.gfx_angle = 0
-        self.force_field_rate = 26
+        self.force_field_rate = 22
         self.phase_triggers = [self.health * 0.8, self.health * 0.5, self.health * 0.15]
         super().__init__()
         self.hitbox = pygame.Rect(winwidth / 2, 1200, self.size[0], self.size[1])
@@ -654,8 +666,8 @@ class Boss_scout(Bosses):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         if self.gfx_angle == 180:
             if limiter.run_block_once():
+                Background.scroll_speed = 10
                 self.special_skills_lst.append(self.skill_scout_force_field_fire)
-                Background.scroll_speed = 8
                 self.gfx_idx = (12, 13)
         elif self.gfx_angle > 180:
             if self.timer_trigger(1):
@@ -701,7 +713,7 @@ class Boss_scout(Bosses):
 class Boss_battleship(Bosses):
 
     def __init__(self):
-        self.health = 3200
+        self.health = 8000
         self.speed = 2
         self.fire_rate = 70
         self.move_pattern = [0, 7, 0, 1, 2]
@@ -879,7 +891,7 @@ class Elites(Bosses):
                 health=Elites.health - Elites.health * 0.2, speed=8, fire_rate=80,
                 skill=Boss_skills.skill_jumpdrive, gfx_idx=(4, 5)),
             lambda: Elites(
-                health=Elites.health + Elites.health, speed=3, fire_rate=100,
+                health=Elites.health + Elites.health * 0.7, speed=3, fire_rate=100,
                 skill=Boss_skills.skill_salvo_delta, gfx_idx=(6, 7)),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.1, speed=2, fire_rate=100,

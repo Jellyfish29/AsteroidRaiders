@@ -3,6 +3,7 @@ import random
 
 from astraid_funcs import *
 from init import *
+from Gfx import Background
 import astraid_data as data
 
 
@@ -339,7 +340,7 @@ class Force_field(Timer):
         Timer.__init__(self)
         self.hitbox = pygame.Rect(location[0], location[1], 400, 10)
         self.kill = False
-        self.speed = 8  # random.randint(8, 16)
+        self.speed = Background.scroll_speed  # random.randint(8, 16)
         self.flag = "shield"
         self.sprite_lst = iter([8, 9, 10, 11, 12, 13, 14])
         self.gfx_idx = 8

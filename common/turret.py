@@ -368,6 +368,7 @@ class Turret:
                             start_point=data.PLAYER.hitbox.center,
                             damage=data.PLAYER.damage + 0.5,
                             gfx_idx=11,
+                            angle_variation=random.randint(-5, 5),
                             target=pygame.mouse.get_pos()
                         ))
                     else:
