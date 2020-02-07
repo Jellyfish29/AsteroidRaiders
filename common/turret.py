@@ -14,7 +14,7 @@ class Turret:
 
     # normal shot vlaues
     projectile_size = (12, 6)
-    projectile_speed = 25
+    projectile_speed = 35
     firing = False
     direction = None
     base_fire_rate = 2.4
@@ -42,6 +42,8 @@ class Turret:
     # Gfx setup
     projectile_sprites = get_images("projectile")
     explosion_sprites = get_images("explosions")
+    muzzle_effect_timer = (i for i in range(1))
+    gun_gfx_idx = 0
     # Special Munitions
     snare_charge = 0
 
@@ -339,7 +341,7 @@ class Turret:
                 if timer.trigger(30):
                     cls.star_shot_limiter += 1
                     Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
-                    if cls.star_shot_limiter > cls.star_shot_ammo + data.LEVELS.level:
+                    if cls.star_shot_limiter > cls.star_shot_ammo + int(data.LEVELS.level / 2):
                         cls.star_shot_limiter = 0
                         star_fire.end_active()
                         del star_fire
@@ -416,6 +418,7 @@ class Turret:
     @timer
     def normal_fire(cls, timer):
         if timer.trigger(cls.get_fire_rate()):
+            cls.muzzle_effect_timer = (i for i in range(8))
             cls.shot_count += 1
 
             dmg = data.PLAYER.damage
@@ -434,7 +437,7 @@ class Turret:
                 cls.he_rounds(),
                 cls.boss_snare(),
             ]):
-                Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
+                # Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
                 data.PLAYER_PROJECTILE_DATA.append(Projectile(
                     speed=cls.projectile_speed,
                     size=cls.projectile_size,
@@ -444,6 +447,13 @@ class Turret:
                     target=pygame.mouse.get_pos(),
                     piercing=piercing
                 ))
+
+    @classmethod
+    def gun_gfx_idx_update(cls):
+        if next(cls.muzzle_effect_timer, "stop") == "stop":
+            cls.gun_gfx_idx = 0
+        else:
+            cls.gun_gfx_idx = 1
 
     @classmethod
     def get_fire_rate(cls):
@@ -459,27 +469,18 @@ class Turret:
     @classmethod
     def gfx_gun_draw(cls):
         win.blit(rot_center(
-            data.PLAYER.ship_sprites[18], degrees(
+            Gfx.gun_sprites[cls.gun_gfx_idx], degrees(
                 pygame.mouse.get_pos()[1],
                  data.PLAYER.hitbox.center[1],
                  pygame.mouse.get_pos()[0],
                  data.PLAYER.hitbox.center[0])
         ),
-            (data.PLAYER.hitbox.center[0] - 17, data.PLAYER.hitbox.center[1] - 6))
-
-    @classmethod
-    def gfx_pd_draw(cls):
-        if "point_defence" in data.ITEMS.active_flag_lst:
-            if data.ITEMS.get_item(flag="point_defence").active:
-                win.blit(
-                    cls.projectile_sprites[7],
-                    (data.PLAYER.hitbox.topleft[0] - 190, data.PLAYER.hitbox.topleft[1] - 220)
-                )
+            (data.PLAYER.hitbox.center[0] - 50, data.PLAYER.hitbox.center[1] - 50))
 
     @classmethod
     def update(cls):
         cls.gfx_gun_draw()
-        cls.gfx_pd_draw()
+        cls.gun_gfx_idx_update()
         cls.on_mouse_click_actions()
         cls.on_item_button_click_actions()
         cls.hit_locations.clear()

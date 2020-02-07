@@ -40,6 +40,9 @@ class Bosses(Shooter, Boss_skills):
         self.rotate = False
         self.buffer_hp = 0
         self.bg_change = True
+        self.muzzle_effect_timer = (i for i in range(1))
+        self.guns = [{"pos": [0, 0], "sprites": [2, 3]}]
+        self.gun_idx = 0
         # Shooting
         self.shot_angle = 0
         self.shot_angles = angles_360(8)  # projectilespeed
@@ -167,7 +170,24 @@ class Bosses(Shooter, Boss_skills):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
 
     def guns_gfx_animation(self):
-        pass
+        gfx_angle = degrees(
+            data.PLAYER.hitbox.center[1],
+            self.hitbox.center[1],
+            data.PLAYER.hitbox.center[0],
+            self.hitbox.center[0]
+        )
+        for gun in self.guns:
+            win.blit(rot_center(
+                Gfx.gun_sprites[gun["sprites"][self.gun_idx]], gfx_angle),
+                (self.hitbox.center[0] + gun["pos"][0],
+                 self.hitbox.center[1] + gun["pos"][1])
+            )
+
+    def gun_gfx_idx_update(self):
+        if next(self.muzzle_effect_timer, "stop") == "stop":
+            self.gun_idx = 0
+        else:
+            self.gun_idx = 1
 
     def special_gfx_animation(self):
         pass
@@ -270,6 +290,7 @@ class Bosses(Shooter, Boss_skills):
         else:
             self.special_gfx_animation()
         self.guns_gfx_animation()
+        self.gun_gfx_idx_update()
         if self.hitable:
             data.TURRET.missile_aquisition(self)
         if any([self.__class__.__name__ == "Boss_turret",
@@ -329,6 +350,7 @@ class Boss_mine_boat(Bosses):
             "up": (-15, 90),
             "left": (32, -10)
         }
+        self.guns = [{"pos": [-50, -50], "sprites": [2, 3]}]
 
     def phase_1(self):
         self.angles = angles_360(5)
@@ -378,6 +400,7 @@ class Boss_frigatte(Bosses):
             "up": (-18, 90),
             "left": (67, -10)
         }
+        self.guns = [{"pos": [-50, -50], "sprites": [4, 5]}]
 
     def phase_1(self):
 
@@ -442,6 +465,9 @@ class Boss_corvette(Bosses):
             "up": (-10, 100),
             "left": (40, -10)
         }
+        self.guns = [{"pos": [-30, -30], "sprites": [2, 3]},
+                     {"pos": [-70, -30], "sprites": [2, 3]}
+                     ]
 
     def phase_1(self):
 
@@ -494,6 +520,9 @@ class Boss_destroyer(Bosses):
             "up": (-15, 90),
             "left": (70, -10)
         }
+        self.guns = [{"pos": [-20, -50], "sprites": [4, 5]},
+                     {"pos": [-80, -50], "sprites": [4, 5]}
+                     ]
 
     def phase_1(self):
 
@@ -510,6 +539,7 @@ class Boss_destroyer(Bosses):
 
     def phase_2(self):
 
+        self.speed += 2
         self.special_attack = True
         self.special_skills_lst.append(self.skill_main_gun_salvo)
         self.skills_lst.append(self.skill_jumpdrive)
@@ -521,7 +551,7 @@ class Boss_destroyer(Bosses):
                 Boss_weakspot(self.max_health * 0.05, self, loc, size=size)
             )
         data.PLAYER.hitbox.center
-        for _ in range(8):
+        for _ in range(6):
             target = random.choice([
                 (random.randint(0, winwidth),
                  random.randint(0, winheight),
@@ -531,7 +561,7 @@ class Boss_destroyer(Bosses):
 
     def phase_3(self):
 
-        self.speed += 3
+        # self.speed += 3
         self.set_health(-100, (0, 255, 0))
         self.fire_rate -= 25
         self.special_attack = True
@@ -570,6 +600,11 @@ class Boss_cruiser(Bosses):
             "up": (-15, 90),
             "left": (70, -10)
         }
+        self.guns = [{"pos": [-20, -40], "sprites": [4, 5]},
+                     {"pos": [-80, -40], "sprites": [4, 5]},
+                     {"pos": [-50, -100], "sprites": [2, 3]},
+                     {"pos": [-50, 0], "sprites": [2, 3]},
+                     ]
 
     def phase_1(self):
 
@@ -734,7 +769,9 @@ class Boss_battleship(Bosses):
             "up": (-15, 90),
             "left": (70, -10)
         }
-        self.gun_position = [-33, 30]  # turned position = [-83, -33]
+        self.guns = [{"pos": [-53, 20], "sprites": [6, 7]},
+                     {"pos": [29, -20], "sprites": [2, 3]},
+                     {"pos": [-133, -20], "sprites": [2, 3]}]
 
     def phase_1(self):
 
@@ -771,19 +808,6 @@ class Boss_battleship(Bosses):
                 self.max_health * 0.05, self, loc,
                 death_effect=death_effect, size=size)
             )
-
-    def guns_gfx_animation(self):
-        gfx_angle = degrees(
-            data.PLAYER.hitbox.center[1],
-            self.hitbox.center[1],
-            data.PLAYER.hitbox.center[0],
-            self.hitbox.center[0]
-        )
-        win.blit(rot_center(
-            data.ENEMY.spez_sprites[19], gfx_angle),
-            (self.hitbox.center[0] + self.gun_position[0],
-             self.hitbox.center[1] + self.gun_position[1])
-        )
 
 
 # class Boss_carrier(Bosses):
@@ -878,6 +902,12 @@ class Elites(Bosses):
                  self.hitbox.topleft[1] + self.gfx_hook[1])
             )
 
+    def guns_gfx_animation(self):
+        pass
+
+    def gun_gfx_idx_update(self):
+        pass
+
     @classmethod
     def spawn(cls):
         data.ENEMY_DATA.append(random.choice([
@@ -958,7 +988,9 @@ class Boss_turret(Shooter):
         self.fire_rate = 150
         self.target = data.PLAYER.hitbox
         self.special_take_damage = boss.special_take_damage
-        self.gfx_idx = (19, 19)
+        self.gfx_idx = 0
+        self.guns = [{"pos": [-50, -50], "sprites": [6, 7]}]
+        self.gun_idx = 0
 
     def move(self):
         self.hitbox.center = self.location
@@ -966,18 +998,28 @@ class Boss_turret(Shooter):
     def set_sp_dmg(self):
         self.special_take_damage = self.boss.special_take_damage
 
-    def gfx_animation(self):
+    def guns_gfx_animation(self):
         gfx_angle = degrees(
-            self.target[1],
+            data.PLAYER.hitbox.center[1],
             self.hitbox.center[1],
-            self.target[0],
+            data.PLAYER.hitbox.center[0],
             self.hitbox.center[0]
         )
-        win.blit(rot_center(
-            self.sprites[self.gfx_idx[0]], gfx_angle),
-            (self.hitbox.topleft[0] + self.gfx_hook[0],
-             self.hitbox.topleft[1] + self.gfx_hook[1])
-        )
+        for gun in self.guns:
+            win.blit(rot_center(
+                Gfx.gun_sprites[gun["sprites"][self.gun_idx]], gfx_angle),
+                (self.hitbox.center[0] + gun["pos"][0],
+                 self.hitbox.center[1] + gun["pos"][1])
+            )
+
+    def gun_gfx_idx_update(self):
+        if next(self.muzzle_effect_timer, "stop") == "stop":
+            self.gun_idx = 0
+        else:
+            self.gun_idx = 1
+
+    def gfx_animation(self):
+        pass
 
 
 class Boss_main_gun_battery(Bosses):
@@ -1003,7 +1045,7 @@ class Boss_main_gun_battery(Bosses):
 
     def tick(self):
         self.hitbox.center = self.location()
-        self.skill_main_gun(target=self.target)
+        self.skill_main_gun(target=self.target, static=True, gun_trigger=30)
         self.timer_tick()
 
 
@@ -1034,13 +1076,13 @@ class Boss_laser_battery(Bosses):
                     self.fixed_angle = 90
         else:
             data.ENEMY_PROJECTILE_DATA.append(Wave(
-                speed=20,
+                speed=25,
                 size=(5, 5),
                 start_point=self.boss.hitbox.center,
                 damage=1,
                 gfx_idx=16,
                 # target=self.target,
-                curve_size=1.5,
+                curve_size=2,
                 fixed_angle=self.fixed_angle
             ))
             if self.timer_trigger(7):

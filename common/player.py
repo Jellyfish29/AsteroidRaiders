@@ -108,7 +108,9 @@ class Player:
             Gfx.create_effect(
                 "heal", 20, (cls.hitbox.topleft[0] - 25, cls.hitbox.topleft[1] - 25), hover=True)
             cls.heal_amount -= 1
-            cls.health = cls.max_health
+            cls.health += 3
+            if cls.health > cls.max_health:
+                cls.health = cls.max_health
 
     @classmethod
     def jumpdrive_update(cls):

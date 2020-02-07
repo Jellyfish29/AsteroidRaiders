@@ -68,6 +68,7 @@ class Enemy(Timer):
         self.flag = "normal"
         self.fire_rate = 0
         self.buffer_hp = 0
+        self.muzzle_effect_timer = (i for i in range(1))
 
     def move(self):
         self.hitbox.move_ip(self.angles[self.direction])
@@ -216,6 +217,9 @@ class Enemy(Timer):
         self.skill()
         data.TURRET.missile_aquisition(self)
         data.TURRET.point_defence(self.hitbox)
+        if any([self.__class__.__name__ == "Boss_turret"]):
+            self.guns_gfx_animation()
+            self.gun_gfx_idx_update()
         if self.health <= 0:
             self.death()
         self.timer_tick()
@@ -247,7 +251,9 @@ data.ENEMY = Enemy
 
 class Asteroid(Enemy):
 
-    def __init__(self, spawn=random.randint(1, 4)):
+    def __init__(self, spawn=1):
+        # if spawn is None:
+        #     spawn = random.randint(1, 4)
         super().__init__(
             random.randint(0, 360),
             random.randint(2, 8),
@@ -285,7 +291,9 @@ class Asteroid(Enemy):
 
 class Jumper(Enemy):
 
-    def __init__(self, spawn=random.randint(1, 4)):
+    def __init__(self, spawn=None):
+        if spawn is None:
+            spawn = random.randint(1, 4)
         super().__init__(
             random.randint(0, 360),
             random.randint(2, 8),
@@ -327,7 +335,9 @@ class Jumper(Enemy):
 
 class Shooter(Enemy):
 
-    def __init__(self, spawn=random.randint(1, 4)):
+    def __init__(self, spawn=None):
+        if spawn is None:
+            spawn = random.randint(1, 4)
         super().__init__(
             random.randint(0, 359),
             random.randint(4, 6),
@@ -346,6 +356,7 @@ class Shooter(Enemy):
     def skill(self):
         # print(f"shooter {self.timer_calls_per_tick}")
         if self.timer_trigger(self.fire_rate):
+            self.muzzle_effect_timer = (i for i in range(8))
             data.ENEMY_PROJECTILE_DATA.append(Projectile(
                 speed=self.projectile_speed,
                 size=(6, 6),
@@ -359,7 +370,9 @@ class Shooter(Enemy):
 
 class Seeker(Enemy):
 
-    def __init__(self, spawn=random.randint(1, 4)):
+    def __init__(self, spawn=None):
+        if spawn is None:
+            spawn = random.randint(1, 4)
         super().__init__(
             random.randint(0, 360),
             4,
@@ -389,7 +402,9 @@ class Seeker(Enemy):
 
 class Strafer(Enemy):
 
-    def __init__(self, spawn=random.randint(1, 4)):
+    def __init__(self, spawn=None):
+        if spawn is None:
+            spawn = random.randint(1, 4)
         super().__init__(
             random.randint(0, 360),
             8,
@@ -448,7 +463,9 @@ class Miner(Enemy):
 
 class Mine_layer(Enemy):
 
-    def __init__(self, spawn=random.randint(1, 4)):
+    def __init__(self, spawn=None):
+        if spawn is None:
+            spawn = random.randint(1, 4)
         super().__init__(
             0,
             4,

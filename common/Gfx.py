@@ -13,6 +13,7 @@ class Gfx(Timer):
     effect_sprites = get_images("effects")
     cursor_sprites = get_images("cursor")
     explosion_sprites = get_images("explosions")
+    gun_sprites = get_images("guns")
     font = pygame.font.SysFont("arial", 20)
 
     def __init__(
@@ -253,7 +254,7 @@ class Background(Timer):
 
         if cls.bg_move:
             cls.y += cls.scroll_speed
-        win.blit(cls.bg_sprites[0], (0, cls.y - 1080))  # 4040
-        win.blit(cls.bg_sprites[0], (0, cls.y - 0))  # 1480
+        win.blit(cls.bg_sprites[1], (0, cls.y - 1080))  # 4040
+        win.blit(cls.bg_sprites[1], (0, cls.y - 0))  # 1480
         if cls.y >= 1080:
             cls.y = 0

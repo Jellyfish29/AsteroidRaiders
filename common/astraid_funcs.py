@@ -221,9 +221,13 @@ class Timer:
 
 class Run_limiter:
 
+    game_tick = 0
+    previous_tick = 0
+
     def __init__(self):
         self.code_block_ran = False
         self.run_counter = 0
+        self.ticker = {}
 
     def run_block_once(self):
         if not self.code_block_ran:
@@ -239,7 +243,7 @@ class Run_limiter:
         else:
             return False
 
-    def reset(self):
+    def run_limiter_reset(self, key="one"):
         self.code_block_ran = False
 
 

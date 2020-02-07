@@ -134,6 +134,41 @@ class Projectile(Timer):
         self.timer_tick()
 
 
+class Laser_designator(Projectile, Run_limiter):
+
+    def __init__(
+            self,
+            start_point=(0, 0),
+            gfx_idx=2,
+            target=None,
+            distance=0,
+            ttl=1,
+            tracking=False
+    ):
+        super().__init__(
+            speed=0,
+            size=(5, 5),
+            start_point=start_point,
+            damage=0,
+            flag="secondary",
+            gfx_idx=gfx_idx,
+            target=target,
+            homing=True)
+        Run_limiter.__init__(self)
+        self.distance = distance
+        self.ttl = ttl
+
+    def move(self):
+        if self.run_block_once():
+            self.hitbox.move_ip(angles_360(self.distance)[self.get_angle()])
+        if self.timer_trigger(self.ttl):
+            self.kill = True
+
+    # def gfx_draw(self):
+    #     win.blit(Projectile.projectile_sprites[self.gfx_idx],
+    #              (self.hitbox.topleft[0] - 50, self.hitbox.topleft[1] - 50))
+
+
 class Impactor(Projectile):
 
     def __init__(
@@ -200,7 +235,7 @@ class Dart(Projectile):
             size=(5, 5),
             start_point=start_point,
             damage=damage,
-            flag="en_missile",
+            flag="dart",
             gfx_idx=gfx_idx,
             target=target
         )

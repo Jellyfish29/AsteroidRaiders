@@ -137,7 +137,7 @@ class Item_star_fire(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
     def get_active_str(self):
-        return str((data.TURRET.star_shot_ammo + data.LEVELS.level - data.TURRET.star_shot_limiter))
+        return str(int(data.TURRET.star_shot_ammo + data.LEVELS.level / 2 - data.TURRET.star_shot_limiter))
 
 
 class Item_burst_fire(Active_Items):
@@ -148,7 +148,7 @@ class Item_burst_fire(Active_Items):
         self.flag = "burst_fire"
         self.base_effect = 10
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
-        self.cd_len = 360
+        self.cd_len = 300
 
     def get_upgrade_desc(self):
         return f"Burts Lenght: {int(self.get_lvl_effects(reverse=True)[self.lvl])} <> Cooldown: {int(self.get_cd_len() / 60) + 1}s"
@@ -165,7 +165,7 @@ class Item_scatter_fire(Active_Items):
         self.flag = "scatter_fire"
         self.base_effect = 4
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
-        self.cd_len = 480
+        self.cd_len = 300
 
     def get_upgrade_desc(self):
         return f"Burts Amounts: {int(self.get_lvl_effects(reverse=True)[self.lvl])} <> Cooldown: {int(self.get_cd_len() / 60) + 1}s"
@@ -217,7 +217,7 @@ class Item_black_hole_bomb(Active_Items):
         super().__init__(color, "Balck Hole Bomb (active)", "Fires a Missile that upon Impact creates a micro singularity", (40, 40))
         self.color = color
         self.flag = "black_hole_bomb"
-        self.base_effect = 60  # 2700  # cooldwon time
+        self.base_effect = 2700  # cooldwon time
         self.cd_len = self.get_lvl_effects()[self.lvl]
         self.active_time = 300
         self.engage = False

@@ -16,6 +16,7 @@ from items_active import *
 from items_passive import *
 from items_misc import *
 from phenomenon import *
+import math
 
 
 def test_mode():
@@ -66,6 +67,7 @@ def main():
     while True:
 
         # print(Clock.get_fps())
+        # print(pygame.time.get_ticks())
 
         win.fill(Background.bg_color)
         Background.update()
@@ -197,6 +199,7 @@ def main():
             elif event.type == QUIT:
                 pygame.quit()
                 exit()
+
         Gfx.cursor()
         Clock.tick(fps)
         # pygame.display.update()

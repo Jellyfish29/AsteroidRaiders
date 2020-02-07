@@ -4,7 +4,7 @@ import astraid_data as data
 from init import *
 from astraid_funcs import *
 from Gfx import Gfx, Background
-from projectiles import Projectile, Mine, Missile, Impactor, Explosion, Dart, Wave
+from projectiles import Projectile, Mine, Missile, Impactor, Explosion, Dart, Wave, Laser_designator
 from phenomenon import Gravity_well, Force_field
 from items import Event_item_boss_snare
 
@@ -21,7 +21,7 @@ class Boss_skills(Timer):
             [i for i in range(0, self.size[1], int(self.size[1] / 10))]
         )
         self.delta_salvo_limit = (i for i in range(6))
-        self.wave_motion_limit = (i for i in range(5))
+        self.wave_motion_limit = (i for i in range(4))
         self.dart_salvo_start_point = iter(
             [i for i in range(0, self.size[1], int(self.size[1] / 5))]
         )
@@ -32,6 +32,7 @@ class Boss_skills(Timer):
         self.jump_chance = 1100
         self.chaser_hit = False
         self.pd_envelope = pygame.Rect(1500, 0, winwidth - 1500, winheight)
+        self.run_limiter_1 = Run_limiter()
 
     def skill_mines(self, **kwargs):
         if self.timer_trigger(self.fire_rate * 5):
@@ -181,24 +182,38 @@ class Boss_skills(Timer):
                 self.hitbox.topleft = self.jump_point
                 self.jump_charge = False
 
-    def skill_main_gun(self, target=data.PLAYER.hitbox):
+    def skill_main_gun(self, target=data.PLAYER.hitbox, static=False, gun_trigger=80):
         if self.__class__.__name__ == "Boss_battleship":
             fire_rate = 120
         else:
             fire_rate = self.fire_rate * 6
         if self.timer_key_delay(limit=fire_rate, key="main_gun"):
-            data.ENEMY_PROJECTILE_DATA.append(Projectile(
-                speed=70,
-                size=(4, 4),
-                start_point=self.hitbox.midbottom,
-                damage=0,
-                flag="secondary",
-                gfx_idx=2,
-                target=target,
-            ))
-            if self.timer_trigger(80):
+            if static:
+                if self.run_limiter_1.run_block_once():
+                    for i in range(400, 1601, 400):
+                        data.ENEMY_PROJECTILE_DATA.append(Laser_designator(
+                            start_point=self.hitbox.center,
+                            gfx_idx=21,
+                            target=target,
+                            distance=i,
+                            ttl=gun_trigger - 5
+                        ))
+            else:
+                if self.timer_trigger(2):
+                    data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                        speed=70,
+                        size=(4, 4),
+                        start_point=self.hitbox.midbottom,
+                        damage=0,
+                        flag="secondary",
+                        gfx_idx=2,
+                        target=target,
+                    ))
+
+            if self.timer_trigger(gun_trigger):
+                self.muzzle_effect_timer = (i for i in range(8))
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(
-                    speed=80,
+                    speed=90,
                     size=(30, 30),
                     start_point=self.hitbox.midbottom,
                     damage=4,
@@ -207,12 +222,13 @@ class Boss_skills(Timer):
                     target=target
                 ))
                 self.timer_key_delay(reset=True, key="main_gun")
-                if target is not data.PLAYER.hitbox:
-                    self.target = random.choice([
-                        (random.randint(0, winwidth),
-                         random.randint(0, winheight),
-                         data.PLAYER.hitbox.center)
-                    ])
+                if static:
+                    self.run_limiter_1.run_limiter_reset()
+                self.target = random.choice([
+                    (random.randint(0, winwidth),
+                     random.randint(0, winheight),
+                     data.PLAYER.hitbox.center)
+                ])
 
     def skill_dart_missiles(self):
         if self.timer_key_delay(limit=self.fire_rate * 15, key="darts"):
@@ -412,8 +428,8 @@ class Boss_skills(Timer):
                 if self.trigger(60 - self.dart_missiles):
                     shot_sp = next(self.dart_salvo_start_point, "stop")
                     if shot_sp == "stop":
-                        if self.dart_missiles <= 40:
-                            self.dart_missiles += 4
+                        if self.dart_missiles <= 50:
+                            self.dart_missiles += 7
                         self.dart_salvo_start_point = iter(
                             [i for i in range(0, self.size[1], int(self.size[1] / self.dart_missiles))]
                         )
@@ -433,14 +449,14 @@ class Boss_skills(Timer):
                                 target=data.PLAYER.hitbox
                             ))
                         ))
-            if self.trigger(600):
+            if self.trigger(300):
                 location = random.randint(300, 1500), random.randint(100, 900)
                 data.ENEMY_PROJECTILE_DATA.append(Impactor(
                     speed=10,
                     size=(6, 6),
                     start_point=self.hitbox.center,
                     damage=2,
-                    flag="en_missile",
+                    flag="boss",
                     gfx_idx=9,
                     target=location,
                     impact_effect=lambda location=location: data.PHENOMENON_DATA.append(Gravity_well(
@@ -493,8 +509,9 @@ class Boss_skills(Timer):
             if self.timer_trigger(3):
                 self.turn_angle = next(self.turn_angles_2, 359)
                 if self.turn_angle != 359:  # 91 ticks zum drehen
-                    self.gun_position[0] += 0.54
-                    self.gun_position[1] += 0.73
+                    for gun in self.guns:
+                        gun["pos"][0] += 0.54
+                        gun["pos"][1] += 0.73
             win.blit(rot_center(self.sprites[
                 self.gfx_idx[0]], self.turn_angle),
                 (self.hitbox.center[0] + self.gfx_hook[0],
@@ -527,8 +544,9 @@ class Boss_skills(Timer):
             if self.timer_trigger(3):
                 self.turn_angle = next(self.turn_angles_1, 270)
                 if self.turn_angle != 270:  # 91 ticks zum drehen
-                    self.gun_position[0] -= 0.54
-                    self.gun_position[1] -= 0.73
+                    for gun in self.guns:
+                        gun["pos"][0] -= 0.54
+                        gun["pos"][1] -= 0.73
             win.blit(rot_center(self.sprites[
                 self.gfx_idx[0]], self.turn_angle),
                 (self.hitbox.center[0] + self.gfx_hook[0],
@@ -542,6 +560,8 @@ class Boss_skills(Timer):
                         dummy[1] = 100
                     elif dummy[1] < 100:
                         dummy[1] = 1000
+
+                self.muzzle_effect_timer = (i for i in range(8))
 
                 data.ENEMY_PROJECTILE_DATA.append(Projectile(
                     speed=28,
