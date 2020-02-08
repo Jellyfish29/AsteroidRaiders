@@ -6,6 +6,7 @@ from player import *
 from turret import *
 from enemys import *
 from bosses import *
+from bosses_def import *
 from Gfx import *
 from levels import *
 from items import *
@@ -16,7 +17,7 @@ from phenomenon import *
 
 win = pygame.display.set_mode((winwidth, winheight))
 
-Boss_test_lst = [Boss_mine_boat(), Boss_frigatte(), Boss_corvette(), Boss_destroyer(), Boss_cruiser()]  # Boss_battleship(), Boss_carrier()]
+Boss_test_lst = [Boss_mine_boat(), Boss_frigatte(), Boss_corvette(), Boss_destroyer(), Boss_cruiser(), Boss_battleship(), Boss_scout()]  # Boss_battleship(), Boss_carrier()]
 
 fps = 10000
 

@@ -16,6 +16,7 @@ from items_active import *
 from items_passive import *
 from items_misc import *
 from phenomenon import *
+from bosses_def import *
 import math
 
 

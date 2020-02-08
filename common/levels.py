@@ -6,6 +6,7 @@ from astraid_funcs import *
 import astraid_data as data
 from phenomenon import *
 from enemys import *
+from bosses_def import *
 import Gfx as gfx
 from items import Active_Items
 
@@ -45,7 +46,7 @@ class Levels:
     @classmethod
     def scaling(cls):
         data.ENEMY.health += 0.5
-        data.ELITES.health += data.ELITES.health * 0.1
+        Elites.health += Elites.health * 0.1
         cls.event_trigger_time = (cls.event_trigger_time[0] - 60, cls.event_trigger_time[1] - 75)
         if cls.event_trigger_time[0] <= 200:
             cls.event_trigger_time = (200, 500)
@@ -57,7 +58,8 @@ class Levels:
             cls.elite_max_spawn_time -= 100
         if cls.level % 6 == 0:
             cls.spez_add()
-            data.BOSS.create(cls.level)
+            # data.BOSS.create(cls.level)
+            cls.boss_spawn()
             cls.boss_fight = True
             gfx.Background.bg_move = False
             cls.save_game()
@@ -72,14 +74,31 @@ class Levels:
                     cls.elite_wait = True
                 if cls.elite_wait:
                     if timer.trigger(int(cls.elite_spawn_time)):
-                        data.ELITES.spawn()
+                        Elites.spawn()
                         if cls.level > 10 and random.randint(0, 100) > cls.second_elite_chance:
                             cls.second_elite = True
                         cls.elite_wait = False
         if cls.second_elite:
             if timer.trigger(240):
                 cls.second_elite = False
-                data.ELITES.spawn()
+                Elites.spawn()
+
+    @classmethod
+    def boss_spawn(cls):
+        if cls.level == 6:
+            data.ENEMY_DATA.append(Boss_mine_boat())
+        elif cls.level == 12:
+            data.ENEMY_DATA.append(Boss_frigatte())
+        elif cls.level == 18:
+            data.ENEMY_DATA.append(Boss_corvette())
+        elif cls.level == 24:
+            data.ENEMY_DATA.append(Boss_destroyer())
+        elif cls.level == 30:
+            data.ENEMY_DATA.append(Boss_cruiser())
+        elif cls.level == 36:
+            data.ENEMY_DATA.append(Boss_scout())
+        elif cls.level == 42:
+            data.ENEMY_DATA.append(Boss_battleship())
 
     @classmethod
     def spez_add(cls):
@@ -191,7 +210,7 @@ class STAGE_SAVE():
         self.interval_score = Levels.level_interval
         self.boss_fight = Levels.boss_fight
         self.enemy_health = data.ENEMY.health
-        self.elite_health = data.ELITES.health
+        self.elite_health = Elites.health
         self.enemy_amount = Levels.enemy_amount
         self.second_elite_chance = Levels.second_elite_chance
         self.enemy_table = data.ENEMY.spez_spawn_table
@@ -236,7 +255,7 @@ class STAGE_SAVE():
         data.PLAYER.shield = self.pl_shield
         Levels.boss_fight = self.boss_fight
         data.ENEMY.health = self.enemy_health
-        data.ELITES.health = self.elite_health
+        Elites.health = self.elite_health
         Levels.enemy_amount = self.enemy_amount
         Levels.second_elite_chance = self.second_elite_chance
         data.ENEMY.spez_spawn_table = self.enemy_table
