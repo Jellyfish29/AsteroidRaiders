@@ -6,7 +6,7 @@ from astraid_funcs import *
 from Gfx import Gfx, Background
 from projectiles import Projectile, Mine, Missile, Impactor, Explosion, Dart, Wave, Laser_designator
 from phenomenon import Gravity_well, Force_field
-from items import Event_item_boss_snare
+from items_misc import Event_item_boss_snare
 
 
 class Boss_skills(Timer):
@@ -182,8 +182,10 @@ class Boss_skills(Timer):
                 self.hitbox.topleft = self.jump_point
                 self.jump_charge = False
 
-    def skill_main_gun(self, target=data.PLAYER.hitbox, static=False, gun_trigger=80):
-        if self.__class__.__name__ == "Boss_battleship":
+    def skill_main_gun(self, target=data.PLAYER.hitbox, static=False, gun_trigger=80, damage=None):
+        if damage is None:
+            damage = 4
+        if self.get_name() == "Boss_battleship":
             fire_rate = 120
         else:
             fire_rate = self.fire_rate * 6
@@ -216,7 +218,7 @@ class Boss_skills(Timer):
                     speed=90,
                     size=(30, 30),
                     start_point=self.hitbox.midbottom,
-                    damage=4,
+                    damage=damage,
                     flag="enemy",
                     gfx_idx=18,
                     target=target

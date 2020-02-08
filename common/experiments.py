@@ -71,30 +71,30 @@ import random
 # pygame.draw.rect(win, (255, 255, 255), r1)
 # pygame.draw.rect(win, (255, 255, 255), r2)
 
-        # pygame.draw.rect(win, (255, 255, 255), r1)
-        # x = (Player.hitbox.center[0] + r1.center[0]) / 2
-        # y = (Player.hitbox.center[1] + r1.center[1]) / 2
-        # r2 = pygame.Rect(x, y, 5, 5)
-        # lst.append(r2)
+# pygame.draw.rect(win, (255, 255, 255), r1)
+# x = (Player.hitbox.center[0] + r1.center[0]) / 2
+# y = (Player.hitbox.center[1] + r1.center[1]) / 2
+# r2 = pygame.Rect(x, y, 5, 5)
+# lst.append(r2)
 
-        # x = (r2.center[0] + r1.center[0]) / 2
-        # y = (r2.center[1] + r1.center[1]) / 2
-        # r3 = pygame.Rect(x, y, 5, 5)
-        # lst.append(r3)
+# x = (r2.center[0] + r1.center[0]) / 2
+# y = (r2.center[1] + r1.center[1]) / 2
+# r3 = pygame.Rect(x, y, 5, 5)
+# lst.append(r3)
 
-        # x = (r2.center[0] + Player.hitbox.center[0]) / 2
-        # y = (r2.center[1] + Player.hitbox.center[1]) / 2
-        # r4 = pygame.Rect(x, y, 5, 5)
-        # lst.append(r4)
+# x = (r2.center[0] + Player.hitbox.center[0]) / 2
+# y = (r2.center[1] + Player.hitbox.center[1]) / 2
+# r4 = pygame.Rect(x, y, 5, 5)
+# lst.append(r4)
 
-        # for r in lst:
-        #     pygame.draw.rect(win, (255, 255, 255), r)
-        #     gfx_angle = degrees(
-        #         Player.hitbox.center[1],
-        #         r.center[1],
-        #         Player.hitbox.center[0],
-        #         r.center[0]
-        #     )
-        #     win.blit(rot_center(
-        #         Phenomenon.phenom_sprites[16], gfx_angle), (r[0] - 200, r[1] - 200))
-        #     lst.remove(r)
+# for r in lst:
+#     pygame.draw.rect(win, (255, 255, 255), r)
+#     gfx_angle = degrees(
+#         Player.hitbox.center[1],
+#         r.center[1],
+#         Player.hitbox.center[0],
+#         r.center[0]
+#     )
+#     win.blit(rot_center(
+#         Phenomenon.phenom_sprites[16], gfx_angle), (r[0] - 200, r[1] - 200))
+#     lst.remove(r)

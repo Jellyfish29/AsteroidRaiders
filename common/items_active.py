@@ -88,7 +88,7 @@ class Item_piercing_shot(Active_Items):
         super().__init__(color, "Hyper Penetrator rounds (active)", "Rounds pierce the target and deal damge depending on traveltime", (32, 33))
         self.color = color
         self.flag = "piercing_shot"
-        self.base_effect = 0.8
+        self.base_effect = 1.5
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
         self.cd_len = 1200
         self.active_time = 600
@@ -360,4 +360,12 @@ data.ACTIVE_ITEMS = Active_Items
 
 
 def start_item_generator():
-    return active_item_drop_table[random.randint(0, len(active_item_drop_table) - 1)][0]
+    return [
+        Item_he_rounds,
+        Item_scatter_fire,
+        Item_burst_fire,
+        Item_rail_gun,
+        Item_fragmentation_rounds,
+        Item_piercing_shot,
+        Item_missile
+    ][random.randint(0, 7)]

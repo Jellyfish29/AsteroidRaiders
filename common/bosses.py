@@ -6,7 +6,7 @@ from astraid_funcs import *
 from enemys import Enemy, Shooter
 from projectiles import Wave
 from boss_skills import Boss_skills
-from items import Item_upgrade_point_crate, Item_heal_crate
+from items_misc import Item_upgrade_point_crate, Item_heal_crate
 from Gfx import Gfx, Background
 import astraid_data as data
 
@@ -47,7 +47,7 @@ class Bosses(Shooter, Boss_skills):
         self.shot_angle = 0
         self.shot_angles = angles_360(8)  # projectilespeed
         self.score_amount = 400
-        self.projectile_speed = 16
+        self.projectile_speed = 20
         self.special_attack = False
         self.special_skills_lst = []
         Boss_skills.__init__(self)
@@ -289,43 +289,26 @@ class Bosses(Shooter, Boss_skills):
             self.gfx_animation()
         else:
             self.special_gfx_animation()
-        self.guns_gfx_animation()
-        self.gun_gfx_idx_update()
+        if not any([self.get_name() == "Elites",
+                    self.get_name() == "Boss_scout"]):
+            self.guns_gfx_animation()
+            self.gun_gfx_idx_update()
         if self.hitable:
             data.TURRET.missile_aquisition(self)
-        if any([self.__class__.__name__ == "Boss_turret",
-                self.__class__.__name__ == "Boss_weakspot"]):
+        if any([self.get_name() == "Boss_turret",
+                self.get_name() == "Boss_weakspot"]):
             data.TURRET.point_defence(self.hitbox)
         if self.health <= 0:
             self.death()
 
-        if not any([self.__class__.__name__ == "Boss_turret",
-                    self.__class__.__name__ == "Boss_weakspot",
-                    self.__class__.__name__ == "Elites"]):
-            if self.bg_change:
-                if Background.bg_color_change(color=0, c_value=40):
-                    self.bg_change = False
+        if not any([self.get_name() == "Boss_turret",
+                    self.get_name() == "Boss_weakspot",
+                    self.get_name() == "Elites"]):
+            # if self.bg_change:
+            Background.bg_color_change(color=(40, 0, 30))
+            # self.bg_change = False
 
         self.timer_tick()
-
-    @classmethod
-    def create(cls, lvl):
-        if lvl == 6:
-            data.ENEMY_DATA.append(Boss_mine_boat())
-        elif lvl == 12:
-            data.ENEMY_DATA.append(Boss_frigatte())
-        elif lvl == 18:
-            data.ENEMY_DATA.append(Boss_corvette())
-        elif lvl == 24:
-            data.ENEMY_DATA.append(Boss_destroyer())
-        elif lvl == 30:
-            data.ENEMY_DATA.append(Boss_cruiser())
-        elif lvl == 36:
-            data.ENEMY_DATA.append(Boss_scout())
-        elif lvl == 42:
-            data.ENEMY_DATA.append(Boss_battleship())
-        # elif lvl == 35:
-        #     data.ENEMY_DATA.append(Boss_carrier())
 
 
 data.BOSS = Bosses
@@ -334,7 +317,7 @@ data.BOSS = Bosses
 class Boss_weakspot(Enemy):
 
     def __init__(self, health, boss, location, death_effect=None, size=(50, 50)):
-        super().__init__(0, 0, 1, health, size, (14, 14), (-27, -27), data.ENEMY.spez_sprites)
+        super().__init__(0, 0, 1, health, size, (6, 6), (-27, -27), data.ENEMY.spez_sprites)
         self.boss = boss
         self.boss.hitable = False
         self.location = location
@@ -387,6 +370,7 @@ class Boss_turret(Shooter):
         self.gfx_idx = 0
         self.guns = [{"pos": [-50, -50], "sprites": [6, 7]}]
         self.gun_idx = 0
+        self.score_amount = 0
 
     def move(self):
         self.hitbox.center = self.location
@@ -441,7 +425,7 @@ class Boss_main_gun_battery(Bosses):
 
     def tick(self):
         self.hitbox.center = self.location()
-        self.skill_main_gun(target=self.target, static=True, gun_trigger=30)
+        self.skill_main_gun(target=self.target, static=True, gun_trigger=30, damage=2)
         self.timer_tick()
 
 
@@ -495,7 +479,7 @@ class Boss_repair_ship(Enemy):
         super().__init__(0, 4, random.randint(1, 4), Enemy.health + 8,
                          (80, 80), (0, 1), (0, 0), Enemy.spez_sprites)
         self.gfx_hook = (-10, -20)
-        self.gfx_idx = (20, 21)
+        self.gfx_idx = (11, 12)
         self.target = self.boss.hitbox.center
 
     def move(self):

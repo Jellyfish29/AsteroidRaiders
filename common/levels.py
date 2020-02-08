@@ -7,7 +7,7 @@ import astraid_data as data
 from phenomenon import *
 from enemys import *
 from bosses_def import *
-import Gfx as gfx
+from Gfx import Gfx, Background
 from items import Active_Items
 
 
@@ -21,13 +21,15 @@ class Levels:
     enemy_amount = 3  # at Start
     skill_points = 1
     # elite/Elites
-    elite_wait = False
+    elite_max_spawn_time = 4000
+    second_elite_chance = 100
     elite_spawn_time = 0
+    # Flags
+    elite_wait = False
     boss_fight = False
     after_boss = False
     elite_fight = False
-    elite_max_spawn_time = 4000
-    second_elite_chance = 100
+    special_events = False
     second_elite = False
     death_score_panalties = {
         1: 30,
@@ -41,7 +43,12 @@ class Levels:
     }
     # Events
     event_trigger_time = (3600, 5000)
+    special_event_queue = []
+    events_disabled = False
     event_id = 0
+    special_event_triggered = 0
+    special_event_didnt_trigger = 0
+    special_event_amount = 2
 
     @classmethod
     def scaling(cls):
@@ -53,16 +60,28 @@ class Levels:
         cls.second_elite_chance -= 1.5
         if cls.second_elite_chance < 40:
             cls.second_elite_chance = 40
+        if cls.level % 12 == 0:
+            cls.self.special_event_amount += 1
+            if cls.self.special_event_amount > 5:
+                self.special_event_amount = 5
         if cls.level % 6 == 0:
             cls.enemy_amount += 1
             cls.elite_max_spawn_time -= 100
-        if cls.level % 6 == 0:
             cls.spez_add()
-            # data.BOSS.create(cls.level)
             cls.boss_spawn()
             cls.boss_fight = True
-            gfx.Background.bg_move = False
+            Background.bg_move = False
+            cls.special_event_triggered = 0
+            cls.special_event_didnt_trigger = 0
             cls.save_game()
+        else:
+            if not cls.events_disabled:
+                if cls.special_event_triggered < cls.special_event_amount:
+                    if random.randint(1, 100) > 50 or cls.special_event_didnt_trigger > 1:
+                        cls.special_event_triggered += 1
+                        cls.execute_special_event()
+                    else:
+                        cls.special_event_didnt_trigger += 1
 
     @classmethod
     @timer
@@ -111,6 +130,7 @@ class Levels:
             data.ENEMY.set_spawn_table(Jumper)
             data.PHENOM.set_spawn_table(Planet)
         if cls.level == 6:
+            data.ENEMY.set_spawn_table(Comet)
             data.ENEMY.set_spawn_table(Shooter)
             # data.PHENOM.set_spawn_table(Gravity_well)
         elif cls.level == 12:
@@ -121,7 +141,7 @@ class Levels:
             # data.PHENOM.set_spawn_table(Anti_gravity_well)
         elif cls.level == 24:
             pass
-            # data.ENEMY.get_spawn_table().append(en.Miner)
+            data.ENEMY.set_spawn_table(Miner)
             # data.PHENOM.set_spawn_table(Nabulae_aoe_damage)
         elif cls.level == 30:
             pass
@@ -131,25 +151,34 @@ class Levels:
 
     @classmethod
     def execute_event(cls, event_id):
-        spawn = random.randint(1, 4)
         if event_id == 1:
-            for i in range(4 + int(cls.level / 2)):
-                data.ENEMY_DATA.append(Asteroid(spawn=spawn))
+            Events.event_wave(
+                enemy=Asteroid, spawn=random.randint(1, 4), amount=4, scaling=int(cls.level / 2))
         elif event_id == 2:
-            for i in range(2 + int(cls.level / 2)):
-                data.ENEMY_DATA.append(Jumper(spawn=spawn))
+            Events.event_wave(
+                enemy=Jumper, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 2))
         elif event_id == 3:
-            for i in range(2 + int(cls.level / 10)):
-                data.ENEMY_DATA.append(Shooter(spawn=spawn))
+            Events.event_wave(
+                enemy=Shooter, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 8))
         elif event_id == 4:
-            for i in range(2 + int(cls.level / 10)):
-                data.ENEMY_DATA.append(Seeker(spawn=spawn))
+            Events.event_wave(
+                enemy=Seeker, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 8))
         elif event_id == 5:
-            for i in range(3 + int(cls.level / 10)):
-                data.ENEMY_DATA.append(Strafer(spawn=spawn))
+            Events.event_wave(
+                enemy=Strafer, spawn=random.randint(1, 4), amount=3, scaling=int(cls.level / 8))
         elif event_id == 6:
-            for i in range(3):
-                data.ENEMY_DATA.append(Mine_layer(spawn=spawn))
+            Events.event_wave(
+                enemy=Mine_layer, spawn=random.randint(1, 4), amount=3, scaling=0)
+        elif event_id == 7:
+            Events.event_wave(
+                enemy=Miner, spawn=random.randint(1, 4), amount=3, scaling=0)
+
+    @classmethod
+    def execute_special_event(cls):
+        cls.special_events = True
+        cls.special_event_queue.append(random.choice([
+            Events.event_comet_storm
+        ]))
 
     @classmethod
     def save_game(cls):
@@ -165,11 +194,18 @@ class Levels:
     @timer
     def update(cls, timer):
 
-        if not any((cls.boss_fight, cls.after_boss, cls.elite_fight)):
+        if not any((cls.boss_fight, cls.after_boss, cls.elite_fight, cls.special_events)):
             if timer.trigger(random.randint(cls.event_trigger_time[0], cls.event_trigger_time[1])):
-                cls.execute_event(random.randint(1, 6))  # choices
+                cls.execute_event(random.randint(1, 7))  # choices
 
         cls.elite_spawn()
+
+        for event in cls.special_event_queue:
+            if event():
+                cls.special_event_queue.remove(event)
+
+        if len(cls.special_event_queue) == 0:
+            cls.special_events = False
 
         if cls.interval_score > cls.level_interval:
             cls.level += 1
@@ -181,6 +217,31 @@ class Levels:
 
 
 data.LEVELS = Levels
+
+
+class Events():
+
+    change_bg = True
+
+    @classmethod
+    def event_wave(cls, enemy=None, spawn=None, amount=None, scaling=None):
+        for _ in range(amount + scaling):
+            data.ENEMY_DATA.append(enemy(spawn=spawn))
+
+    @classmethod
+    def set_bg_color(cls):
+        Background.bg_color_change(color=(20, 20, 0), speed=3)
+
+    @classmethod
+    @timer
+    def event_comet_storm(cls, timer):
+        if not timer.trigger(1200):
+            cls.set_bg_color()
+            if timer.trigger(25):
+                data.ENEMY_PROJECTILE_DATA.append(Comet())
+        else:
+            # cls.change_bg = True
+            return True
 
 
 class STAGE_SAVE():
@@ -215,10 +276,11 @@ class STAGE_SAVE():
         self.second_elite_chance = Levels.second_elite_chance
         self.enemy_table = data.ENEMY.spez_spawn_table
         self.phenomenon_spawn_table = data.PHENOM.phenomenon_spawn_table
-        self.bg_speed = gfx.Background.scroll_speed
-        self.bg_move = gfx.Background.bg_move
+        self.bg_speed = Background.scroll_speed
+        self.bg_move = Background.bg_move
         self.overdrive_count = data.TURRET.overdrive_count
         self.elite_sp_time = Levels.elite_max_spawn_time
+        self.special_event_amount = Levels.special_event_amount
 
     def load_save(self):
         data.ENEMY_DATA.clear()
@@ -230,6 +292,8 @@ class STAGE_SAVE():
 
         Levels.after_boss = False
         Levels.interval_score = 0
+        Levels.special_event_triggered = 0
+        Levels.special_event_didnt_trigger = 0
         Levels.level = self.lvl
         Levels.display_level = self.display_level
         Levels.display_score = self.score
@@ -260,12 +324,10 @@ class STAGE_SAVE():
         Levels.second_elite_chance = self.second_elite_chance
         data.ENEMY.spez_spawn_table = self.enemy_table
         data.PHENOM.phenomenon_spawn_table = self.phenomenon_spawn_table
-        gfx.Background.scroll_speed = self.bg_speed
-        gfx.Background.bg_move = self.bg_move
+        Background.scroll_speed = self.bg_speed
+        Background.bg_move = self.bg_move
         data.TURRET.overdrive_count = self.overdrive_count
         Levels.elite_max_spawn_time = self.elite_sp_time
+        Levels.special_event_amount = self.special_event_amount
         if self.boss_fight:
-            self.spawn_boss()
-
-    def spawn_boss(self):
-        data.BOSS.create(self.lvl)
+            Levels.boss_spawn()

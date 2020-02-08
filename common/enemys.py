@@ -62,7 +62,7 @@ class Enemy(Timer):
         self.sprites = sprites
         self.kill = False
         self.ttk_bonus = 0
-        self.projectile_speed = 14
+        self.projectile_speed = 20
         self.hitable = True
         self.special_take_damage = None
         self.flag = "normal"
@@ -174,13 +174,13 @@ class Enemy(Timer):
             self.spawn_points[self.spawn_point][0]
         )
         if animation_ticker < 4:
-            win.blit(gfx_rotate(
+            win.blit(rot_center(
                 self.sprites[self.gfx_idx[0]], gfx_angle),
                 (self.hitbox.topleft[0] + self.gfx_hook[0],
                  self.hitbox.topleft[1] + self.gfx_hook[1])
             )
         else:
-            win.blit(gfx_rotate(
+            win.blit(rot_center(
                 self.sprites[self.gfx_idx[1]], gfx_angle),
                 (self.hitbox.topleft[0] + self.gfx_hook[0],
                  self.hitbox.topleft[1] + self.gfx_hook[1])
@@ -208,6 +208,9 @@ class Enemy(Timer):
 
         self.kill = True
 
+    def get_name(self):
+        return self.__class__.__name__
+
     def tick(self):
         self.gfx_animation()
         self.gfx_health_bar()
@@ -217,7 +220,7 @@ class Enemy(Timer):
         self.skill()
         data.TURRET.missile_aquisition(self)
         data.TURRET.point_defence(self.hitbox)
-        if any([self.__class__.__name__ == "Boss_turret"]):
+        if any([self.get_name() == "Boss_turret"]):
             self.guns_gfx_animation()
             self.gun_gfx_idx_update()
         if self.health <= 0:
@@ -238,7 +241,8 @@ class Enemy(Timer):
         if not any((
             data.LEVELS.boss_fight,
             data.LEVELS.elite_fight,
-            data.LEVELS.after_boss
+            data.LEVELS.after_boss,
+            data.LEVELS.special_events
         )):
             if len(data.ENEMY_DATA) < data.LEVELS.enemy_amount:
                 data.ENEMY_DATA.append(Asteroid())
@@ -344,7 +348,7 @@ class Shooter(Enemy):
             spawn,
             Enemy.health + 2,
             (80, 80),
-            (2, 3),
+            (0, 1),
             (0, 0),
             Enemy.spez_sprites
         )
@@ -379,8 +383,8 @@ class Seeker(Enemy):
             spawn,
             Enemy.health + 2,
             (80, 80),
-            (8, 9),
-            (-40, -30),
+            (2, 3),
+            (0, 0),
             Enemy.spez_sprites
         )
         self.score_amount = 6
@@ -411,7 +415,7 @@ class Strafer(Enemy):
             spawn,
             Enemy.health + 2,
             (80, 80),
-            (15, 16),
+            (7, 8),
             (0, 0),
             Enemy.spez_sprites
         )
@@ -423,7 +427,7 @@ class Strafer(Enemy):
     def skill(self):
         if self.timer_trigger(self.fire_rate):
             data.ENEMY_PROJECTILE_DATA.append(Projectile(
-                speed=20,
+                speed=25,
                 size=(6, 6),
                 start_point=self.hitbox.center,
                 damage=1,
@@ -435,30 +439,38 @@ class Strafer(Enemy):
 
 class Miner(Enemy):
 
-    def __init__(self):
+    def __init__(self, spawn=None):
+        if spawn is None:
+            spawn = random.randint(1, 4)
         super().__init__(
             0,
             5,
-            random.randint(1, 4),
+            spawn,
             Enemy.health + 2,
             (80, 80),
-            0,
-            (0, 0),
+            (13, 14),
+            (-30, -30),
             Enemy.spez_sprites
         )
         self.score_amount = 8
         self.fire_rate = 100
         self.ttk_bonus = 50
-        self.delays = iter([540, 420, 300, 180, 60, 0])
+        self.delays = (i for i in range(500, 0, -100))
 
     def skill(self):
         if self.timer_trigger(self.fire_rate):
-            data.ENEMY_PROJECTILE_DATA.append(Explosion(
-                loation=self.hitbox.center,
-                explo_size=200,
-                damage=1,
-                explo_delay=next(self.delays)
-            ))
+            delay = next(self.delays, -1)
+            if delay > -1:
+                data.ENEMY_PROJECTILE_DATA.append(Explosion(
+                    location=self.hitbox.center,
+                    explo_size=200,
+                    damage=1,
+                    explo_delay=delay,
+                    explosion_effect=lambda loc: Gfx.create_effect(
+                        "explosion_3", 1, (loc[0] - 300, loc[1] - 300), explo=True),
+                    explo_speed=(50, 50),
+                    gfx_idx=22
+                ))
 
 
 class Mine_layer(Enemy):
@@ -472,7 +484,7 @@ class Mine_layer(Enemy):
             spawn,
             Enemy.health + 2,
             (80, 80),
-            (17, 18),
+            (9, 10),
             (0, 0),
             Enemy.spez_sprites
         )
@@ -489,6 +501,24 @@ class Mine_layer(Enemy):
                 flag="en_mine",
                 decay=True
             ))
+
+
+class Comet(Enemy):
+    def __init__(self,):
+        super().__init__(
+            0,
+            20,
+            1,
+            Enemy.health,
+            (60, 60),
+            (15, 15),
+            (-100, -100),
+            Enemy.spez_sprites
+        )
+        self.hitable = False
+        self.score_amount = 8
+        self.fire_rate = 180
+        self.ttk_bonus = 50
 
 
 spez_spawn_table = [Jumper, Seeker]

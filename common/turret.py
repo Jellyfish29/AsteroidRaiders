@@ -188,8 +188,9 @@ class Turret:
     def point_defence(cls, enemy, timer):
         if "point_defence" in data.ITEMS.active_flag_lst:
             if data.ITEMS.get_item(flag="point_defence").active:
+                win.blit(cls.projectile_sprites[7], (data.PLAYER.hitbox.topleft[0] - 190, data.PLAYER.hitbox.topleft[1] - 220))
                 pd_envelope = pygame.Rect(
-                    data.PLAYER.hitbox.center[0] - 200, data.PLAYER.hitbox.center[1] - 200, 400, 400)
+                    data.PLAYER.hitbox.center[0] - 200, data.PLAYER.hitbox.center[1] - 200, 600, 600)
                 # pygame.draw.rect(win, (255, 255, 0), pd_envelope)
                 if pd_envelope.colliderect(enemy):
                     if timer.trigger(6):
@@ -467,6 +468,12 @@ class Turret:
             cls.fire_rate = cls.fire_rate_limit
 
     @classmethod
+    def draw_pd(cls):
+        if "point_defence" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="point_defence").active:
+                win.blit(cls.projectile_sprites[7], (data.PLAYER.hitbox.topleft[0] - 190, data.PLAYER.hitbox.topleft[1] - 220))
+
+    @classmethod
     def gfx_gun_draw(cls):
         win.blit(rot_center(
             Gfx.gun_sprites[cls.gun_gfx_idx], degrees(
@@ -480,6 +487,7 @@ class Turret:
     @classmethod
     def update(cls):
         cls.gfx_gun_draw()
+        cls.draw_pd()
         cls.gun_gfx_idx_update()
         cls.on_mouse_click_actions()
         cls.on_item_button_click_actions()

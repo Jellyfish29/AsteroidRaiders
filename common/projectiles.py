@@ -81,7 +81,8 @@ class Projectile(Timer):
         if self.timer_delay(limit=delay):
             if self.hitbox.colliderect(obj.hitbox):
                 if self.flag != "secondary" and not self.hit_event:
-                    self.gfx_hit()
+                    Gfx.create_effect(
+                        "shot_hit", 4, anchor=self.hitbox, follow=True, x=-50, y=-50)
                     if not isinstance(obj, type):
                         data.TURRET.hit_locations.append(self)
                     self.hit_event = True
@@ -108,14 +109,8 @@ class Projectile(Timer):
             (self.hitbox.topleft[0] - 50, self.hitbox.topleft[1] - 50)
         )
 
-    def gfx_hit(self):
-        Gfx.shot_hit_effect(self.hitbox, effect=self.gfx_hit_effect)
-
     def out_of_bounds(self):
         return rect_not_on_sreen(self.hitbox)
-
-    def hit_effect(self):
-        Gfx.shot_hit_effect(self.hitbox, effect=self.gfx_hit_effect)
 
     def apply_damage(self):
         return self.damage
@@ -329,7 +324,7 @@ class Missile(Projectile):
                 )
         self.hitbox.move_ip(self.angles[self.angle])
         if self.timer_delay(limit=480):
-            Gfx.shot_hit_effect(self.hitbox, effect=self.gfx_hit_effect)
+
             self.kill = True
 
     def gfx_draw(self):
@@ -396,7 +391,7 @@ class Mine(Projectile):
                 self.hitbox.move_ip(self.angles[self.angle])
                 self.envelope.move_ip(self.angles[self.angle])
                 if self.hitbox.collidepoint(obj.hitbox.center):
-                    Gfx.shot_hit_effect(self.hitbox, effect=self.gfx_hit_effect)
+
                     return True
 
     def gfx_draw(self):
@@ -428,7 +423,8 @@ class Explosion(Projectile):
             damage=0,
             explo_delay=0,
             explosion_effect=None,
-            explo_speed=(30, 30)
+            explo_speed=(30, 30),
+            gfx_idx=None
     ):
         super().__init__(damage=damage, flag="explo", piercing=True)
         self.hitbox = pygame.Rect(location[0], location[1], 1, 1)
@@ -437,6 +433,7 @@ class Explosion(Projectile):
         self.piercing = True
         self.explosion_effect = run_once(explosion_effect)
         self.explo_speed = explo_speed
+        self.gfx_idx = gfx_idx
         self.flag = "secondary"
 
     def set_location(self, l):
@@ -451,6 +448,10 @@ class Explosion(Projectile):
             self.hitbox.inflate_ip(self.explo_speed)
             if abs(self.hitbox.topleft[0] - self.hitbox.center[0]) > self.explo_size:
                 self.kill = True
+        else:
+            if self.gfx_idx is not None:
+                win.blit(Projectile.projectile_sprites[self.gfx_idx],
+                         (self.hitbox.center[0] - 50, self.hitbox.center[1] - 50))
 
     def run_explosion_effect(self):
         self.explosion_effect(self.hitbox.topleft)

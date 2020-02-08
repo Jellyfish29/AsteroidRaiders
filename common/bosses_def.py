@@ -2,7 +2,7 @@ import pygame
 import random
 from bosses import *
 import astraid_data as data
-from items import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
+from items_misc import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
 from projectiles import Impactor
 from Gfx import Gfx, Background
 
@@ -333,7 +333,6 @@ class Boss_scout(Bosses):
         self.phase_triggers = [self.health * 0.8, self.health * 0.5, self.health * 0.15]
         super().__init__()
         self.hitbox = pygame.Rect(winwidth / 2, 1200, self.size[0], self.size[1])
-        # self.engine = {"right": (-105, -10), "down": (-19, -153), "up": (-15, 90), "left": (70, -10)}
 
     def gfx_animation(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)

@@ -17,22 +17,22 @@ from items_passive import *
 from items_misc import *
 from phenomenon import *
 from bosses_def import *
-import math
 
 
 def test_mode():
     Levels.display_level += 1
     Levels.level += 1
+    Levels.events_disabled = True
     Levels.scaling()
-    # Player.max_health +d= 0 40000
+    Levels.display_score += 400
     Player.health += 40000
     Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
-    # pygame.mouse.set_visible(True)AAAAAAAAAA
+    Levels.execute_special_event()
     # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
-    # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_tabled)())
+    # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
 
 
 def main():
@@ -54,7 +54,7 @@ def main():
     Background.bg_objs += [Background(y=0), Background(y=1000)]
 
     # Item Setup
-    Items.drop((winwidth / 2, 400), target=Item_he_rounds((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_he_rounds((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
 
@@ -203,8 +203,8 @@ def main():
 
         Gfx.cursor()
         Clock.tick(fps)
-        # pygame.display.update()
-        pygame.display.flip()
+        pygame.display.update()
+        # pygame.display.flip()
 
 
 if __name__ == "__main__":

@@ -129,10 +129,6 @@ class Gfx(Timer):
         return str(int(self.dmg_text * 10))
 
     @classmethod
-    def shot_hit_effect(cls, shot, effect="shot_hit"):
-        Gfx.create_effect(effect, 4, (shot.topleft[0] - 10, shot.topleft[1] - 10))
-
-    @classmethod
     def create_effect(
             cls,
             typ,
@@ -223,18 +219,20 @@ class Background(Timer):
 
     @classmethod
     @timer
-    def bg_color_change(cls, timer, color=0, c_value=0, speed=1, sub=False):
-        if timer.trigger(5):
-            if sub:
-                cls.bg_color[color] -= speed
-                if cls.bg_color[color] <= c_value:
-                    cls.bg_color[color] = c_value
-                    return True
-            else:
-                cls.bg_color[color] += speed
-                if cls.bg_color[color] >= c_value:
-                    cls.bg_color[color] = c_value
-                    return True
+    def bg_color_change(cls, timer, color=None, speed=None, sub=False):
+        if color is None:
+            color = (0, 0, 30)
+        if speed is None:
+            speed = 5
+        if timer.trigger(speed):
+            if not all([cls.bg_color[i] == color[i] for i in range(3)]):
+                for i in range(3):
+                    if not cls.bg_color[i] == color[i]:
+                        if cls.bg_color[i] < color[i]:
+                            cls.bg_color[i] += 1
+                        else:
+                            cls.bg_color[i] -= 1
+                # return True
 
     @classmethod
     @timer
@@ -248,9 +246,10 @@ class Background(Timer):
             if bg_obj.kill:
                 cls.bg_objs.remove(bg_obj)
 
-        if data.LEVELS.after_boss:
-            cls.bg_color_change(sub=True)
-            cls.bg_color_change(color=2, c_value=30)
+        if any([data.LEVELS.after_boss,
+                not data.LEVELS.special_events and not data.LEVELS.boss_fight
+                ]):
+            cls.bg_color_change(color=(0, 0, 30))
 
         if cls.bg_move:
             cls.y += cls.scroll_speed

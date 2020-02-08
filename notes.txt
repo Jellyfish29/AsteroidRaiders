@@ -1,13 +1,3 @@
-Upgrade Attributes:
-
-Player.speed 				+=
-Player.max_health 			+=
-Player.damage 				+=
-Turret.fire_rate 			-=
-Turret.super_shot_ammo 		+=
-Turret.star_shot_ammo 		+=
-Power_ups.star_shot_tubes 	+=
-
 
 Richtungen:
 
@@ -34,220 +24,34 @@ engine:
 270 = nach links fleigen zeigt nach rechts
 360 = nach unten fliegen zeigt nach oben
 
-git fetch --all
-git reset --hard originn/changes
+TODO:
 
-
-seltenheit/Item-lvl:
-
-- jedes Item 4 Level
-- drei 4 Stufen in tuple
-- beim spawn wird die Seltenheit als als param(randint(1, 2)) an Klasse übergeben
-- nur lvl 1 und 2 spawnbar
-- item upgrade mit dropbaren upgrade punkten
-
-Bosse skill Ideen
-
-- Ein art salven Feuer das undodgebar ist außer man versteckt sich hinter Deckung die dann gespawnnt wird
-
-- Gravity Bomben / das auch als spieler Item
-- Stun schuss / das auch  als Spieler Item(actice)
-- schwer dodgbarer atckspeed debuff auch playr Item
-- Slow debuff
-- Ein Buff für adds
-. Eine art Repairshipevent, dass spawned und mann muss verhindern, dass der boss das aufnimmt 
-- Ein unbesiegbarModus, wo mann vor dem Boss abhauen muss (bei Kontakt großer Schaden)
-- Weakspots am Boss (in einer reinfolge zerstören)
-- einen Art kleine Kontrollpunkt erobern (für eine gewisse Zeit auf einem Punkt bleiben während dessen Boss unbesiegbar)
-
-Event Ideen:
-
-- Convoy beschützen
-- Controlpunkt erobern /hacken
-
-
-1 the Corvette
-
-- klein 
-
-- bewegt sich schnell (im kreis)
-
-- shießt langsam auf Spieler
-
-- legt minen
-
-2 the frigate
-
-- klein
-
-- fliegt schnell von links nach rechts ...
-
-- shießt zielsuchende Raketen auf spieler
-
-3 the destroyer
-
-- bewegt sich langsam von oben nach unten
-
-- mittel
-
-- shießt schnell direkt auf spieler
-
-- legt minen und shießt Raketen
-
-- Breitseite
-
-
-4 the cruiser
-
-- mittel 
-
-- stanionär
-
-- "Laser" schuss
-
-- jumpdrive
-
-- 1 fighter add
-
-- Breitseite
-
-5 the battleship
-
-- Groß
-
--stationär
-
-- 2 x "Laser" Schuss
-
-- von beginn 2 fighter adds
-
-- jumpdrive
-
-- Breitseite
-
-- zielsuchende Raketen
-
-6 the carrier
-
-- groß
-
-- stationär
-
-- pd
-
-- lenkraketen
-
-- 6 permanent nachspawnednde adds
-
-
-Methoden:
-
-Skills:
-	gezielter schuss
-	Minen
-	lenkraketen
-	jumpdrive
-	Laser Schuss
-	
-
-Adds:
-	spawnen
-	bewegen 
-	Schüsse erzeugen
-
-Game_state Vars
-""" Player.max_health 
-    Player.health 
-    Power_ups.shield_amount 
-    Power_ups.super_shot_amount 
-    Power_ups.heal_amount 
-    Power_ups.star_shot_amount 
-    Levels.skill_points 
-    Levels.level 
-    Turret.pd_ammo 
-    Turret.nuke_ammo 
-    Turret.missile_ammo 
-    Player.jump_charges 
-    Levels.skill_points 
-    Player.damage 
-    Turret.fire_rate 
-    Power_ups.star_shot_tubes 
-    Power_ups.shield_time 
-    Player.speed 
-    Turret.normal_fire_rate 
-    Turret.pd_reload_speed 
-    Turret.missile_reload_speed 
-    Turret.nuke_reload_speed 
-    Player.jump_recharge_rate 
-    Enemy.health 
-    Spez_enemy.health 
-    display_score 
-    Levels.enemy_amount 
-    Levels.boss_fight 
-    Levels.level 
-    Levels.display_level 
-    Levels.level_interval 
-    Power_ups.interval 
-    Levels.boss_amount 
-    Levels.blocker_amount 
-    self.max_health
-    self.health
-    self.shield_amount
-    self.super_shot_amount
-    self.heal_amount
-    self.star_shot_amount
-    self.skill_points
-    self.level
-    self.pd_ammo
-    self.nuke_ammo
-    self.missile_ammo
-    self.jump_charges
-    self.skill_points
-    self.player_damage
-    self.fire_rate
-    self.star_shot_tubes
-    self.shield_time
-    self.speed
-    self.normal_fire_rate
-    self.pd_reload_speed
-    self.missile_reload_speed
-    self.nuke_reload_speed
-    self.jump_recharge_rate
-    self.enemy_health
-    self.spez_health
-    self.displaylay_score
-    self.enemy_amount
-    self.boss_fight
-    self.level
-    self.display_level
-    self.level_interval
-    self.interval
-    self.boss_amount
-    self.blocker_amount
-"""
-
-Items
-
-gameplay
-- Starshot Supershot combiner
-- passive Lifereg + 1 hp/min
-- Pd
-- missiles
-- Nuke
-- jumpdrive
-- volley shot
-- flak bullets: explosion bei hit und nach travel time
-- hypersonic rounds: angles_360(30) +0.4 damage
-- overdrive: je kill mehr damage/firerate bis mann selbst schaden nimmt
-- burts
-- supplycrate on time use (Power_ups, skill_points)
-- on hit active Item ammo drop chance
-
-Stat Boni
-- +0.8 Damage
-- -10 Firerate
-- +5 health
-- +2.5 Speed
-- +70/50 ammo for star/super
-- +8 s shield (480)
-- +2 heal strenght
+- Boss "Carrier/Mothership"
+- 8 Items
+- Mehr Spez Enemys:
+    - Dart missile ship
+    -...
+- Mehr Events
+    - Convoys
+    - controllpunkte
+    - Geschicklichkeits Zeug
+    -...
+- Mehr Items
+    - Heal als upgradebares stnadart Item
+    - Shop ???
+    - Snare/CC Items
+    - Beweave Shield
+    - Prog effecte
+    -...
+- Gfx
+    - Spez neu
+    - Mehr Planeten mit untershiedlichen Größen
+    - Player ship neu
+    - Boss Instance background effekte
+- Interface
+    - koplettes rework
+- Score Berechnung mit Time Bonus
+- Menu
+    - Schwierigkeitsgrad
+    - hardcore modus
+    - Highscore/ Stats DB

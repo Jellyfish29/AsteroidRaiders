@@ -96,7 +96,7 @@ class Player:
         if "overdrive" in data.ITEMS.active_flag_lst:
             cls.damage -= 0.05 * data.TURRET.overdrive_count
             data.TURRET.set_fire_rate(-0.1 * data.TURRET.overdrive_count)
-            data.TURRET.overdrive_count = 0
+            data.TURRET.overdrive_count = int(data.TURRET.overdrive_count / 2)
 
     @classmethod
     def shield_update(cls):
@@ -238,116 +238,6 @@ class Player:
         cls.gfx_animation(cls.direction)
         cls.shield_update()
         cls.gfx_warning_lights()
-
-        Escort.spawn()
-
-
-class Escort(Timer):
-
-    lst = []
-    spawned = False
-    fire_rate = 100
-
-    def __init__(self, typ, color, gfx_idx, second=False):
-        Timer.__init__(self)
-        self.typ = typ
-        self.color = color
-        self.gfx_idx = gfx_idx
-        self.second = second
-        self.tc = Time_controler()
-        if self.second:
-            self.hitbox = pygame.Rect(Player.hitbox.center[0] + 100, Player.hitbox.center[1], 50, 50)
-        else:
-            self.hitbox = pygame.Rect(Player.hitbox.center[0] - 100, Player.hitbox.center[1], 50, 50)
-        self.kill = False
-
-    def move(self):
-        if self.second:
-            self.hitbox.center = (Player.hitbox.center[0] + 100, Player.hitbox.center[1])
-        else:
-            self.hitbox.center = (Player.hitbox.center[0] - 100, Player.hitbox.center[1])
-        # pygame.draw.circle(win, self.color, self.hitbox.center, 25)
-
-    def destroy(self):
-        return self.kill
-
-    def gfx_draw(self):
-        animation_ticker = self.timer_animation_ticker(10)
-        if animation_ticker < 5:
-            win.blit(Player.ship_sprites[self.gfx_idx[0]], (self.hitbox.topleft[0] - 0, self.hitbox.topleft[1] - 0))
-        else:
-            win.blit(Player.ship_sprites[self.gfx_idx[1]], (self.hitbox.topleft[0] - 0, self.hitbox.topleft[1] - 0))
-
-    def skills(self):
-        if not data.LEVELS.after_boss:
-            try:
-                targets = [enemy for enemy in data.ENEMY_DATA if enemy.__class__.__name__ != "Asteroid"]
-            except IndexError:
-                pass
-
-            if self.typ == "escort_missile":
-                if self.timer_trigger(Escort.fire_rate * 5):
-                    for target in targets:
-                        data.PLAYER_PROJECTILE_DATA.append(Missile(15,
-                                                                   (5, 5),
-                                                                   self.hitbox.center,
-                                                                   target.hitbox,
-                                                                   Player.damage * 3,
-                                                                   "es_missile"))
-
-            elif self.typ == "escort_gun":
-                if self.timer_trigger(Escort.fire_rate):
-                    for target in targets:
-                        data.PLAYER_PROJECTILE_DATA.append(Projectile(data.TURRET.projectile_speed,
-                                                                      data.TURRET.projectile_size,
-                                                                      self.hitbox.center,
-                                                                      Player.damage,
-                                                                      "es_normal",
-                                                                      0,
-                                                                      target=target.hitbox.center))
-
-            elif self.typ == "escort_gunship":
-                if self.timer_trigger(Escort.fire_rate * 0.65):
-                    for angle in [280, 283, 286]:
-                        if self.second:
-                            data.PLAYER_PROJECTILE_DATA.append(Projectile(data.TURRET.projectile_speed,
-                                                                          data.TURRET.projectile_size,
-                                                                          self.hitbox.center,
-                                                                          Player.damage,
-                                                                          "gs_normal",
-                                                                          0,
-                                                                          angle=angle,
-                                                                          angle_variation=-30))
-                        else:
-                            data.PLAYER_PROJECTILE_DATA.append(Projectile(data.TURRET.projectile_speed,
-                                                                          data.TURRET.projectile_size,
-                                                                          self.hitbox.center,
-                                                                          Player.damage,
-                                                                          "gs_normal",
-                                                                          0,
-                                                                          angle=angle))
-
-    def tick(self):
-        self.move()
-        self.skills()
-        self.gfx_draw()
-        self.timer_tick()
-        if not Escort.spawned:
-            self.kill = True
-
-    @classmethod
-    def spawn(cls):
-        if not Escort.spawned:
-            for typ, c, gfx in [
-                ("escort_missile", (255, 0, 00), (23, 24)),
-                ("escort_gun", (0, 0, 255), (25, 26)),
-                ("escort_gunship", (0, 255, 255), (27, 28))
-            ]:
-                if typ in data.ITEMS.active_flag_lst:
-                    if "2nd_escort" in data.ITEMS.active_flag_lst:
-                        data.PLAYER_DATA.append(Escort(typ, c, gfx, second=True))
-                    data.PLAYER_DATA.append(Escort(typ, c, gfx))
-                    Escort.spawned = True
 
 
 data.PLAYER = Player
