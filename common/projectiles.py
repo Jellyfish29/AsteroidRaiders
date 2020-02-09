@@ -3,7 +3,7 @@ import pygame
 from init import *
 from astraid_funcs import *
 import astraid_data as data
-from Gfx import Gfx
+from Gfx import Gfx, Background
 
 
 class Projectile(Timer):
@@ -117,6 +117,9 @@ class Projectile(Timer):
 
     def destroy(self):
         return self.kill
+
+    def get_name(self):
+        return self.__class__.__name__
 
     def tick(self):
         if self.decay is not None:
@@ -356,7 +359,10 @@ class Mine(Projectile):
             start_point=(0, 0),
             damage=0,
             flag="",
-            decay=False
+            decay=False,
+            oob_check=True,
+            moving=False,
+            fuse_delay=180
     ):
         super().__init__(
             speed=speed,
@@ -369,19 +375,42 @@ class Mine(Projectile):
             self.hitbox.center[0] - 175, self.hitbox.center[1] - 175, 350, 350
         )
         self.decay = decay
+        self.out_of_bounds_check = oob_check
+        self.moving = moving
+        self.fuse_delay = fuse_delay
         self.draw_envelope = False
+        self.move_angles = angles_360(4)
+        self.angle = random.randint(0, 359)
+        self.direction_interval = random.randint(40, 100)
 
     def move(self):
-        pass
+        if self.moving:
+            if Background.bg_move:
+                self.hitbox.move_ip(0, Background.scroll_speed)
+                self.envelope.move_ip(0, Background.scroll_speed)
+            else:
+                if self.hitbox.center[0] < 0:
+                    self.angle = 0
+                elif self.hitbox.center[0] > winwidth:
+                    self.angle = 180
+                elif self.hitbox.center[1] < -50:
+                    self.angle = 90
+                elif self.hitbox.center[1] > winheight:
+                    self.angle = 270
+            if self.timer_trigger(self.direction_interval):
+                self.angle = random.randint(0, 359)
+            self.hitbox.move_ip(self.move_angles[self.angle])
+            self.envelope.move_ip(self.move_angles[self.angle])
 
     def hit(self, obj):
         if self.decay:
             if self.timer_trigger(500):
                 self.kill = True
-        if self.timer_delay(limit=180):  # Fuse Delay
+        if self.timer_delay(limit=self.fuse_delay):  # Fuse Delay
             self.draw_envelope = True
             # if self.envelope.colliderect(obj.hitbox):
             if self.envelope.collidepoint(obj.hitbox.center):
+                self.moving = False
                 self.angle = degrees(
                     obj.hitbox.center[0],
                     self.hitbox.center[0],
@@ -409,8 +438,9 @@ class Mine(Projectile):
         self.move()
         self.gfx_draw()
         data.TURRET.point_defence(self.hitbox)
-        if self.out_of_bounds():
-            self.kill = True
+        if self.out_of_bounds_check:
+            if self.out_of_bounds():
+                self.kill = True
         self.timer_tick()
 
 

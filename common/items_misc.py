@@ -7,12 +7,15 @@ from init import *
 
 class Item_supply_crate(Items):
 
-    def __init__(self, color, start=False):
+    def __init__(self, color, level=None):
         super().__init__("Supply Container", "Provides New Supplies", (38, 38))
         self.color = color
         self.flag = "supply_con"
         self.base_effect = 4
-        self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
+        if level is None:
+            self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
+        else:
+            self.lvl = level
 
     def get_upgrade_desc(self):
         return f"Upgrade Points: + {int(self.get_lvl_effects(reverse=True)[self.lvl])}"
@@ -30,12 +33,15 @@ class Item_supply_crate(Items):
 
 class Item_upgrade_point_crate(Items):
 
-    def __init__(self, color, start=False):
+    def __init__(self, color, level=None):
         super().__init__("Scrap", "Used to updgrade Items", (49, 49))
         self.color = color
         self.flag = "upgrade_con"
         self.base_effect = 4
-        self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
+        if level is None:
+            self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
+        else:
+            self.lvl = level
 
     def get_upgrade_desc(self):
         return f"Upgrade Points: + {int(self.get_lvl_effects(reverse=True)[self.lvl])}"
@@ -53,12 +59,15 @@ class Item_upgrade_point_crate(Items):
 
 class Item_heal_crate(Items):
 
-    def __init__(self, color, start=False):
+    def __init__(self, color, level=None):
         super().__init__("Spare Part Container", "Spare Parts to restore the Ship to full Strength", (39, 39))
         self.color = color
         self.flag = "heal_con"
         self.base_effect = 4
-        self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
+        if level is None:
+            self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
+        else:
+            self.lvl = level
 
     def get_upgrade_desc(self):
         return f"Health: + {int(self.get_lvl_effects(reverse=True)[self.lvl])} <> Damage Control: + 1"

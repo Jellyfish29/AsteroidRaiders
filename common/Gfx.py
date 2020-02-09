@@ -19,7 +19,7 @@ class Gfx(Timer):
     def __init__(
         self, typ, interval,
         anchor, hover, follow,
-        x, y, dmg_text,
+        x, y, text,
         text_color, explo, pl_shield, rot
     ):
         Timer.__init__(self)
@@ -36,7 +36,7 @@ class Gfx(Timer):
         self.x = x
         self.y = y
         self.follow = follow
-        self.dmg_text = dmg_text
+        self.text = text
         self.text_color = text_color
         self.rot = rot
         self.effect_types = {
@@ -64,7 +64,7 @@ class Gfx(Timer):
     def draw(self):
         if self.hover:
             self.hover_rect.move_ip(0, -2)
-            if self.dmg_text is not None:
+            if self.typ == "dmg_text":
                 try:
                     text = Gfx.font.render(
                         self.get_dmg_str(), True, self.text_color, self.hover_rect
@@ -75,6 +75,19 @@ class Gfx(Timer):
 
                 if self.timer_trigger(30):
                     return True
+
+            elif self.typ == "text":
+                try:
+                    text = Gfx.font.render(
+                        self.text, True, self.text_color, self.hover_rect
+                    )
+                except SystemError:
+                    return True
+                win.blit(text, self.hover_rect)
+
+                if self.timer_trigger(30):
+                    return True
+
             else:
                 try:
                     win.blit(self.sprites[
@@ -84,6 +97,7 @@ class Gfx(Timer):
                     ], self.hover_rect)
                 except TypeError:
                     return True
+
         elif self.follow:
             try:
                 win.blit(self.sprites[
@@ -127,7 +141,7 @@ class Gfx(Timer):
                 return True
 
     def get_dmg_str(self):
-        return str(int(self.dmg_text * 10))
+        return str(int(self.text * 10))
 
     @classmethod
     def create_effect(
@@ -138,7 +152,7 @@ class Gfx(Timer):
             hover=False,
             follow=False,
             x=0, y=0,
-            dmg_text=None,
+            text=None,
             text_color=(0, 0, 0),
             explo=False,
             pl_shield=False,
@@ -147,15 +161,15 @@ class Gfx(Timer):
     ):
         if layer == 3:
             Gfx.gfx_layer_3_lst.append(
-                Gfx(typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield, rot)
+                Gfx(typ, interval, anchor, hover, follow, x, y, text, text_color, explo, pl_shield, rot)
             )
         elif layer == 2:
             Gfx.gfx_layer_2_lst.append(
-                Gfx(typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield, rot)
+                Gfx(typ, interval, anchor, hover, follow, x, y, text, text_color, explo, pl_shield, rot)
             )
         else:
             Gfx.gfx_layer_1_lst.append(
-                Gfx(typ, interval, anchor, hover, follow, x, y, dmg_text, text_color, explo, pl_shield, rot)
+                Gfx(typ, interval, anchor, hover, follow, x, y, text, text_color, explo, pl_shield, rot)
             )
 
     @classmethod
@@ -238,7 +252,7 @@ class Background(Timer):
     @classmethod
     @timer
     def update(cls, timer):
-        if not data.LEVELS.boss_fight:
+        if not any([data.LEVELS.boss_fight, not cls.bg_move]):
             if timer.trigger(cls.bg_obj_spawn_rate):
                 cls.bg_objs.append(Background())
 

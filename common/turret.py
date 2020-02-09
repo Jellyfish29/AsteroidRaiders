@@ -219,7 +219,7 @@ class Turret:
                             size=(5, 5),
                             start_point=location,
                             target=enemy.hitbox,
-                            damage=data.PLAYER.damage * 3 + int(cls.fire_rate),
+                            damage=data.PLAYER.damage * int(data.ITEMS.get_item(flag="missile").effect_strength),
                             flag="missile"
                         ))
                     data.ITEMS.get_item(flag="missile").end_active()
@@ -259,7 +259,7 @@ class Turret:
                             speed=20,
                             size=cls.projectile_size,
                             start_point=projectile.hitbox.center,
-                            damage=data.PLAYER.damage * 0.1,
+                            damage=data.PLAYER.damage * 0.08,
                             flag="secondary",
                             gfx_idx=3,
                             angle=angle,

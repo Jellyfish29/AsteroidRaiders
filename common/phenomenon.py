@@ -61,7 +61,8 @@ class Phenomenon(Timer):
         return self.kill
 
     def tick(self):
-        self.move()
+        if Background.bg_move:
+            self.move()
         self.gfx_draw()
         self.border_collision()
         self.player_collision()
@@ -79,7 +80,7 @@ class Phenomenon(Timer):
     @timer
     def update(cls, timer):
 
-        if not any((data.LEVELS.boss_fight, data.LEVELS.after_boss)):
+        if not any((data.LEVELS.boss_fight, data.LEVELS.after_boss, data.LEVELS.special_events)):
             if data.LEVELS.level not in [i - 1 for i in range(6, 49, 6)]:
                 if timer.trigger(Phenomenon.spawn_time):
                     if len(data.PHENOMENON_DATA) < Phenomenon.amount:
@@ -87,35 +88,6 @@ class Phenomenon(Timer):
 
 
 data.PHENOM = Phenomenon
-
-
-class Wormhole(Phenomenon):
-
-    trigger = False
-
-    def __init__(self):
-        super().__init__(1.5, (200, 200), (0, 0), (-150, -150))
-
-    def player_collision(self):
-        if self.hitbox.colliderect(data.PLAYER.hitbox):
-            data.ENEMY_DATA.clear()
-            data.PHENOMENON_DATA.clear()
-            data.ENEMY_PROJECTILE_DATA.clear()
-            data.PLAYER_PROJECTILE_DATA.clear()
-            data.LEVELS.elite_fight = True
-            self.kill = True
-            data.PLAYER.hitbox.center = (winwidth / 2, 900)
-
-    def hit(self, obj):
-        if self.hitbox.colliderect(obj.hitbox):
-            obj.kill = True
-
-    @classmethod
-    def spawn(cls):
-        if not any((data.LEVELS.boss_fight, data.LEVELS.after_boss)):
-            if Wormhole.trigger:
-                data.PHENOMENON_DATA.append(Wormhole())
-                Wormhole.trigger = False
 
 
 class Gravity_well(Phenomenon):
@@ -222,7 +194,7 @@ class Black_hole(Phenomenon):
 class Repair_station(Phenomenon):
 
     def __init__(self):
-        super().__init__(1, (200, 200), (3, 4), (-125, -125))
+        super().__init__(Background.scroll_speed, (200, 200), (3, 4), (-125, -125))
 
     def player_collision(self):
         if self.hitbox.colliderect(data.PLAYER.hitbox):
@@ -264,7 +236,7 @@ class Nebulae_fire_rate_plus(Phenomenon):
 class Planet(Phenomenon):
 
     def __init__(self):
-        super().__init__(1, (250, 250), (2, 2), (-160, -160))
+        super().__init__(Background.scroll_speed, (250, 250), (2, 2), (-160, -160))
 
     def player_collision(self):
         if self.hitbox.colliderect(data.PLAYER.hitbox):

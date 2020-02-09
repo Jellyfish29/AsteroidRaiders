@@ -102,6 +102,10 @@ def rect_not_on_sreen(rect, bot=False, strict=False):
         return False
 
 
+def get_random_point():
+    return (random.randint(0, winwidth), random.randint(0, winheight))
+
+
 def gfx_rotate(surf, angle):
     return pygame.transform.rotate(surf, angle)
 
@@ -214,6 +218,12 @@ class Timer:
             return None
         self.animation_range_ticker_1 += 1
         return self.animation_range_ticker_2
+
+    def timer_reset(self):
+        self.ticker = {}
+        self.timer_calls_per_tick = 0
+        self.animation_range_ticker_1 = 0
+        self.animation_range_ticker_2 = 0
 
     def timer_tick(self):
         self.timer_calls_per_tick = 0

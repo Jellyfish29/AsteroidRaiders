@@ -1,5 +1,6 @@
 
 from pygame.locals import *
+import concurrent.futures
 
 from init import *
 from astraid_funcs import *
@@ -8,6 +9,7 @@ from interface import *
 from player import *
 from turret import *
 from enemys import *
+from allies import *
 from bosses import *
 from Gfx import *
 from levels import *
@@ -49,12 +51,18 @@ def main():
 
     components = [Player, Turret, Enemy, Phenomenon, Interface, Levels, Items]
 
+    def component_update():
+
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            for component in components:
+                executor.submit(component.update)
+
     # Background Setup
     Background.update()
     Background.bg_objs += [Background(y=0), Background(y=1000)]
 
     # Item Setup
-    # Items.drop((winwidth / 2, 400), target=Item_he_rounds((100, 100, 200)))
+    Items.drop((winwidth / 2, 400), target=Item_missile((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
 
@@ -68,7 +76,7 @@ def main():
     while True:
 
         # print(Clock.get_fps())
-        # print(pygame.time.get_ticks())
+        print(Events.convoy_points)
 
         win.fill(Background.bg_color)
         Background.update()
@@ -79,6 +87,7 @@ def main():
 
         Gfx.layer_2_update()
 
+        # component_update()
         for component in components:
             component.update()
 
@@ -138,8 +147,9 @@ def main():
                 elif event.key == K_m:
                     test_mode()
                 elif event.key == K_SPACE:
-                    Player.jumpdrive.toggle()
-                    Player.jumpdrive.activation_effect()
+                    if not Player.jumpdrive_disabled:
+                        Player.jumpdrive.toggle()
+                        Player.jumpdrive.activation_effect()
                 elif event.key == K_LSHIFT:
                     Player.afterburner.toggle()
                     Player.afterburner.activation_effect()

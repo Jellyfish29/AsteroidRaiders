@@ -10,7 +10,7 @@ from Gfx import Gfx, Background
 class Boss_mine_boat(Bosses):
 
     def __init__(self):
-        self.health = 170
+        self.health = 240
         self.speed = 4
         self.fire_rate = 90
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]
@@ -59,7 +59,7 @@ class Boss_mine_boat(Bosses):
 class Boss_frigatte(Bosses):
 
     def __init__(self):
-        self.health = 700
+        self.health = 1000
         self.speed = 3
         self.fire_rate = 60
         self.move_pattern = [0, 1, 2, 3]
@@ -125,7 +125,7 @@ class Boss_corvette(Bosses):
 
     def __init__(self):
 
-        self.health = 800
+        self.health = 1300
         self.speed = 4
         self.fire_rate = 30
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]
@@ -178,7 +178,7 @@ class Boss_corvette(Bosses):
 class Boss_destroyer(Bosses):
 
     def __init__(self):
-        self.health = 2400
+        self.health = 3000
         self.speed = 2
         self.fire_rate = 60
         self.move_pattern = [0, 7, 0, 1, 2]
@@ -258,7 +258,7 @@ class Boss_destroyer(Bosses):
 class Boss_cruiser(Bosses):
 
     def __init__(self):
-        self.health = 5000
+        self.health = 7000
         self.speed = 2
         self.fire_rate = 50
         self.move_pattern = [8, 9]
@@ -319,7 +319,7 @@ class Boss_cruiser(Bosses):
 class Boss_scout(Bosses):
 
     def __init__(self):
-        self.health = 2000
+        self.health = 3000
         self.speed = 6
         self.fire_rate = 70
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]
@@ -423,7 +423,7 @@ class Boss_scout(Bosses):
 class Boss_battleship(Bosses):
 
     def __init__(self):
-        self.health = 8000
+        self.health = 12000
         self.speed = 2
         self.fire_rate = 70
         self.move_pattern = [0, 7, 0, 1, 2]
@@ -488,7 +488,7 @@ class Boss_battleship(Bosses):
 # class Boss_carrier(Bosses):
 
 #     def __init__(self):
-#         self.health = 7000
+#         self.health = 20000
 #         self.speed = 2
 #         self.fire_rate = 160
 #         self.boss_skill = ["adds"]

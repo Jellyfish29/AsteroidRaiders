@@ -103,7 +103,8 @@ class Items(Timer):
                     self.hitbox.move_ip(random.choice([50, -50]), 0)
 
     def decay(self):
-        if not data.LEVELS.after_boss:
+        if not any([data.LEVELS.after_boss,
+                    data.LEVELS.special_events]):
             self.hitbox.move_ip(0, 1)
             if rect_not_on_sreen(self.hitbox):
                 Items.dropped_lst.remove(self)

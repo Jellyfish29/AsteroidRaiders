@@ -30,16 +30,17 @@ class Item_missile(Active_Items):
         super().__init__(color, "Heat seeking Missiles (acive)", "Fires two heat seeking Missile at the Target", (6, 7))
         self.color = color
         self.flag = "missile"
-        self.base_effect = 600  # cooldown time
-        self.cd_len = self.get_lvl_effects()[self.lvl]
+        self.base_effect = 6  # cooldown time
+        self.cd_len = 300
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
         self.active_time = 1
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
 
     def get_upgrade_desc(self):
-        return f"Cooldown: {int(self.cd_len / 60) + 1}s"
+        return f"Damage: {(int(data.PLAYER.damage * self.effect_strength) * 10)} <> Cooldown: {int(self.cd_len / 60) + 1}s"
 
     def set_effect_strength(self):
-        self.cd_len = self.get_lvl_effects()[self.lvl]
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
 
 
 class Item_nuke(Active_Items):
@@ -186,7 +187,7 @@ class Item_fragmentation_rounds(Active_Items):
         self.effect_strength = int(self.get_lvl_effects(reverse=True)[self.lvl])
 
     def get_upgrade_desc(self):
-        return f"Fragments: {int(self.effect_strength)}<> Cooldown: {int(self.get_cd_len() / 60) + 1}s"
+        return f"Fragments: {int(self.effect_strength)} <> Cooldown: {int(self.get_cd_len() / 60) + 1}s"
 
     def set_effect_strength(self):
         self.effect_strength = int(self.get_lvl_effects(reverse=True)[self.lvl])
@@ -279,7 +280,10 @@ class Item_jump_drive(Active_Items):
         return 0
 
     def get_key_str(self):
-        return ""
+        if not data.PLAYER.jumpdrive_disabled:
+            return ""
+        else:
+            return "DISABLED"
 
 
 class Item_shield(Active_Items):

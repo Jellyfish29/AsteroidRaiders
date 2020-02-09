@@ -50,9 +50,10 @@ class Enemy(Timer):
             self.spawn_points[spawn_point][1],
             size[0], size[1]
         )
+        self.size = size
         self.health = health
         self.max_health = self.health
-        self.healthbar_len = 70
+        self.healthbar_len = self.size[0]
         self.healthbar_height = 1
         self.healthbar_max_len = self.healthbar_len
         self.score_amount = speed
@@ -107,17 +108,17 @@ class Enemy(Timer):
         self.healthbar_len -= (self.healthbar_max_len / (self.max_health / hp))
         if hp >= 0.5:
             Gfx.create_effect(
-                "dmg_txt", 4,
+                "dmg_text", 4,
                 (self.hitbox.center[0] + random.randint(-10, 10),
                  self.hitbox.center[1] + random.randint(-10, 10)),
-                hover=True, follow=True, dmg_text=hp, text_color=color
+                hover=True, follow=True, text=hp, text_color=color
             )
         elif hp < 0:
             Gfx.create_effect(
-                "dmg_txt", 4,
+                "dmg_text", 4,
                 (self.hitbox.center[0] + random.randint(-10, 10),
                  self.hitbox.center[1] + random.randint(-10, 10)),
-                hover=True, follow=True, dmg_text=hp, text_color=color
+                hover=True, follow=True, text=hp, text_color=color
             )
         else:
             self.dmg_text_buffer(hp)
@@ -130,10 +131,10 @@ class Enemy(Timer):
         self.buffer_hp += hp
         if self.buffer_hp >= 1.5 or force:
             Gfx.create_effect(
-                "dmg_txt", 4,
+                "dmg_text", 4,
                 (self.hitbox.center[0] + random.randint(-10, 10),
                  self.hitbox.center[1] + random.randint(-10, 10)),
-                hover=True, follow=True, dmg_text=self.buffer_hp, text_color=(255, 10, 10)
+                hover=True, follow=True, text=self.buffer_hp, text_color=(255, 10, 10)
             )
             self.buffer_hp = 0
 
@@ -359,6 +360,10 @@ class Shooter(Enemy):
 
     def skill(self):
         # print(f"shooter {self.timer_calls_per_tick}")
+        if len(data.PLAYER_DATA) == 0:
+            target = data.PLAYER.hitbox.center
+        else:
+            target = data.PLAYER_DATA[random.randint(0, len(data.PLAYER_DATA) - 1)].hitbox.center
         if self.timer_trigger(self.fire_rate):
             self.muzzle_effect_timer = (i for i in range(8))
             data.ENEMY_PROJECTILE_DATA.append(Projectile(
@@ -368,7 +373,7 @@ class Shooter(Enemy):
                 damage=1,
                 flag="spez_enemy",
                 gfx_idx=12,
-                target=data.PLAYER.hitbox.center
+                target=target
             ))
 
 
@@ -452,7 +457,7 @@ class Miner(Enemy):
             spawn,
             Enemy.health + 2,
             (80, 80),
-            (13, 14),
+            (4, 5),
             (-30, -30),
             Enemy.spez_sprites
         )
@@ -515,7 +520,7 @@ class Comet(Enemy):
             1,
             Enemy.health,
             (60, 60),
-            (15, 15),
+            (13, 13),
             (-50, -50),
             Enemy.spez_sprites
         )

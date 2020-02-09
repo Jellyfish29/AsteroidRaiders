@@ -28,6 +28,7 @@ class Player:
     direction = "idle"
     angles = directions(speed)
     jumpdrive = Item_jump_drive((0, 0, 0))
+    jumpdrive_disabled = False
     afterburner = Item_afterburner((0, 0, 0,))
     # Damage
     base_damage = 0.5
