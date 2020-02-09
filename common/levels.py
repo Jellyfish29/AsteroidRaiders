@@ -61,8 +61,8 @@ class Levels:
         if cls.second_elite_chance < 40:
             cls.second_elite_chance = 40
         if cls.level % 12 == 0:
-            cls.self.special_event_amount += 1
-            if cls.self.special_event_amount > 5:
+            cls.special_event_amount += 1
+            if cls.special_event_amount > 5:
                 self.special_event_amount = 5
         if cls.level % 6 == 0:
             cls.enemy_amount += 1
@@ -129,6 +129,12 @@ class Levels:
             data.ENEMY.set_spawn_table(Seeker)
             data.ENEMY.set_spawn_table(Jumper)
             data.PHENOM.set_spawn_table(Planet)
+
+            # data.ENEMY.set_spawn_table(Comet)
+            # data.ENEMY.set_spawn_table(Shooter)
+            # data.ENEMY.set_spawn_table(Mine_layer)
+            # data.ENEMY.set_spawn_table(Strafer)
+            # data.ENEMY.set_spawn_table(Miner)
         if cls.level == 6:
             data.ENEMY.set_spawn_table(Comet)
             data.ENEMY.set_spawn_table(Shooter)

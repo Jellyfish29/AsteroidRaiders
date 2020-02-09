@@ -368,4 +368,4 @@ def start_item_generator():
         Item_fragmentation_rounds,
         Item_piercing_shot,
         Item_missile
-    ][random.randint(0, 7)]
+    ][random.randint(0, 6)]

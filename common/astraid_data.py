@@ -88,6 +88,13 @@ def GAME_UPDATE():
                         if enemy.hitable:
                             enemy.take_damage(phenom.apply_damage())
 
+            for pl_obj in PLAYER_DATA:
+                if pl_obj.hit(enemy):
+                    if pl_obj.hitable:
+                        pl_obj.kill = True
+                    if enemy.hitable:
+                        enemy.kill = True
+
         enemy.hit(PLAYER)
 
     for pl_obj in PLAYER_DATA:

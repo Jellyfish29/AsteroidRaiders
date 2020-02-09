@@ -166,24 +166,24 @@ class Enemy(Timer):
                                               )))
 
     def gfx_animation(self):
-        animation_ticker = self.timer_animation_ticker(8)
+        animation_ticker = self.timer_animation_ticker(16)
         gfx_angle = degrees(
             self.target[1],
             self.spawn_points[self.spawn_point][1],
             self.target[0],
             self.spawn_points[self.spawn_point][0]
         )
-        if animation_ticker < 4:
+        if animation_ticker < 8:
             win.blit(rot_center(
                 self.sprites[self.gfx_idx[0]], gfx_angle),
-                (self.hitbox.topleft[0] + self.gfx_hook[0],
-                 self.hitbox.topleft[1] + self.gfx_hook[1])
+                (self.hitbox.topleft[0] + self.gfx_hook[0] - 50,
+                 self.hitbox.topleft[1] + self.gfx_hook[1] - 50)
             )
         else:
             win.blit(rot_center(
                 self.sprites[self.gfx_idx[1]], gfx_angle),
-                (self.hitbox.topleft[0] + self.gfx_hook[0],
-                 self.hitbox.topleft[1] + self.gfx_hook[1])
+                (self.hitbox.topleft[0] + self.gfx_hook[0] - 50,
+                 self.hitbox.topleft[1] + self.gfx_hook[1] - 50)
             )
 
     def gfx_hit(self):
@@ -305,7 +305,7 @@ class Jumper(Enemy):
             Enemy.health,
             (70, 70),
             0,
-            (0, 0),
+            (-40, -40),
             Enemy.asteroid_sprites
         )
         self.score_amount = 7
@@ -384,7 +384,7 @@ class Seeker(Enemy):
             Enemy.health + 2,
             (80, 80),
             (2, 3),
-            (0, 0),
+            (-10, -10),
             Enemy.spez_sprites
         )
         self.score_amount = 6
@@ -392,6 +392,10 @@ class Seeker(Enemy):
         self.target = data.PLAYER.hitbox
 
     def skill(self):
+        if self.trigger(30):
+            Gfx.create_effect(
+                "smoke1", 4, anchor=self.hitbox, follow=True, x=-50, y=-50
+            )
         self.direction = degrees(
             data.PLAYER.hitbox.center[0],
             self.spawn_points[self.spawn_point][0],
@@ -512,7 +516,7 @@ class Comet(Enemy):
             Enemy.health,
             (60, 60),
             (15, 15),
-            (-100, -100),
+            (-50, -50),
             Enemy.spez_sprites
         )
         self.hitable = False
