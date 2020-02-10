@@ -21,6 +21,13 @@ class Events():
 
     # Station hack
 
+    # Battleship defence
+    battleship_defence_set_up = True
+    bs_heals = 0
+    bs_defence_wave_trigger = 1400
+    bs_defence_wave_strength = 2
+    bs_defence_wave_counter = 0
+
     # Minefield
     mine_field_set_up = True
     mine_amount = 8
@@ -168,9 +175,27 @@ class Events():
     @timer
     def event_battleship_defence(cls, timer):
         cls.set_bg_color()
-        if battleship_defence_set_up:
+        if cls.battleship_defence_set_up:
             cls.bs_dest = (950, 400)
             data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -150), target=cls.bs_dest))
+            for _ in range(3):
+                data.ENEMY_DATA.append(Event_shooter(get_random_point(), spawn=1))
+            cls.battleship_defence_set_up = False
+
+        if not Background.bg_move:
+            if timer.trigger(cls.bs_defence_wave_trigger):
+                for _ in range(cls.bs_defence_wave_strength):
+                    data.ENEMY_DATA.append(Event_shooter(get_random_point()))
+                cls.bs_defence_wave_counter += 1
+                cls.bs_defence_wave_strength += 1
+            if timer.trigger(1400):
+                data.LEVELS.execute_event(5)
+
+            if cls.bs_defence_wave_counter == 6:
+                if timer.delay(400):
+                    Background.bg_move = True
+        else:
+            pass
 
     @classmethod
     def set_bg_color(cls):
@@ -179,9 +204,10 @@ class Events():
     @classmethod
     def get_special_events_lst(cls):
         return [
-            (cls.event_comet_storm, 0),
-            (cls.event_mine_field, 0),
-            (cls.event_convoy_escort, 6),
+            # (cls.event_comet_storm, 0),
+            # (cls.event_mine_field, 0),
+            # (cls.event_convoy_escort, 6),
+            (cls.event_battleship_defence, 0),
         ]
 
 

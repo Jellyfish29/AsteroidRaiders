@@ -116,6 +116,31 @@ class Event_item_boss_snare(Items):
             Items.dropped_lst.remove(self)
 
 
+class Event_item_battleship_heal(Items):
+
+    def __init__(self, color, start=False):
+        super().__init__("Repair Parts", "", (38, 38))
+        self.color = color
+        self.flag = "bs_heal"
+        self.base_effect = 4
+        self.lvl = 0
+
+    def get_upgrade_desc(self):
+        return f" "
+
+    def effect(self):
+        if "bs_heal" not in Items.active_flag_lst:
+
+            data.EVENTS.bs_heals += 1
+
+            for key, item in Items.inventory_dic.items():
+                if item == self:
+                    Items.inventory_dic[key] = None
+
+    def decay(self):
+        pass
+
+
 Items.consumables = [
     Event_item_boss_snare,
     Item_supply_crate,

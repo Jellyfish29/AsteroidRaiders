@@ -40,7 +40,7 @@ class Allied_entity(Timer):
             self.target[0], self.hitbox.center[0],
             self.target[1], self.hitbox.center[1]
         )])
-        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        pygame.draw.rect(win, (255, 0, 0), self.hitbox)
 
     def skill(self):
         pass
@@ -204,9 +204,9 @@ class Convoy_ship_allie(Allied_entity):
 class Battleship_allie(Allied_entity):
 
     def __init__(self, spawn_point=0, target=None):
-        super().__init__(speed=Background.scroll_speed, health=100, spawn_point=spawn_point,
+        super().__init__(speed=Background.scroll_speed, health=1000, spawn_point=spawn_point,
                          target=target, size=(200, 200), gfx_idx=(0, 0), gfx_hook=(-50, 0))
-        self.hitable = False
+        self.hitable = True
         self.rot_sprite = False
         self.run_limiter = Run_limiter()
 
@@ -239,7 +239,20 @@ class Battleship_allie(Allied_entity):
                     data.ITEMS.drop(
                         (self.hitbox.topright), target=Item_upgrade_point_crate((100, 100, 100), level=1))
 
-                data.LEVELS.convoy_points = 0
+    def skill(self):
+        if len(data.ENEMY_DATA) > 0:
+            target = data.ENEMY_DATA[random.randint(0, len(data.ENEMY_DATA) - 1)].hitbox.center
+            if self.timer_trigger(100):
+                # self.muzzle_effect_timer = (i for i in range(8))
+                data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                    speed=20,
+                    size=(6, 6),
+                    start_point=self.hitbox.center,
+                    damage=1,
+                    flag="allie",
+                    gfx_idx=15,
+                    target=target
+                ))
 
 
 data.ALLIE = Allied_entity

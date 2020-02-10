@@ -6,6 +6,7 @@ from astraid_funcs import *
 import astraid_data as data
 from Gfx import Gfx
 from projectiles import Projectile, Mine, Explosion
+from items_misc import Event_item_battleship_heal
 
 
 class Enemy(Timer):
@@ -15,7 +16,7 @@ class Enemy(Timer):
     boss_sprites = get_images("boss_ship")
     spez_enemy = []
     spez_spawn_table = []
-    health = 2.6
+    health = 2.5
     ttk_ticker = 100
     spez_spawn_time = 480
 
@@ -541,9 +542,10 @@ spez_spawn_table = [Jumper, Seeker]
 
 class Event_shooter(Shooter):
 
-    def __init__(self, dest):
-        super().__init__()
+    def __init__(self, dest, spawn=random.randint(1, 4)):
+        super().__init__(spawn=spawn)
         self.dest = dest
+        self.gfx_hook = (-100, -100)
 
     def move(self):
         self.hitbox.move_ip(self.angles[degrees(
@@ -554,12 +556,40 @@ class Event_shooter(Shooter):
         if self.hitbox.collidepoint(self.dest):
             self.angles = angles_360(0)
 
+    def gfx_animation(self):
+        pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        animation_ticker = self.timer_animation_ticker(8)
+        gfx_angle = degrees(
+            data.PLAYER_DATA[0].hitbox.center[1],
+            self.hitbox.center[1],
+            data.PLAYER_DATA[0].hitbox.center[0],
+            self.hitbox.center[0]
+        )
+        if animation_ticker < 4:
+            win.blit(rot_center(
+                self.sprites[self.gfx_idx[0]], gfx_angle),
+                (self.hitbox.topleft[0] + self.gfx_hook[0],
+                 self.hitbox.topleft[1] + self.gfx_hook[1])
+            )
+        else:
+            win.blit(rot_center(
+                self.sprites[self.gfx_idx[1]], gfx_angle),
+                (self.hitbox.topleft[0] + self.gfx_hook[0],
+                 self.hitbox.topleft[1] + self.gfx_hook[1])
+            )
 
-class Event_supply_ship(Event_shooter):
 
-    def __init__(self, dest):
-        super().__init__(dest)
-        self.gfx_idx = (0, 0)
+class Event_supply_ship(Shooter):
+
+    def __init__(self):
+        super().__init__()
+        self.gfx_idx = (11, 12)
 
     def skill(self):
         pass
+
+    def death(self):
+        data.TURRET.overdrive()
+        self.gfx_hit()
+        data.ITEMS.drop(self.hitbox.topleft, target=Event_item_battleship_heal((100, 100, 200)))
+        self.kill = True

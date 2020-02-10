@@ -179,10 +179,8 @@ class Levels:
             cls.special_events_lst = [
                 e[0] for e in data.EVENTS.get_special_events_lst() if cls.level - 12 <= e[1] <= cls.level
             ]
-        for e in cls.special_events_lst:
-            print(e.__name__)
-        # cls.special_event_queue.append(
-        #     cls.special_events_lst.pop(random.randint(0, len(cls.special_events_lst) - 1)))
+        cls.special_event_queue.append(
+            cls.special_events_lst.pop(random.randint(0, len(cls.special_events_lst) - 1)))
 
     @classmethod
     def save_game(cls):

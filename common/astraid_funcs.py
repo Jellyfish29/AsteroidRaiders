@@ -103,7 +103,7 @@ def rect_not_on_sreen(rect, bot=False, strict=False):
 
 
 def get_random_point():
-    return (random.randint(0, winwidth), random.randint(0, winheight))
+    return (random.randint(200, winwidth - 200), random.randint(200, winheight - 200))
 
 
 def gfx_rotate(surf, angle):
