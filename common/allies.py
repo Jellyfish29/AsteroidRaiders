@@ -32,6 +32,8 @@ class Allied_entity(Timer):
         self.rot_sprite = True
         self.kill = False
         self.hitable = True
+        self.hide_healthbar = False
+        self.border_check = True
         self.flag = "allie"
         Timer.__init__(self)
 
@@ -40,7 +42,7 @@ class Allied_entity(Timer):
             self.target[0], self.hitbox.center[0],
             self.target[1], self.hitbox.center[1]
         )])
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
 
     def skill(self):
         pass
@@ -126,11 +128,13 @@ class Allied_entity(Timer):
 
     def tick(self):
         self.gfx_animation()
-        self.gfx_health_bar()
+        if not self.hide_healthbar:
+            self.gfx_health_bar()
         self.move()
         self.skill()
         self.script()
-        # self.border_collide()
+        if self.border_check:
+            self.border_collide()
         if self.health <= 0:
             self.death()
         self.timer_tick()
@@ -204,11 +208,13 @@ class Convoy_ship_allie(Allied_entity):
 class Battleship_allie(Allied_entity):
 
     def __init__(self, spawn_point=0, target=None):
-        super().__init__(speed=Background.scroll_speed, health=100, spawn_point=spawn_point,
+        super().__init__(speed=Background.scroll_speed, health=200, spawn_point=spawn_point,
                          target=target, size=(200, 200), gfx_idx=(4, 4), gfx_hook=(0, 0))
         self.hitable = True
         self.rot_sprite = False
+        self.border_check = False
         self.healthbar_height = 5
+        self.fire_rate = 150
         self.run_limiter = Run_limiter()
 
     def move(self):
@@ -221,9 +227,16 @@ class Battleship_allie(Allied_entity):
             Background.bg_move = False
 
         if not data.EVENTS.bs_defence_bs_disabled:
-            self.speed = 1
+            if not self.timer_delay(120):
+                self._draw_damage_effect()
+
+            # self.hitable = False
+            # self.hide_healthbar = True
+            self.speed = 2
             self.gfx_idx = (5, 6)
+            self.fire_rate = 10
             if self.hitbox.center[1] > 1200:
+                Background.bg_move = True
                 self.kill = True
 
                 data.ITEMS.drop(
@@ -242,19 +255,31 @@ class Battleship_allie(Allied_entity):
                         (1000, 400), target=Item_supply_crate((100, 100, 100), level=1))
                 elif self.health >= 0:
                     data.ITEMS.drop(
-                        (1000, 400), target=Item_supply_crate((100, 100, 100), level=1))
+                        (1000, 400), target=Item_supply_crate((100, 100, 100), level=0))
+        else:
+            self._draw_damage_effect()
+
+    def _draw_damage_effect(self):
+        for x, y, i in [self._get_smoke_loc() + [i] for i in range(20, 41, 10)]:
+            if self.timer_trigger(i):
+                Gfx.create_effect(
+                    "smoke1", 4, anchor=self.hitbox, follow=True, x=x, y=y
+                )
+
+    def _get_smoke_loc(self):
+        return [random.randint(-100, 80), random.randint(-100, 80)]
 
     def skill(self):
         if len(data.ENEMY_DATA) > 0:
             target = data.ENEMY_DATA[random.randint(0, len(data.ENEMY_DATA) - 1)].hitbox.center
-            if self.timer_trigger(150):
+            if self.timer_trigger(self.fire_rate):
                 # self.muzzle_effect_timer = (i for i in range(8))
                 data.PLAYER_PROJECTILE_DATA.append(Projectile(
                     speed=20,
                     size=(6, 6),
                     start_point=self.hitbox.center,
                     damage=1,
-                    flag="allie",
+                    flag="ally",
                     gfx_idx=15,
                     target=target
                 ))

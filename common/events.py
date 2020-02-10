@@ -12,15 +12,16 @@ from Gfx import Gfx, Background
 class Events():
 
     special_events_lst = []
+    # Minefield
+    mine_field_set_up = True
+    mine_amount = 8
+    mine_field_stage = 0
+    mine_field_max_stages = 5
     # Convoy escort
     convoy_set_up = True
     convoy_wave_amount = (i for i in range(3))
     convoy_ship_amount = (i for i in range(4))
     convoy_points = 0
-    # Convoy attack
-
-    # Station hack
-
     # Battleship defence
     battleship_defence_set_up = True
     bs_defence_bs_disabled = True
@@ -28,12 +29,9 @@ class Events():
     bs_defence_wave_trigger = 700
     bs_defence_wave_strength = 4
     bs_defence_wave_counter = 0
+    # Convoy attack
 
-    # Minefield
-    mine_field_set_up = True
-    mine_amount = 8
-    mine_field_stage = 0
-    mine_field_max_stages = 5
+    # Station hack
 
     @classmethod
     def event_wave(cls, enemy=None, spawn=None, amount=None, scaling=None):
@@ -48,6 +46,8 @@ class Events():
             if timer.trigger(22):
                 data.ENEMY_PROJECTILE_DATA.append(Comet())
         else:
+            data.ITEMS.drop(
+                (1000, 400), target=Item_supply_crate((100, 100, 100), level=random.randint(0, 1)))
             return "stop_event"
 
     @classmethod
@@ -67,6 +67,12 @@ class Events():
                 data.ENEMY_PROJECTILE_DATA.clear()
                 data.PHENOMENON_DATA.clear()
                 data.ITEMS.dropped_lst.clear()
+
+                Background.bg_objs.clear()
+                Background.y += 1080
+                cls.bg_objs.append(Background(y=random.randint(100, 800)))
+
+                # Destruction Effects >>>
 
                 cls.mine_field_stage += 1
                 cls.mine_amount += 1
@@ -164,16 +170,6 @@ class Events():
 
     @classmethod
     @timer
-    def event_convoy_atack(cls, timer):
-        pass
-
-    @classmethod
-    @timer
-    def event_station_hack(cls, timer):
-        pass
-
-    @classmethod
-    @timer
     def event_battleship_defence(cls, timer):
         cls.set_bg_color()
         if cls.battleship_defence_set_up:
@@ -181,30 +177,32 @@ class Events():
             data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -200), target=cls.bs_dest))
             for _ in range(3):
                 data.ENEMY_DATA.append(Event_shooter(get_random_point(), spawn=1))
+            timer.ticker.update({"wave_timer": 600})
             cls.battleship_defence_set_up = False
 
         if not Background.bg_move:
             if cls.bs_defence_bs_disabled:
-                if timer.trigger(cls.bs_defence_wave_trigger):
+                if timer.timer_key_trigger(cls.bs_defence_wave_trigger, key="wave_timer"):
+                    spawn = random.randint(1, 4)
                     for _ in range(cls.bs_defence_wave_strength):
-                        data.ENEMY_DATA.append(Event_shooter(get_random_point()))
-                    cls.bs_defence_wave_trigger -= 50
+                        data.ENEMY_DATA.append(Event_shooter(get_random_point(), spawn=spawn))
+                    cls.bs_defence_wave_trigger -= 60
                     cls.bs_defence_wave_counter += 1
                     cls.bs_defence_wave_strength += 1
                     if cls.bs_defence_wave_counter == 4:
                         Elites.spawn()
 
-                if timer.trigger(1400):
+                if timer.trigger(1000):
                     data.LEVELS.execute_event(5)
 
                 if cls.bs_defence_wave_counter == 5:
                     cls.bs_defence_bs_disabled = False
 
-            else:
-                if len(data.PLAYER_DATA) == 0:
-                    cls.bs_defence_reset()
-                    Background.bg_move = True
-                    return "stop_event"
+        else:
+            if len(data.PLAYER_DATA) == 0:
+                cls.bs_defence_reset()
+
+                return "stop_event"
 
     @classmethod
     def bs_defence_reset(cls):
@@ -221,11 +219,21 @@ class Events():
     @classmethod
     def get_special_events_lst(cls):
         return [
-            # (cls.event_comet_storm, 0),
-            # (cls.event_mine_field, 0),
-            # (cls.event_convoy_escort, 6),
-            (cls.event_battleship_defence, 0),
+            (cls.event_comet_storm, 0),
+            (cls.event_mine_field, 0),
+            (cls.event_convoy_escort, 6),
+            (cls.event_battleship_defence, 6),
         ]
+
+    @classmethod
+    @timer
+    def event_convoy_atack(cls, timer):
+        pass
+
+    @classmethod
+    @timer
+    def event_station_hack(cls, timer):
+        pass
 
 
 data.EVENTS = Events

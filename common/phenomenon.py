@@ -4,6 +4,7 @@ import random
 from astraid_funcs import *
 from init import *
 from Gfx import Background
+from projectiles import Projectile
 import astraid_data as data
 
 
@@ -244,23 +245,22 @@ class Planet(Phenomenon):
 
     def hit(self, obj):
         if self.hitbox.colliderect(obj.hitbox):
-            if not issubclass(obj.__class__, Phenomenon):
-                if obj.flag == "boss" or obj.flag == "elite":
-                    if self.hitbox.center[0] < winwidth / 2:
-                        new_cp = (self.hitbox.center[0] + 300, winheight / 2)
+            if obj is data.PLAYER:
+                if self.timer_trigger(20):
+                    data.PLAYER.take_damage(1)
+            else:
+                if not any([issubclass(obj.__class__, Phenomenon),
+                            issubclass(obj.__class__, Projectile)]):
+                    if not any([obj.get_name() == "Asteroid",
+                                obj.get_name() == "Comet",
+                                obj.get_name() == "Seeker", ]):
+                        obj.direction = collison_avoidance(self, obj, obj.direction)
                     else:
-                        new_cp = (self.hitbox.center[0] - 300, winheight / 2)
-                    if new_cp not in obj.checkpoints:
-                        obj.move_pattern.append(len(obj.checkpoints) + 1)
-                        obj.checkpoints.update({len(obj.checkpoints) + 1: new_cp})
-                    obj.cp_ticker = len(obj.checkpoints)
-
-                else:
-                    try:
-                        obj.gfx_hit()
-                    except AttributeError:
-                        pass
-                    obj.kill = True
+                        try:
+                            obj.gfx_hit()
+                        except AttributeError:
+                            pass
+                        obj.kill = True
 
 
 class Nabulae_aoe_damage(Phenomenon):

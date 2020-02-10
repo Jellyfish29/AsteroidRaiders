@@ -218,7 +218,9 @@ class Background(Timer):
     bg_objs = []
     bg_obj_spawn_rate = 1200
 
-    def __init__(self, y=-1000):
+    def __init__(self, y=None):
+        if y is None:
+            y = -1000
         self.gfx_idx = random.randint(2, 9)
         self.x = random.randint(100, 1800)
         self.y = y

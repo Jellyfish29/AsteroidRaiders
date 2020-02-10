@@ -20,7 +20,7 @@ class Levels:
     level = 1
     level_interval = 35
     enemy_amount = 3  # at Start
-    skill_points = 1
+    skill_points = 0
     # elite/Elites
     elite_max_spawn_time = 4000
     second_elite_chance = 100
@@ -205,6 +205,7 @@ class Levels:
         for event in cls.special_event_queue:
             if event() == "stop_event":
                 cls.special_event_queue.remove(event)
+                cls.special_events = False
 
         if len(cls.special_event_queue) == 0:
             cls.special_events = False
@@ -216,9 +217,10 @@ class Levels:
             cls.level += 1
             cls.display_level += 1
             cls.level_interval += 3
-            cls.skill_points += 1
             cls.scaling()
             cls.interval_score = 0
+            if not cls.level % 6 == 0:
+                cls.skill_points += 1
 
 
 data.LEVELS = Levels

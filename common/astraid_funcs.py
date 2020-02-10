@@ -77,6 +77,21 @@ def directions(speed):
     }
 
 
+def collison_avoidance(obj_1, obj_2, angle):
+    angle = angle
+    if obj_1.hitbox.colliderect(obj_2.hitbox):
+        if obj_1.hitbox.right > obj_2.hitbox.left:
+            angle = 0
+        elif obj_1.hitbox.left < obj_2.hitbox.right:
+            angle = 180
+        elif obj_1.hitbox.bottom > obj_2.hitbox.top:
+            angle = 90
+        elif obj_1.hitbox.top < obj_2.hitbox.bottom:
+            angle = 270
+
+    return angle
+
+
 def get_images(kind):
     pathes = [os.path.join(os.getcwd()[:-7], f"Gfx\\{kind}\\" + file) for file in os.listdir(os.path.join(os.getcwd()[:-7], f"Gfx\\{kind}"))]
     return {idx: pygame.image.load(img).convert_alpha() for idx, img in enumerate(sorted(pathes))}

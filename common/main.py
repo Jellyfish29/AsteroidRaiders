@@ -32,10 +32,10 @@ def test_mode():
     Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
-    Levels.execute_special_event()
+    # Levels.execute_special_event()
     # Elites.spawn()
-    # data.ENEMY.set_spawn_table(Shooter)
-    # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
+    data.ENEMY.set_spawn_table(Shooter)
+    data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
 
 
 def main():
@@ -57,7 +57,7 @@ def main():
     Background.bg_objs += [Background(y=0), Background(y=1000)]
 
     # Item Setup
-    Items.drop((winwidth / 2, 400), target=Item_missile((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_missile((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
 

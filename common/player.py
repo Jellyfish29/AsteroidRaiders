@@ -31,7 +31,7 @@ class Player:
     jumpdrive_disabled = False
     afterburner = Item_afterburner((0, 0, 0,))
     # Damage
-    base_damage = 0.5
+    base_damage = 0.6
     damage = base_damage
     crit_chance = 95
     raw_crit_chance = crit_chance

@@ -99,10 +99,6 @@ import random
 #         Phenomenon.phenom_sprites[16], gfx_angle), (r[0] - 200, r[1] - 200))
 #     lst.remove(r)
 
-def foo():
-    pass
-
-
-x = foo
-
-print(x.__name__)
+x = [1, 1]
+y = [4]
+print(x + y)

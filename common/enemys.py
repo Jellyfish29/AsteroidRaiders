@@ -62,6 +62,7 @@ class Enemy(Timer):
         self.gfx_idx = gfx_idx
         self.gfx_hook = gfx_hook
         self.sprites = sprites
+        self.orig_direction = self.direction
         self.kill = False
         self.border_ckeck = True
         self.ttk_bonus = 0
@@ -74,8 +75,11 @@ class Enemy(Timer):
         self.muzzle_effect_timer = (i for i in range(1))
 
     def move(self):
-        self.hitbox.move_ip(self.angles[self.direction])
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        self.hitbox.move_ip(self.angles[self.direction])
+        if self.direction != self.orig_direction:
+            if self.timer_key_trigger(1, key="collsion"):
+                self.direction = self.orig_direction
 
     def border_collide(self):
         if rect_not_on_sreen(self.hitbox, bot=False, strict=False):
@@ -547,7 +551,9 @@ spez_spawn_table = [Jumper, Seeker]
 
 class Event_shooter(Shooter):
 
-    def __init__(self, dest, spawn=random.randint(1, 4)):
+    def __init__(self, dest, spawn=None):
+        if spawn is None:
+            spawn = random.randint(1, 4)
         super().__init__(spawn=spawn)
         self.dest = dest
         self.gfx_hook = (-50, -50)
