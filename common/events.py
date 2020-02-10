@@ -23,9 +23,10 @@ class Events():
 
     # Battleship defence
     battleship_defence_set_up = True
+    bs_defence_bs_disabled = True
     bs_heals = 0
-    bs_defence_wave_trigger = 1400
-    bs_defence_wave_strength = 2
+    bs_defence_wave_trigger = 700
+    bs_defence_wave_strength = 4
     bs_defence_wave_counter = 0
 
     # Minefield
@@ -177,25 +178,41 @@ class Events():
         cls.set_bg_color()
         if cls.battleship_defence_set_up:
             cls.bs_dest = (950, 400)
-            data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -150), target=cls.bs_dest))
+            data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -200), target=cls.bs_dest))
             for _ in range(3):
                 data.ENEMY_DATA.append(Event_shooter(get_random_point(), spawn=1))
             cls.battleship_defence_set_up = False
 
         if not Background.bg_move:
-            if timer.trigger(cls.bs_defence_wave_trigger):
-                for _ in range(cls.bs_defence_wave_strength):
-                    data.ENEMY_DATA.append(Event_shooter(get_random_point()))
-                cls.bs_defence_wave_counter += 1
-                cls.bs_defence_wave_strength += 1
-            if timer.trigger(1400):
-                data.LEVELS.execute_event(5)
+            if cls.bs_defence_bs_disabled:
+                if timer.trigger(cls.bs_defence_wave_trigger):
+                    for _ in range(cls.bs_defence_wave_strength):
+                        data.ENEMY_DATA.append(Event_shooter(get_random_point()))
+                    cls.bs_defence_wave_trigger -= 50
+                    cls.bs_defence_wave_counter += 1
+                    cls.bs_defence_wave_strength += 1
+                    if cls.bs_defence_wave_counter == 4:
+                        Elites.spawn()
 
-            if cls.bs_defence_wave_counter == 6:
-                if timer.delay(400):
+                if timer.trigger(1400):
+                    data.LEVELS.execute_event(5)
+
+                if cls.bs_defence_wave_counter == 5:
+                    cls.bs_defence_bs_disabled = False
+
+            else:
+                if len(data.PLAYER_DATA) == 0:
+                    cls.bs_defence_reset()
                     Background.bg_move = True
-        else:
-            pass
+                    return "stop_event"
+
+    @classmethod
+    def bs_defence_reset(cls):
+        cls.battleship_defence_set_up = True
+        cls.bs_defence_bs_disabled = True
+        cls.bs_defence_wave_trigger = 700
+        cls.bs_defence_wave_strength = 2
+        cls.bs_defence_wave_counter = 0
 
     @classmethod
     def set_bg_color(cls):

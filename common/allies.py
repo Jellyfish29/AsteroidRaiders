@@ -82,14 +82,14 @@ class Allied_entity(Timer):
         if self.health < self.max_health:
             pygame.draw.rect(win, (200, 0, 0),
                              (pygame.Rect(self.hitbox.topleft[0],
-                                          self.hitbox.topleft[1] - 30,
+                                          self.hitbox.topleft[1] - 60,
                                           self.healthbar_max_len,
                                           self.healthbar_height
                                           )))
             if not self.healthbar_len < 0:
                 pygame.draw.rect(win, (0, 200, 0),
                                  (pygame.Rect(self.hitbox.topleft[0],
-                                              self.hitbox.topleft[1] - 30,
+                                              self.hitbox.topleft[1] - 60,
                                               self.healthbar_len,
                                               self.healthbar_height
                                               )))
@@ -101,7 +101,7 @@ class Allied_entity(Timer):
             self.target[0], self.hitbox.center[0]
         )
         if not self.rot_sprite:
-            gfx_angle = 90
+            gfx_angle = 0
         if animation_ticker < 8:
             win.blit(rot_center(
                 Allied_entity.allied_sprites[self.gfx_idx[0]], gfx_angle),
@@ -130,7 +130,7 @@ class Allied_entity(Timer):
         self.move()
         self.skill()
         self.script()
-        self.border_collide()
+        # self.border_collide()
         if self.health <= 0:
             self.death()
         self.timer_tick()
@@ -204,13 +204,15 @@ class Convoy_ship_allie(Allied_entity):
 class Battleship_allie(Allied_entity):
 
     def __init__(self, spawn_point=0, target=None):
-        super().__init__(speed=Background.scroll_speed, health=1000, spawn_point=spawn_point,
-                         target=target, size=(200, 200), gfx_idx=(0, 0), gfx_hook=(-50, 0))
+        super().__init__(speed=Background.scroll_speed, health=100, spawn_point=spawn_point,
+                         target=target, size=(200, 200), gfx_idx=(4, 4), gfx_hook=(0, 0))
         self.hitable = True
         self.rot_sprite = False
+        self.healthbar_height = 5
         self.run_limiter = Run_limiter()
 
     def move(self):
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         self.hitbox.move_ip(0, self.speed)
 
     def script(self):
@@ -218,31 +220,34 @@ class Battleship_allie(Allied_entity):
             self.speed = 0
             Background.bg_move = False
 
-        if not data.LEVELS.special_events:
-            Background.bg_move = True
-            self.speed = Background.scroll_speed
-
-            if self.run_limiter.run_block_once():
+        if not data.EVENTS.bs_defence_bs_disabled:
+            self.speed = 1
+            self.gfx_idx = (5, 6)
+            if self.hitbox.center[1] > 1200:
+                self.kill = True
 
                 data.ITEMS.drop(
-                    (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100), level=2))
+                    (1000, 400), target=Item_heal_crate((100, 100, 100), level=2))
 
-                if data.EVENTS.convoy_points >= 12:
+                if self.health >= self.max_health * 0.85:
                     data.ITEMS.drop((self.hitbox.topright), amount=1)
-                elif data.EVENTS.convoy_points >= 8:
+                elif self.health >= self.max_health * 0.7:
                     data.ITEMS.drop(
-                        (self.hitbox.topright), target=Item_upgrade_point_crate((100, 100, 100), level=3))
-                elif data.EVENTS.convoy_points >= 6:
+                        (1000, 400), target=Item_supply_crate((100, 100, 100), level=3))
+                elif self.health >= self.max_health * 0.4:
                     data.ITEMS.drop(
-                        (self.hitbox.topright), target=Item_upgrade_point_crate((100, 100, 100), level=2))
-                elif data.EVENTS.convoy_points >= 4:
+                        (1000, 400), target=Item_supply_crate((100, 100, 100), level=2))
+                elif self.health >= self.max_health * 0.2:
                     data.ITEMS.drop(
-                        (self.hitbox.topright), target=Item_upgrade_point_crate((100, 100, 100), level=1))
+                        (1000, 400), target=Item_supply_crate((100, 100, 100), level=1))
+                elif self.health >= 0:
+                    data.ITEMS.drop(
+                        (1000, 400), target=Item_supply_crate((100, 100, 100), level=1))
 
     def skill(self):
         if len(data.ENEMY_DATA) > 0:
             target = data.ENEMY_DATA[random.randint(0, len(data.ENEMY_DATA) - 1)].hitbox.center
-            if self.timer_trigger(100):
+            if self.timer_trigger(150):
                 # self.muzzle_effect_timer = (i for i in range(8))
                 data.PLAYER_PROJECTILE_DATA.append(Projectile(
                     speed=20,
@@ -253,6 +258,10 @@ class Battleship_allie(Allied_entity):
                     gfx_idx=15,
                     target=target
                 ))
+
+    def death(self):
+        Background.bg_move = True
+        self.kill = True
 
 
 data.ALLIE = Allied_entity

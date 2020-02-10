@@ -52,12 +52,6 @@ def main():
 
     components = [Player, Turret, Enemy, Phenomenon, Interface, Levels, Items]
 
-    def component_update():
-
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            for component in components:
-                executor.submit(component.update)
-
     # Background Setup
     Background.update()
     Background.bg_objs += [Background(y=0), Background(y=1000)]
@@ -87,7 +81,6 @@ def main():
 
         Gfx.layer_2_update()
 
-        # component_update()
         for component in components:
             component.update()
 

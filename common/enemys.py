@@ -63,6 +63,7 @@ class Enemy(Timer):
         self.gfx_hook = gfx_hook
         self.sprites = sprites
         self.kill = False
+        self.border_ckeck = True
         self.ttk_bonus = 0
         self.projectile_speed = 20
         self.hitable = True
@@ -217,7 +218,8 @@ class Enemy(Timer):
         self.gfx_animation()
         self.gfx_health_bar()
         self.move()
-        self.border_collide()
+        if self.border_ckeck:
+            self.border_collide()
         self.player_collide()
         self.skill()
         data.TURRET.missile_aquisition(self)
@@ -368,7 +370,10 @@ class Shooter(Enemy):
         if len(data.PLAYER_DATA) == 0:
             target = data.PLAYER.hitbox.center
         else:
-            target = data.PLAYER_DATA[random.randint(0, len(data.PLAYER_DATA) - 1)].hitbox.center
+            target = random.choices([
+                data.PLAYER_DATA[random.randint(0, len(data.PLAYER_DATA) - 1)].hitbox.center,
+                data.PLAYER.hitbox.center], weights=[80, 20], k=1)[0]
+
         if self.timer_trigger(self.fire_rate):
             self.muzzle_effect_timer = (i for i in range(8))
             data.ENEMY_PROJECTILE_DATA.append(Projectile(
@@ -545,7 +550,8 @@ class Event_shooter(Shooter):
     def __init__(self, dest, spawn=random.randint(1, 4)):
         super().__init__(spawn=spawn)
         self.dest = dest
-        self.gfx_hook = (-100, -100)
+        self.gfx_hook = (-50, -50)
+        self.border_ckeck = False
 
     def move(self):
         self.hitbox.move_ip(self.angles[degrees(
@@ -555,16 +561,24 @@ class Event_shooter(Shooter):
 
         if self.hitbox.collidepoint(self.dest):
             self.angles = angles_360(0)
+            self.gfx_idx = (14, 14)
 
     def gfx_animation(self):
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         animation_ticker = self.timer_animation_ticker(8)
+
+        if len(data.PLAYER_DATA) > 0:
+            target = data.PLAYER_DATA[0].hitbox.center
+        else:
+            target = data.PLAYER.hitbox.center
+
         gfx_angle = degrees(
-            data.PLAYER_DATA[0].hitbox.center[1],
+            target[1],
             self.hitbox.center[1],
-            data.PLAYER_DATA[0].hitbox.center[0],
+            target[0],
             self.hitbox.center[0]
         )
+
         if animation_ticker < 4:
             win.blit(rot_center(
                 self.sprites[self.gfx_idx[0]], gfx_angle),
