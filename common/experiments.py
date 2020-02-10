@@ -98,3 +98,11 @@ import random
 #     win.blit(rot_center(
 #         Phenomenon.phenom_sprites[16], gfx_angle), (r[0] - 200, r[1] - 200))
 #     lst.remove(r)
+
+def foo():
+    pass
+
+
+x = foo
+
+print(x.__name__)

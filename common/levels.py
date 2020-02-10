@@ -32,16 +32,8 @@ class Levels:
     elite_fight = False
     special_events = False
     second_elite = False
-    death_score_panalties = {
-        1: 30,
-        6: 50,
-        12: 80,
-        18: 150,
-        24: 250,
-        30: 370,
-        36: 500,
-        42: 700
-    }
+    death_score_panalties = {1: 30, 6: 50, 12: 80, 18: 150,
+                             24: 250, 30: 370, 36: 500, 42: 700}
     # Events
     event_trigger_time = (3600, 5000)
     special_event_queue = []
@@ -159,34 +151,38 @@ class Levels:
     @classmethod
     def execute_event(cls, event_id):
         if event_id == 1:
-            Events.event_wave(
+            data.EVENTS.event_wave(
                 enemy=Asteroid, spawn=random.randint(1, 4), amount=4, scaling=int(cls.level / 2))
         elif event_id == 2:
-            Events.event_wave(
+            data.EVENTS.event_wave(
                 enemy=Jumper, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 2))
         elif event_id == 3:
-            Events.event_wave(
+            data.EVENTS.event_wave(
                 enemy=Shooter, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 8))
         elif event_id == 4:
-            Events.event_wave(
+            data.EVENTS.event_wave(
                 enemy=Seeker, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 8))
         elif event_id == 5:
-            Events.event_wave(
+            data.EVENTS.event_wave(
                 enemy=Strafer, spawn=random.randint(1, 4), amount=3, scaling=int(cls.level / 8))
         elif event_id == 6:
-            Events.event_wave(
+            data.EVENTS.event_wave(
                 enemy=Mine_layer, spawn=random.randint(1, 4), amount=3, scaling=0)
         elif event_id == 7:
-            Events.event_wave(
+            data.EVENTS.event_wave(
                 enemy=Miner, spawn=random.randint(1, 4), amount=3, scaling=0)
 
     @classmethod
     def execute_special_event(cls):
         cls.special_events = True
         if len(cls.special_events_lst) == 0:
-            cls.special_events_lst = special_events_lst.copy()
-        cls.special_event_queue.append(cls.special_events_lst.pop(
-            random.randint(0, len(cls.special_events_lst) - 1)))
+            cls.special_events_lst = [
+                e[0] for e in data.EVENTS.get_special_events_lst() if cls.level - 12 <= e[1] <= cls.level
+            ]
+        for e in cls.special_events_lst:
+            print(e.__name__)
+        # cls.special_event_queue.append(
+        #     cls.special_events_lst.pop(random.randint(0, len(cls.special_events_lst) - 1)))
 
     @classmethod
     def save_game(cls):
@@ -209,7 +205,7 @@ class Levels:
         cls.elite_spawn()
 
         for event in cls.special_event_queue:
-            if event():
+            if event() == "stop_event":
                 cls.special_event_queue.remove(event)
 
         if len(cls.special_event_queue) == 0:
@@ -228,165 +224,6 @@ class Levels:
 
 
 data.LEVELS = Levels
-
-
-class Events():
-
-    # Convoy escort
-    convoy_set_up = True
-    convoy_amount = (i for i in range(3))
-    convoy_ship_amount = (i for i in range(4))
-    convoy_points = 0
-    # Convoy attack
-
-    # Station hack
-
-    # Minefield
-    mine_field_set_up = True
-    mine_amount = 8
-    mine_field_stage = 0
-    mine_field_max_stages = 5
-
-    @classmethod
-    def event_wave(cls, enemy=None, spawn=None, amount=None, scaling=None):
-        for _ in range(amount + scaling):
-            data.ENEMY_DATA.append(enemy(spawn=spawn))
-
-    @classmethod
-    def set_bg_color(cls):
-        Background.bg_color_change(color=(20, 20, 0), speed=3)
-
-    @classmethod
-    @timer
-    def event_comet_storm(cls, timer):
-        if not timer.trigger(1200):
-            cls.set_bg_color()
-            if timer.trigger(25):
-                data.ENEMY_PROJECTILE_DATA.append(Comet())
-        else:
-            # cls.change_bg = True
-            return True
-
-    @classmethod
-    @timer
-    def event_convoy_escort(cls, timer):
-        cls.set_bg_color()
-
-        if cls.convoy_set_up:
-            cls.station_dest = (200, random.randint(400, 800))
-            data.PLAYER_DATA.append(Space_station_allie(spawn_point=(200, -100), target=cls.station_dest))
-            cls.convoy_set_up = False
-
-        if not Background.bg_move:
-            if timer.trigger(300):
-                event_id = random.choice([3, 5, 6])
-                Levels.execute_event(event_id)
-            if timer.trigger(60):
-                if next(cls.convoy_ship_amount, "stop") != "stop":
-                    data.PLAYER_DATA.append(Convoy_ship_allie(
-                        spawn_point=(2000, random.randint(200, 800)),
-                        target=cls.station_dest
-                    ))
-
-            if timer.trigger(1200):
-                wave = next(cls.convoy_amount, "stop")
-                if wave != "stop":
-                    cls.convoy_ship_amount = (i for i in range(4))
-                if wave == 2:
-                    Elites.spawn()
-
-            if timer.timer_key_delay(limit=3600, key="end"):
-                if len([s for s in data.PLAYER_DATA if isinstance(s, Convoy_ship_allie)]) == 0:
-                    cls.convoy_set_up = True
-                    # timer.timer_key_delay(reset=True, key="end")
-                    timer.timer_reset()
-                    return True
-
-    @classmethod
-    @timer
-    def event_convoy_atack(cls, timer):
-        pass
-
-    @classmethod
-    @timer
-    def event_station_hack(cls, timer):
-        pass
-
-    @classmethod
-    @timer
-    def event_mine_field(cls, timer):
-        cls.set_bg_color()
-        if cls.mine_field_set_up:
-            data.PLAYER.jumpdrive_disabled = True
-            cls.spawn_mine_field()
-            cls.mine_field_set_up = False
-        if timer.trigger(400):
-            Background.bg_move = False
-        if not Background.bg_move:
-            if data.PLAYER.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):
-                data.PLAYER.hitbox.center = (data.PLAYER.hitbox.center[0], winheight)
-
-                data.ENEMY_PROJECTILE_DATA.clear()
-                data.PHENOMENON_DATA.clear()
-                data.ITEMS.dropped_lst.clear()
-
-                cls.mine_field_stage += 1
-                cls.mine_amount += 1
-
-                if cls.mine_field_stage == cls.mine_field_max_stages - 1:
-                    sp = get_random_point()
-                    random.choice([
-                        lambda: data.ITEMS.drop(
-                            sp, target=Item_supply_crate((100, 100, 100), level=3)),
-                        lambda: data.ITEMS.drop(
-                            sp, target=Item_heal_crate((100, 100, 100), level=3)),
-                        lambda: data.ITEMS.drop(
-                            sp, target=Item_upgrade_point_crate((100, 100, 100), level=3))
-                    ])()
-
-                if cls.mine_field_stage >= cls.mine_field_max_stages:
-                    Background.bg_move = True
-                    Background.y += 1080
-                    cls.mine_amount = 10
-                    cls.mine_field_stage = 0
-                    cls.mine_field_set_up = True
-                    data.PLAYER.jumpdrive_disabled = False
-
-                    return True
-
-                else:
-                    cls.spawn_mine_field(start=False)
-
-    @classmethod
-    def spawn_mine_field(cls, start=True):
-        mine_amount = (i for i in range(cls.mine_amount))
-        t = next(mine_amount, "stop")
-        while t != "stop":
-            if start:
-                y_cord = random.randint(-600, -200)
-                x_cord = random.randint(-100, winwidth + 100)
-            else:
-                y_cord = random.randint(-200, 700)
-                x_cord = random.randint(-100, winwidth + 100)
-            t = next(mine_amount, "stop")
-            data.ENEMY_PROJECTILE_DATA.append(Mine(
-                speed=30,
-                start_point=(x_cord, y_cord),
-                damage=2,
-                flag="neutral",
-                oob_check=False,
-                moving=True,
-                fuse_delay=0
-            ))
-
-
-data.EVENTS = Events
-
-special_events_lst = [
-    Events.event_convoy_escort,
-    Events.event_comet_storm,
-    Events.event_mine_field
-]
 
 
 class STAGE_SAVE():
@@ -427,6 +264,7 @@ class STAGE_SAVE():
         self.elite_sp_time = Levels.elite_max_spawn_time
         self.special_event_amount = Levels.special_event_amount
         self.special_events_lst = Levels.special_events_lst
+        # self.event_special_event_lst = data.EVENTS.special_events_lst
 
     def load_save(self):
         data.ENEMY_DATA.clear()
@@ -478,5 +316,28 @@ class STAGE_SAVE():
         Levels.elite_max_spawn_time = self.elite_sp_time
         Levels.special_event_amount = self.special_event_amount
         Levels.special_events_lst = self.special_events_lst
+
         if self.boss_fight:
             Levels.boss_spawn()
+
+    # @classmethod
+    # def execute_special_event(cls):
+    #     cls.special_events = True
+    #     if len(cls.special_events_lst) == 0:
+    #         cls.special_events_lst = [e[0] for e in data.EVENTS.get_special_events_lst() if e[1] < csl.level]
+    #         data.EVENTS.get_special_events_lst().copy()
+
+    #     event = cls.special_events_lst[random.randint(0, len(cls.special_events_lst) - 1)]
+    #     if event[1] < cls.level:
+    #         cls.special_events_lst.remove(event)
+    #         cls.special_event_queue.append(event[0])
+    #     else:
+    #         for i in range(len(cls.special_events_lst)):
+    #             event = cls.special_events_lst[random.randint(0, len(cls.special_events_lst) - 1)]
+    #             if event[1] < cls.level:
+    #                 cls.special_events_lst.remove(event)
+    #                 cls.special_event_queue.append(event[0])
+    #                 break
+    #         else:
+    #             cls.special_events_lst. += data.EVENTS.get_special_events_lst()
+    #             cls.execute_special_event()

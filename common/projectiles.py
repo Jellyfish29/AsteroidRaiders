@@ -307,6 +307,8 @@ class Missile(Projectile):
         self.aquisition_delay = aquisition_delay
         self.movement_checker = 0
         self.enemy_missile = enemy_missile
+        self.hit_effect = lambda loc: Gfx.create_effect(
+            "explosion_4", 1, (loc[0] - 90, loc[1] - 90), explo=True)
 
     def move(self):
         if not self.enemy_missile:

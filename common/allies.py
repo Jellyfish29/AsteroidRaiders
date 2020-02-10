@@ -174,6 +174,8 @@ class Space_station_allie(Allied_entity):
                     data.ITEMS.drop(
                         (self.hitbox.topright), target=Item_upgrade_point_crate((100, 100, 100), level=1))
 
+                data.LEVELS.convoy_points = 0
+
 
 class Convoy_ship_allie(Allied_entity):
 

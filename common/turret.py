@@ -215,7 +215,7 @@ class Turret:
                 if aa_target_area.colliderect(enemy.hitbox):
                     for location in [data.PLAYER.hitbox.topleft, data.PLAYER.hitbox.topright]:
                         data.PLAYER_PROJECTILE_DATA.append(Missile(
-                            speed=15,
+                            speed=30,
                             size=(5, 5),
                             start_point=location,
                             target=enemy.hitbox,

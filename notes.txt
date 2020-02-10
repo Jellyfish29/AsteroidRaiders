@@ -32,9 +32,10 @@ TODO:
     - Dart missile ship
     -...
 - Mehr Events
-    - Convoys
+    - Convoys 
     - controllpunkte
     - Geschicklichkeits Zeug
+    - Battleship defence/repair
     -...
 - Mehr Items
     - Heal als upgradebares stnadart Item

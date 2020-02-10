@@ -13,6 +13,7 @@ from allies import *
 from bosses import *
 from Gfx import *
 from levels import *
+from events import *
 from items import *
 from items_active import *
 from items_passive import *
@@ -25,13 +26,13 @@ def test_mode():
     Levels.display_level += 1
     Levels.level += 1
     Levels.events_disabled = True
-    Levels.scaling()
+    # Levels.scaling()
     Levels.display_score += 400
     Player.health += 40000
     Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
-    # Levels.execute_special_event()
+    Levels.execute_special_event()
     # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
@@ -76,7 +77,6 @@ def main():
     while True:
 
         # print(Clock.get_fps())
-        print(Events.convoy_points)
 
         win.fill(Background.bg_color)
         Background.update()
@@ -187,7 +187,8 @@ def main():
                     except AttributeError:
                         pass
                 elif event.key == K_SPACE:
-                    Player.jumpdrive.end_activation()
+                    if not Player.jumpdrive_disabled:
+                        Player.jumpdrive.end_activation()
                 elif event.key == K_LSHIFT:
                     Player.afterburner.end_activation()
 
