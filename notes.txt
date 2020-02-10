@@ -56,3 +56,5 @@ TODO:
     - Schwierigkeitsgrad
     - hardcore modus
     - Highscore/ Stats DB
+
+draw.io

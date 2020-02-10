@@ -353,10 +353,14 @@ class Shooter(Enemy):
             (0, 0),
             Enemy.spez_sprites
         )
+
         self.score_amount = 8
         self.shot_angles = angles_360(8)
         self.fire_rate = random.randint(80, 140)
         self.ttk_bonus = 40
+
+        self.hitbox.move_ip(self.angles[self.direction])
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
 
     def skill(self):
         # print(f"shooter {self.timer_calls_per_tick}")
@@ -531,3 +535,31 @@ class Comet(Enemy):
 
 
 spez_spawn_table = [Jumper, Seeker]
+
+
+# Event Ships
+
+class Event_shooter(Shooter):
+
+    def __init__(self, dest):
+        super().__init__()
+        self.dest = dest
+
+    def move(self):
+        self.hitbox.move_ip(self.angles[degrees(
+            self.dest[0], self.hitbox.center[0],
+            self.dest[1], self.hitbox.center[1]
+        )])
+
+        if self.hitbox.collidepoint(self.dest):
+            self.angles = angles_360(0)
+
+
+class Event_supply_ship(Event_shooter):
+
+    def __init__(self, dest):
+        super().__init__(dest)
+        self.gfx_idx = (0, 0)
+
+    def skill(self):
+        pass

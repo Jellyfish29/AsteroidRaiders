@@ -201,4 +201,45 @@ class Convoy_ship_allie(Allied_entity):
                 self.kill = True
 
 
+class Battleship_allie(Allied_entity):
+
+    def __init__(self, spawn_point=0, target=None):
+        super().__init__(speed=Background.scroll_speed, health=100, spawn_point=spawn_point,
+                         target=target, size=(200, 200), gfx_idx=(0, 0), gfx_hook=(-50, 0))
+        self.hitable = False
+        self.rot_sprite = False
+        self.run_limiter = Run_limiter()
+
+    def move(self):
+        self.hitbox.move_ip(0, self.speed)
+
+    def script(self):
+        if self.hitbox.center[1] >= self.target[1]:
+            self.speed = 0
+            Background.bg_move = False
+
+        if not data.LEVELS.special_events:
+            Background.bg_move = True
+            self.speed = Background.scroll_speed
+
+            if self.run_limiter.run_block_once():
+
+                data.ITEMS.drop(
+                    (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100), level=2))
+
+                if data.EVENTS.convoy_points >= 12:
+                    data.ITEMS.drop((self.hitbox.topright), amount=1)
+                elif data.EVENTS.convoy_points >= 8:
+                    data.ITEMS.drop(
+                        (self.hitbox.topright), target=Item_upgrade_point_crate((100, 100, 100), level=3))
+                elif data.EVENTS.convoy_points >= 6:
+                    data.ITEMS.drop(
+                        (self.hitbox.topright), target=Item_upgrade_point_crate((100, 100, 100), level=2))
+                elif data.EVENTS.convoy_points >= 4:
+                    data.ITEMS.drop(
+                        (self.hitbox.topright), target=Item_upgrade_point_crate((100, 100, 100), level=1))
+
+                data.LEVELS.convoy_points = 0
+
+
 data.ALLIE = Allied_entity

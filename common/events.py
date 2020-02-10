@@ -167,7 +167,10 @@ class Events():
     @classmethod
     @timer
     def event_battleship_defence(cls, timer):
-        pass
+        cls.set_bg_color()
+        if battleship_defence_set_up:
+            cls.bs_dest = (950, 400)
+            data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -150), target=cls.bs_dest))
 
     @classmethod
     def set_bg_color(cls):
