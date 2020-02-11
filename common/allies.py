@@ -29,6 +29,7 @@ class Allied_entity(Timer):
         self.healthbar_len = self.size[0]
         self.healthbar_height = 1
         self.healthbar_max_len = self.healthbar_len
+        self.direction = 0
         self.rot_sprite = True
         self.kill = False
         self.hitable = True
@@ -38,11 +39,14 @@ class Allied_entity(Timer):
         Timer.__init__(self)
 
     def move(self):
-        self.hitbox.move_ip(self.angles[degrees(
-            self.target[0], self.hitbox.center[0],
-            self.target[1], self.hitbox.center[1]
-        )])
+        self.hitbox.move_ip(self.angles[self.direction])
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+
+        if self.timer_trigger(20):
+            self.direction = degrees(
+                self.target[0], self.hitbox.center[0],
+                self.target[1], self.hitbox.center[1]
+            )
 
     def skill(self):
         pass
@@ -216,10 +220,15 @@ class Battleship_allie(Allied_entity):
         self.healthbar_height = 5
         self.fire_rate = 150
         self.run_limiter = Run_limiter()
+        self.direction = 90
+        self.orig_directions = self.directions
 
     def move(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
-        self.hitbox.move_ip(0, self.speed)
+        self.hitbox.move_ip(self.angles[self.direction])
+        if self.direction != self.orig_direction:
+            if self.timer_key_trigger(80, key="collision_avoidance"):
+                self.direction = self.orig_direction
 
     def script(self):
         if self.hitbox.center[1] >= self.target[1]:

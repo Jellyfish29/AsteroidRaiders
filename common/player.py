@@ -191,6 +191,10 @@ class Player:
             cls.crit_chance = cls.crit_limit
 
     @classmethod
+    def get_name(cls):
+        return cls.__name__
+
+    @classmethod
     @timer
     def update(cls, timer):
 

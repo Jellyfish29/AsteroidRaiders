@@ -238,29 +238,39 @@ class Planet(Phenomenon):
 
     def __init__(self):
         super().__init__(Background.scroll_speed, (250, 250), (2, 2), (-160, -160))
+        self.collision_hitbox = pygame.Rect(0, 0, 400, 400)
 
-    def player_collision(self):
-        if self.hitbox.colliderect(data.PLAYER.hitbox):
-            data.PLAYER.take_damage(0.1)
+    # def player_collision(self):
+    #     if self.hitbox.colliderect(data.PLAYER.hitbox):
+    #         data.PLAYER.take_damage(0.1)
 
     def hit(self, obj):
-        if self.hitbox.colliderect(obj.hitbox):
-            if obj is data.PLAYER:
-                if self.timer_trigger(20):
-                    data.PLAYER.take_damage(1)
-            else:
-                if not any([issubclass(obj.__class__, Phenomenon),
-                            issubclass(obj.__class__, Projectile)]):
-                    if not any([obj.get_name() == "Asteroid",
-                                obj.get_name() == "Comet",
-                                obj.get_name() == "Seeker", ]):
-                        obj.direction = collison_avoidance(self, obj, obj.direction)
-                    else:
-                        try:
-                            obj.gfx_hit()
-                        except AttributeError:
-                            pass
-                        obj.kill = True
+        self.collision_hitbox.center = self.hitbox.center
+
+        if not any([issubclass(obj.__class__, Phenomenon),
+                    issubclass(obj.__class__, Projectile),
+                    obj is data.PLAYER,
+                    obj.get_name() == "Asteroid",
+                    obj.get_name() == "Comet",
+                    obj.get_name() == "Seeker", ]):
+
+            obj.direction = collison_avoidance(
+                self.collision_hitbox, obj.hitbox, obj.direction)
+        else:
+
+            if self.hitbox.colliderect(obj.hitbox):
+                if obj.get_name() == "Player":
+                    if self.timer_trigger(60):
+                        data.PLAYER.take_damage(1)
+                else:
+                    try:
+                        obj.gfx_hit()
+                    except AttributeError:
+                        pass
+                    obj.kill = True
+
+        # pygame.draw.rect(win, (255, 0, 0), self.collision_hitbox)
+        # pygame.draw.rect(win, (0, 0, 255), self.hitbox)
 
 
 class Nabulae_aoe_damage(Phenomenon):

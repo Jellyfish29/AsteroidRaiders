@@ -271,9 +271,9 @@ class Events():
         return [
             # (cls.event_comet_storm, 0),
             # (cls.event_mine_field, 0),
-            # (cls.event_convoy_escort, 6),
+            (cls.event_convoy_escort, 0),
             # (cls.event_battleship_defence, 6),
-            (cls.event_convoy_atack, 0),
+            # (cls.event_convoy_atack, 0),
         ]
 
 

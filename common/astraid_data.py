@@ -113,8 +113,8 @@ def GAME_UPDATE():
                     if pl_obj.hitable:
                         pl_obj.take_damage(projectile.apply_damage())
 
-            # for phenom in PHENOMENON_DATA:
-            #     if phenom.flag != "player":
-            #         if phenom.hit(pl_obj):
-            #             if phenom.hitable:
-            #                 pl_obj.take_damage(phenom.apply_damage())
+            for phenom in PHENOMENON_DATA:
+                if phenom.flag != "player":
+                    if phenom.hit(pl_obj):
+                        if phenom.hitable:
+                            pl_obj.take_damage(phenom.apply_damage())

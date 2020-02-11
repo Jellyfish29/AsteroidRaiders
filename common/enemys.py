@@ -46,6 +46,7 @@ class Enemy(Timer):
         )
         self.angles = angles_360(speed)
         self.orig_angles = self.angles
+        self.slow_angles = angles_360(2)
         self.hitbox = pygame.Rect(
             self.spawn_points[spawn_point][0],
             self.spawn_points[spawn_point][1],
@@ -78,7 +79,7 @@ class Enemy(Timer):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         self.hitbox.move_ip(self.angles[self.direction])
         if self.direction != self.orig_direction:
-            if self.timer_key_trigger(1, key="collsion"):
+            if self.timer_key_trigger(80, key="collision_avoidance"):
                 self.direction = self.orig_direction
 
     def border_collide(self):

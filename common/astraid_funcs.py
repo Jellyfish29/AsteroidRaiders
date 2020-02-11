@@ -79,15 +79,19 @@ def directions(speed):
 
 def collison_avoidance(obj_1, obj_2, angle):
     angle = angle
-    if obj_1.hitbox.colliderect(obj_2.hitbox):
-        if obj_1.hitbox.right > obj_2.hitbox.left:
-            angle = 2
-        elif obj_1.hitbox.left < obj_2.hitbox.right:
-            angle = 182
-        elif obj_1.hitbox.bottom > obj_2.hitbox.top:
-            angle = 92
-        elif obj_1.hitbox.top < obj_2.hitbox.bottom:
-            angle = 272
+    if obj_1.colliderect(obj_2):
+        angle = 0
+        if obj_1.right > obj_2.left:
+            angle += 0
+        elif obj_1.left < obj_2.right:
+            angle += 180
+
+        if obj_1.bottom > obj_2.top:
+            angle += 90
+        elif obj_1.top < obj_2.bottom:
+            angle += 270
+
+        angle *= 0.5
 
     return angle
 
