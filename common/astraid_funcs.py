@@ -25,7 +25,7 @@ def angles_80(speed):
 
 
 def angles_360(speed, n=360):
-    return {idx: i for idx, i in enumerate([(math.cos(2 * math.pi / n * x) * speed, math.sin(2 * math.pi / n * x) * speed) for x in range(0, n + 1)])}
+    return {idx: i for idx, i in enumerate([(round(math.cos(2 * math.pi / n * x) * speed), round(math.sin(2 * math.pi / n * x) * speed)) for x in range(0, n + 1)])}
 
 
 def angle_switcher(a):
@@ -81,13 +81,13 @@ def collison_avoidance(obj_1, obj_2, angle):
     angle = angle
     if obj_1.hitbox.colliderect(obj_2.hitbox):
         if obj_1.hitbox.right > obj_2.hitbox.left:
-            angle = 0
+            angle = 2
         elif obj_1.hitbox.left < obj_2.hitbox.right:
-            angle = 180
+            angle = 182
         elif obj_1.hitbox.bottom > obj_2.hitbox.top:
-            angle = 90
+            angle = 92
         elif obj_1.hitbox.top < obj_2.hitbox.bottom:
-            angle = 270
+            angle = 272
 
     return angle
 

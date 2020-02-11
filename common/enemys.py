@@ -6,7 +6,7 @@ from astraid_funcs import *
 import astraid_data as data
 from Gfx import Gfx
 from projectiles import Projectile, Mine, Explosion
-from items_misc import Event_item_battleship_heal
+from items_misc import Event_item_battleship_heal, Item_upgrade_point_crate, Item_supply_crate
 
 
 class Enemy(Timer):
@@ -202,7 +202,7 @@ class Enemy(Timer):
 
     def drops(self):
         it.Items.drop(
-            (self.hitbox.topleft), target=it.Item_upgrade_point_drop((100, 100, 100))
+            (self.hitbox.topleft), target=it.Item_upgrade_point_crate((100, 100, 100))
         )
 
     def death(self):
@@ -560,10 +560,12 @@ class Event_shooter(Shooter):
         self.border_ckeck = False
 
     def move(self):
-        self.hitbox.move_ip(self.angles[degrees(
+        self.direction = degrees(
             self.dest[0], self.hitbox.center[0],
             self.dest[1], self.hitbox.center[1]
-        )])
+        )
+
+        self.hitbox.move_ip(self.angles[self.direction])
 
         if self.hitbox.collidepoint(self.dest):
             self.angles = angles_360(0)
@@ -599,11 +601,22 @@ class Event_shooter(Shooter):
             )
 
 
-class Event_supply_ship(Shooter):
+class Convoy_ship_enemy(Shooter):
 
-    def __init__(self):
+    def __init__(self, y):
         super().__init__()
         self.gfx_idx = (11, 12)
+        self.spawn_points = [(2000, y)]
+        self.spawn_point = 0
+        self.hitbox.center = (2000, y)
+        self.direction = degrees(-100, 2000, y, y)
+        self.orig_direction = self.direction
+        self.target = (-100, y)
+        self.angles = angles_360(4)
+        self.health = Enemy.health + 4
+
+    # def move(self):
+    #     self.hitbox.move_ip(self.speed, 0)
 
     def skill(self):
         pass
@@ -611,5 +624,13 @@ class Event_supply_ship(Shooter):
     def death(self):
         data.TURRET.overdrive()
         self.gfx_hit()
-        data.ITEMS.drop(self.hitbox.topleft, target=Event_item_battleship_heal((100, 100, 200)))
+        data.EVENTS.convoy_attack_c_destroyed += 1
+        if data.EVENTS.convoy_attack_c_destroyed == 4:
+            data.EVENTS.convoy_attack_c_destroyed = 0
+            random.choice([
+                lambda: data.ITEMS.drop(
+                    self.hitbox.topleft, target=Item_upgrade_point_crate((100, 100, 200), level=0)),
+                lambda: data.ITEMS.drop(
+                    (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100), level=0))
+            ])()
         self.kill = True

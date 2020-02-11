@@ -1,6 +1,5 @@
 
 from pygame.locals import *
-import concurrent.futures
 
 from init import *
 from astraid_funcs import *
@@ -32,10 +31,10 @@ def test_mode():
     Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
-    # Levels.execute_special_event()
+    Levels.execute_special_event()
     # Elites.spawn()
-    data.ENEMY.set_spawn_table(Shooter)
-    data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
+    # data.ENEMY.set_spawn_table(Shooter)
+    # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
 
 
 def main():

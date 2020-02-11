@@ -30,6 +30,12 @@ class Events():
     bs_defence_wave_strength = 4
     bs_defence_wave_counter = 0
     # Convoy attack
+    convoy_attack_set_up = True
+    convoy_attack_ship_amount = 6
+    convoy_attack_c_length = (i for i in range(convoy_attack_ship_amount))
+    convoy_attack_wave_amount = 5
+    convoy_attack_wave_counter = 0
+    convoy_attack_c_destroyed = 0
 
     # Station hack
 
@@ -217,23 +223,58 @@ class Events():
         Background.bg_color_change(color=(20, 20, 0), speed=3)
 
     @classmethod
-    def get_special_events_lst(cls):
-        return [
-            (cls.event_comet_storm, 0),
-            (cls.event_mine_field, 0),
-            (cls.event_convoy_escort, 6),
-            (cls.event_battleship_defence, 6),
-        ]
-
-    @classmethod
     @timer
     def event_convoy_atack(cls, timer):
-        pass
+        cls.set_bg_color()
+        if cls.convoy_attack_set_up:
+            Background.bg_move = False
+            timer.ticker["c_spawn"] = 380
+            cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
+            cls.c_a_y = random.randint(300, 800)
+            cls.convoy_attack_set_up = False
+        if timer.timer_key_delay(limit=400, key="c_spawn"):
+            if cls.c_a_ship != "stop":
+                if timer.trigger(60):
+                    cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
+                    data.ENEMY_DATA.append(Convoy_ship_enemy(cls.c_a_y))
+            else:
+                if cls.convoy_attack_wave_counter < cls.convoy_attack_wave_amount:
+                    cls.convoy_attack_wave_counter += 1
+                    cls.convoy_attack_ship_amount += 1
+                    cls.convoy_attack_c_length = (i for i in range(cls.convoy_attack_ship_amount))
+                    cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
+                    cls.c_a_y = random.randint(300, 800)
+                    timer.timer_key_delay(reset=True, key="c_spawn")
+                else:
+                    if timer.trigger(240):
+                        cls.convoy_attack_reset()
+                        Background.bg_move = True
+
+                        return "stop_event"
+
+    @classmethod
+    def convoy_attack_reset(cls):
+        cls.convoy_attack_set_up = True
+        cls.convoy_attack_ship_amount = 6
+        cls.convoy_attack_c_length = (i for i in range(cls.convoy_attack_ship_amount))
+        cls.convoy_attack_wave_amount = 5
+        cls.convoy_attack_wave_counter = 0
+        cls.convoy_attack_c_destroyed = 0
 
     @classmethod
     @timer
     def event_station_hack(cls, timer):
         pass
+
+    @classmethod
+    def get_special_events_lst(cls):
+        return [
+            # (cls.event_comet_storm, 0),
+            # (cls.event_mine_field, 0),
+            # (cls.event_convoy_escort, 6),
+            # (cls.event_battleship_defence, 6),
+            (cls.event_convoy_atack, 0),
+        ]
 
 
 data.EVENTS = Events

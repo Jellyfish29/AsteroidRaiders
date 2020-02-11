@@ -96,11 +96,22 @@ class Items(Timer):
                 self.remove_from_inventory(key)
             self.drag = False
 
-    def collision_avoidance(self):
+    def despawn_avoidance(self):
         for item in Items.dropped_lst:
             if self != item:
                 if self.hitbox.colliderect(item.hitbox):
                     self.hitbox.move_ip(random.choice([50, -50]), 0)
+            for phenom in data.PHENOMENON_DATA:
+                if self.hitbox.colliderect(phenom.hitbox):
+                    self.hitbox.move_ip(random.choice([50, -50]), 0)
+            if item.hitbox[0] < 0:
+                item.hitbox.center = (50, item.hitbox.center[1])
+            elif item.hitbox[0] > winwidth:
+                item.hitbox.center = (winwidth - 50, item.hitbox.center[1])
+            elif item.hitbox[1] < 0:
+                item.hitbox.center = (item.hitbox.center[1], 50)
+            elif item.hitbox[1] > winheight:
+                item.hitbox.center = (item.hitbox.center[1], winheight - 50)
 
     def decay(self):
         if not any([data.LEVELS.after_boss,
@@ -120,11 +131,10 @@ class Items(Timer):
     def get_upgrade_desc(self):
         return ""
 
-    @timer
-    def tool_tip(self, timer):
+    def tool_tip(self):
 
         if self.hitbox.collidepoint(pygame.mouse.get_pos()):
-            if timer.timer_key_delay(limit=Items.tt_delay, key=self.flag):
+            if self.timer_key_delay(limit=Items.tt_delay, key=self.flag + "tt"):
                 # Name
                 win.blit(Items.font_20.render(self.item_name, True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1]))
                 # Desc
@@ -134,7 +144,7 @@ class Items(Timer):
                 # lvl_effect
                 win.blit(Items.font_15.render(self.get_upgrade_desc(), True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 75))
         else:
-            timer.timer_key_delay(key=self.flag, reset=True)
+            self.timer_key_delay(key=self.flag + "tt", reset=True)
 
     def gfx_draw(self):
         if self.lvl is not None:
@@ -205,7 +215,10 @@ class Items(Timer):
                 else:
                     cls.dropped_lst.append(random_item)
         for i, item in enumerate(cls.dropped_lst):
-            item.hitbox.center = (location[0] + i * 100, location[1])
+            if item.hitbox[0] < 0:
+                item.hitbox.center = location
+        # for i, item in enumerate(cls.dropped_lst):
+        #     item.hitbox.center = (location[0] + i * 100, location[1])
 
     @classmethod
     def get_all_inventory_items(cls):
@@ -242,7 +255,7 @@ class Items(Timer):
             item.gfx_draw()
             item.decay()
             item.add_to_inventory()
-            item.collision_avoidance()
+            item.despawn_avoidance()
             item.tool_tip()
 
         for item in cls.get_all_inventory_items():

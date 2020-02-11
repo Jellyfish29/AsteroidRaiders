@@ -99,6 +99,4 @@ import random
 #         Phenomenon.phenom_sprites[16], gfx_angle), (r[0] - 200, r[1] - 200))
 #     lst.remove(r)
 
-x = [1, 1]
-y = [4]
-print(x + y)
+print(round(1.4))
