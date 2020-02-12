@@ -29,15 +29,15 @@ engine:
 TODO:
 
 - Boss "Carrier/Mothership"
-- 8 Items
+- 8 Item Slots
 - Mehr Spez Enemys:
     - Dart missile ship
     -...
 - Mehr Events
-    - Convoys 
+    - #Convoys
     - controllpunkte
     - Geschicklichkeits Zeug
-    - Battleship defence/repair
+    - #Battleship defence/repair
     -...
 - Mehr Items
     - Heal als upgradebares stnadart Item
@@ -47,16 +47,25 @@ TODO:
     - Prog effecte
     -...
 - Gfx
-    - Spez neu
+    - #Spez neu
     - Mehr Planeten mit untershiedlichen Größen
     - Player ship neu
     - Boss Instance background effekte
+    - Event Effekte
 - Interface
-    - koplettes rework
+    - koplettes system rework
+        - Klasse Unterklassen
+        - Instruction texte
+        - Menus
+        - Buttons
+        - ...
 - Score Berechnung mit Time Bonus
 - Menu
     - Schwierigkeitsgrad
     - hardcore modus
     - Highscore/ Stats DB
+    - Skins wählen??? --> Freischalten
+    - Crosshair wählen ???
+    - NG+
 
 draw.io

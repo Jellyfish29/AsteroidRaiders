@@ -39,14 +39,13 @@ class Allied_entity(Timer):
         Timer.__init__(self)
 
     def move(self):
+        self.direction = degrees(
+            self.target[0], self.hitbox.center[0],
+            self.target[1], self.hitbox.center[1]
+        )
+
         self.hitbox.move_ip(self.angles[self.direction])
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
-
-        if self.timer_trigger(20):
-            self.direction = degrees(
-                self.target[0], self.hitbox.center[0],
-                self.target[1], self.hitbox.center[1]
-            )
 
     def skill(self):
         pass
@@ -121,6 +120,13 @@ class Allied_entity(Timer):
                  self.hitbox.topleft[1] + self.gfx_hook[1] - 50)
             )
 
+    def gfx_hit(self):
+        Gfx.create_effect(
+            "explosion_2", 2,
+            (self.hitbox.topleft[0] - 120, self.hitbox.topleft[1] - 130),
+            explo=True
+        )
+
     def get_name(self):
         return self.__class__.__name__
 
@@ -128,6 +134,7 @@ class Allied_entity(Timer):
         return self.kill
 
     def death(self):
+        self.gfx_hit()
         self.kill = True
 
     def tick(self):
@@ -152,6 +159,7 @@ class Space_station_allie(Allied_entity):
         self.hitable = False
         self.rot_sprite = False
         self.run_limiter = Run_limiter()
+        self.border_check = False
 
     def move(self):
         self.hitbox.move_ip(0, self.speed)
@@ -162,6 +170,7 @@ class Space_station_allie(Allied_entity):
             Background.bg_move = False
 
         if not data.LEVELS.special_events:
+            self.border_check = True
             Background.bg_move = True
             self.speed = Background.scroll_speed
 

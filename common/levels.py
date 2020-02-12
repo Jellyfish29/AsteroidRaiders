@@ -250,8 +250,6 @@ class STAGE_SAVE():
         self.overdrive_count = data.TURRET.overdrive_count
         self.elite_sp_time = Levels.elite_max_spawn_time
         self.special_event_amount = Levels.special_event_amount
-        self.special_events_lst = Levels.special_events_lst
-        # self.event_special_event_lst = data.EVENTS.special_events_lst
 
     def load_save(self):
         data.ENEMY_DATA.clear()
@@ -302,7 +300,6 @@ class STAGE_SAVE():
         data.TURRET.overdrive_count = self.overdrive_count
         Levels.elite_max_spawn_time = self.elite_sp_time
         Levels.special_event_amount = self.special_event_amount
-        Levels.special_events_lst = self.special_events_lst
 
         if self.boss_fight:
             Levels.boss_spawn()

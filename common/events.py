@@ -21,7 +21,8 @@ class Events():
     mine_field_max_stages = 5
     # Convoy escort
     convoy_set_up = True
-    convoy_wave_amount = (i for i in range(3))
+    convoy_wave = 0
+    convoy_wave_amount = 4
     convoy_ship_amount = (i for i in range(4))
     convoy_points = 0
     # Battleship defence
@@ -82,7 +83,7 @@ class Events():
 
                 Background.bg_objs.clear()
                 Background.y += 1080
-                cls.bg_objs.append(Background(y=random.randint(100, 800)))
+                Background.bg_objs.append(Background(y=random.randint(100, 800)))
 
                 # Destruction Effects >>>
 
@@ -146,11 +147,11 @@ class Events():
 
         if cls.convoy_set_up:
             cls.station_dest = (250, random.randint(400, 700))
-            data.PLAYER_DATA.append(Space_station_allie(spawn_point=(200, -100), target=cls.station_dest))
+            data.PLAYER_DATA.append(Space_station_allie(spawn_point=(200, -200), target=cls.station_dest))
             cls.convoy_set_up = False
 
         if not Background.bg_move:
-            if timer.trigger(300):
+            if timer.trigger(260):
                 event_id = random.choice([3, 5, 6])
                 data.LEVELS.execute_event(event_id)
             if timer.trigger(60):
@@ -161,13 +162,18 @@ class Events():
                     ))
 
             if timer.trigger(1200):
-                wave = next(cls.convoy_wave_amount, "stop")
-                if wave != "stop":
+                cls.convoy_wave += 1
+                if cls.convoy_wave <= cls.convoy_wave_amount:
                     cls.convoy_ship_amount = (i for i in range(4))
-                if wave == 2:
+                if cls.convoy_wave == 3:
                     Elites.spawn()
+                # wave = next(cls.convoy_wave_amount, "stop")
+                # if wave != "stop":
+                #     cls.convoy_ship_amount = (i for i in range(4))
+                # if wave == 1:
+                #     Elites.spawn()
 
-            if timer.timer_key_delay(limit=3600, key="end"):
+            if cls.convoy_wave >= cls.convoy_wave_amount:
                 if len([s for s in data.PLAYER_DATA if isinstance(s, Convoy_ship_allie)]) == 0:
                     cls.convoy_escort_reset()
                     timer.timer_reset()
@@ -177,7 +183,8 @@ class Events():
     @classmethod
     def convoy_escort_reset(cls):
         cls.convoy_set_up = True
-        cls.convoy_wave_amount = (i for i in range(3))
+        cls.convoy_wave = 0
+        cls.convoy_wave_amount = 4
         cls.convoy_ship_amount = (i for i in range(4))
 
     @classmethod
@@ -279,8 +286,8 @@ class Events():
         return [
             # (cls.event_comet_storm, 0),
             # (cls.event_mine_field, 0),
-            # (cls.event_convoy_escort, 6),
-            (cls.event_battleship_defence, 0),
+            (cls.event_convoy_escort, 0),
+            # (cls.event_battleship_defence, 6),
             # (cls.event_convoy_atack, 0),
         ]
 
