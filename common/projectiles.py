@@ -81,8 +81,7 @@ class Projectile(Timer):
         if self.timer_delay(limit=delay):
             if self.hitbox.colliderect(obj.hitbox):
                 if self.flag != "secondary" and not self.hit_event:
-                    Gfx.create_effect(
-                        "shot_hit", 4, anchor=self.hitbox, follow=True, x=-50, y=-50)
+                    self.gfx_hit()
                     if not isinstance(obj, type):
                         data.TURRET.hit_locations.append(self)
                     self.hit_event = True
@@ -90,6 +89,10 @@ class Projectile(Timer):
                     self.hit_effect(self.hitbox.center)
                 if self.damage > 0:
                     return True
+
+    def gfx_hit(self):
+        Gfx.create_effect(
+            "shot_hit", 4, anchor=self.hitbox, follow=True, x=-50, y=-50)
 
     def gfx_draw(self):
         # pygame.draw.rect(win, (0, 255, 255), self.hitbox)

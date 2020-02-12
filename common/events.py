@@ -12,6 +12,8 @@ from Gfx import Gfx, Background
 class Events():
 
     special_events_lst = []
+    # Comet Storm
+    comet_storm_set_up = True
     # Minefield
     mine_field_set_up = True
     mine_amount = 8
@@ -27,7 +29,7 @@ class Events():
     bs_defence_bs_disabled = True
     bs_heals = 0
     bs_defence_wave_trigger = 700
-    bs_defence_wave_strength = 4
+    bs_defence_wave_strength = 2
     bs_defence_wave_counter = 0
     # Convoy attack
     convoy_attack_set_up = True
@@ -47,11 +49,15 @@ class Events():
     @classmethod
     @timer
     def event_comet_storm(cls, timer):
+        if cls.comet_storm_set_up:
+            data.PHENOMENON_DATA.append(Planet())
+            cls.comet_storm_set_up = False
         if not timer.trigger(1400):
             cls.set_bg_color()
-            if timer.trigger(22):
+            if timer.trigger(17):
                 data.ENEMY_PROJECTILE_DATA.append(Comet())
         else:
+            cls.comet_storm_set_up = True
             data.ITEMS.drop(
                 (1000, 400), target=Item_supply_crate((100, 100, 100), level=random.randint(0, 1)))
             return "stop_event"
@@ -181,7 +187,7 @@ class Events():
         if cls.battleship_defence_set_up:
             cls.bs_dest = (950, 400)
             data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -200), target=cls.bs_dest))
-            for _ in range(3):
+            for _ in range(cls.bs_defence_wave_strength):
                 data.ENEMY_DATA.append(Event_shooter(get_random_point(), spawn=1))
             timer.ticker.update({"wave_timer": 600})
             cls.battleship_defence_set_up = False
@@ -207,6 +213,8 @@ class Events():
         else:
             if len(data.PLAYER_DATA) == 0:
                 cls.bs_defence_reset()
+                for enemy in [e for e in data.ENEMY_DATA if e.get_name() == "Event_shooter"]:
+                    enemy.reset()
 
                 return "stop_event"
 
@@ -271,8 +279,8 @@ class Events():
         return [
             # (cls.event_comet_storm, 0),
             # (cls.event_mine_field, 0),
-            (cls.event_convoy_escort, 0),
-            # (cls.event_battleship_defence, 6),
+            # (cls.event_convoy_escort, 6),
+            (cls.event_battleship_defence, 0),
             # (cls.event_convoy_atack, 0),
         ]
 

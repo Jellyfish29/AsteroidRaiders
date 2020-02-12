@@ -80,12 +80,13 @@ class Phenomenon(Timer):
     @classmethod
     @timer
     def update(cls, timer):
+        pass
 
-        if not any((data.LEVELS.boss_fight, data.LEVELS.after_boss, data.LEVELS.special_events)):
-            if data.LEVELS.level not in [i - 1 for i in range(6, 49, 6)]:
-                if timer.trigger(Phenomenon.spawn_time):
-                    if len(data.PHENOMENON_DATA) < Phenomenon.amount:
-                        data.PHENOMENON_DATA.append(random.choice(cls.phenomenon_spawn_table)())
+        # if not any((data.LEVELS.boss_fight, data.LEVELS.after_boss, data.LEVELS.special_events)):
+        #     if data.LEVELS.level not in [i - 1 for i in range(6, 49, 6)]:
+        #         if timer.trigger(Phenomenon.spawn_time):
+        #             if len(data.PHENOMENON_DATA) < Phenomenon.amount:
+        #                 data.PHENOMENON_DATA.append(random.choice(cls.phenomenon_spawn_table)())
 
 
 data.PHENOM = Phenomenon
@@ -238,39 +239,26 @@ class Planet(Phenomenon):
 
     def __init__(self):
         super().__init__(Background.scroll_speed, (250, 250), (2, 2), (-160, -160))
-        self.collision_hitbox = pygame.Rect(0, 0, 400, 400)
-
-    # def player_collision(self):
-    #     if self.hitbox.colliderect(data.PLAYER.hitbox):
-    #         data.PLAYER.take_damage(0.1)
 
     def hit(self, obj):
-        self.collision_hitbox.center = self.hitbox.center
 
-        if not any([issubclass(obj.__class__, Phenomenon),
-                    issubclass(obj.__class__, Projectile),
-                    obj is data.PLAYER,
-                    obj.get_name() == "Asteroid",
-                    obj.get_name() == "Comet",
-                    obj.get_name() == "Seeker", ]):
-
-            obj.direction = collison_avoidance(
-                self.collision_hitbox, obj.hitbox, obj.direction)
-        else:
-
-            if self.hitbox.colliderect(obj.hitbox):
-                if obj.get_name() == "Player":
-                    if self.timer_trigger(60):
-                        data.PLAYER.take_damage(1)
-                else:
-                    try:
-                        obj.gfx_hit()
-                    except AttributeError:
-                        pass
-                    obj.kill = True
-
-        # pygame.draw.rect(win, (255, 0, 0), self.collision_hitbox)
-        # pygame.draw.rect(win, (0, 0, 255), self.hitbox)
+        # if not any([issubclass(obj.__class__, Phenomenon),
+        #             issubclass(obj.__class__, Projectile),
+        #             obj.get_name() == "Player",
+        #             obj.get_name() == "Asteroid",
+        #             obj.get_name() == "Comet",
+        #             obj.get_name() == "Seeker", ]):
+        #     pass
+        # else:
+        if self.hitbox.colliderect(obj.hitbox):
+            if obj.get_name() == "Player":
+                if slef.timer_trigger(60):
+                    obj.take_damage(1)
+            try:
+                obj.gfx_hit()
+            except AttributeError:
+                pass
+            obj.kill = True
 
 
 class Nabulae_aoe_damage(Phenomenon):

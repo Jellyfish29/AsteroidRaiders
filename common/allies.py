@@ -191,6 +191,7 @@ class Convoy_ship_allie(Allied_entity):
         super().__init__(speed=2, health=3, spawn_point=spawn_point, target=target,
                          size=(80, 80), gfx_idx=(1, 2), gfx_hook=(0, 0))
         self.run_limiter = Run_limiter()
+        self.border_check = False
 
     def script(self):
         if self.hitbox.collidepoint(self.target):
@@ -212,7 +213,7 @@ class Convoy_ship_allie(Allied_entity):
 class Battleship_allie(Allied_entity):
 
     def __init__(self, spawn_point=0, target=None):
-        super().__init__(speed=Background.scroll_speed, health=200, spawn_point=spawn_point,
+        super().__init__(speed=Background.scroll_speed, health=100, spawn_point=spawn_point,
                          target=target, size=(200, 200), gfx_idx=(4, 4), gfx_hook=(0, 0))
         self.hitable = True
         self.rot_sprite = False
@@ -221,18 +222,15 @@ class Battleship_allie(Allied_entity):
         self.fire_rate = 150
         self.run_limiter = Run_limiter()
         self.direction = 90
-        self.orig_directions = self.directions
+        self.orig_directions = self.direction
 
     def move(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         self.hitbox.move_ip(self.angles[self.direction])
-        if self.direction != self.orig_direction:
-            if self.timer_key_trigger(80, key="collision_avoidance"):
-                self.direction = self.orig_direction
 
     def script(self):
         if self.hitbox.center[1] >= self.target[1]:
-            self.speed = 0
+            self.angles = angles_360(0)
             Background.bg_move = False
 
         if not data.EVENTS.bs_defence_bs_disabled:
@@ -241,7 +239,7 @@ class Battleship_allie(Allied_entity):
 
             # self.hitable = False
             # self.hide_healthbar = True
-            self.speed = 2
+            self.angles = angles_360(1)
             self.gfx_idx = (5, 6)
             self.fire_rate = 10
             if self.hitbox.center[1] > 1200:
@@ -262,7 +260,7 @@ class Battleship_allie(Allied_entity):
                 elif self.health >= self.max_health * 0.2:
                     data.ITEMS.drop(
                         (1000, 400), target=Item_supply_crate((100, 100, 100), level=1))
-                elif self.health >= 0:
+                elif self.health > 0:
                     data.ITEMS.drop(
                         (1000, 400), target=Item_supply_crate((100, 100, 100), level=0))
         else:

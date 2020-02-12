@@ -1,6 +1,8 @@
 
 Richtungen:
 
+Uhrzeigersinn
+
 0 = Rechts
 338 -- 23
 45 = rechtsunten

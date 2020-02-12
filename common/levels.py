@@ -122,29 +122,16 @@ class Levels:
         if cls.level == 1:
             data.ENEMY.set_spawn_table(Seeker)
             data.ENEMY.set_spawn_table(Jumper)
-            data.PHENOM.set_spawn_table(Planet)
-
-            # data.ENEMY.set_spawn_table(Comet)
-            # data.ENEMY.set_spawn_table(Shooter)
-            # data.ENEMY.set_spawn_table(Mine_layer)
-            # data.ENEMY.set_spawn_table(Strafer)
-            # data.ENEMY.set_spawn_table(Miner)
         if cls.level == 6:
             data.ENEMY.set_spawn_table(Shooter)
-            # data.PHENOM.set_spawn_table(Gravity_well)
         elif cls.level == 12:
             data.ENEMY.set_spawn_table(Mine_layer)
-            data.PHENOM.set_spawn_table(Repair_station)
         elif cls.level == 18:
             data.ENEMY.set_spawn_table(Strafer)
-            # data.PHENOM.set_spawn_table(Anti_gravity_well)
         elif cls.level == 24:
-            pass
             data.ENEMY.set_spawn_table(Miner)
-            # data.PHENOM.set_spawn_table(Nabulae_aoe_damage)
         elif cls.level == 30:
             pass
-            # data.PHENOM.set_spawn_table(Nebulae_fire_rate_plus)
         elif cls.level == 36:
             pass
 

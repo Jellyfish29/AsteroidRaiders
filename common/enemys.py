@@ -65,7 +65,7 @@ class Enemy(Timer):
         self.sprites = sprites
         self.orig_direction = self.direction
         self.kill = False
-        self.border_ckeck = True
+        self.border_check = True
         self.ttk_bonus = 0
         self.projectile_speed = 20
         self.hitable = True
@@ -223,7 +223,7 @@ class Enemy(Timer):
         self.gfx_animation()
         self.gfx_health_bar()
         self.move()
-        if self.border_ckeck:
+        if self.border_check:
             self.border_collide()
         self.player_collide()
         self.skill()
@@ -558,7 +558,9 @@ class Event_shooter(Shooter):
         super().__init__(spawn=spawn)
         self.dest = dest
         self.gfx_hook = (-50, -50)
-        self.border_ckeck = False
+        self.border_check = False
+        self.health = Enemy.health + 6
+        self.max_health = self.health
 
     def move(self):
         self.direction = degrees(
@@ -579,7 +581,7 @@ class Event_shooter(Shooter):
         if len(data.PLAYER_DATA) > 0:
             target = data.PLAYER_DATA[0].hitbox.center
         else:
-            target = data.PLAYER.hitbox.center
+            target = self.dest
 
         gfx_angle = degrees(
             target[1],
@@ -601,6 +603,12 @@ class Event_shooter(Shooter):
                  self.hitbox.topleft[1] + self.gfx_hook[1])
             )
 
+    def reset(self):
+        self.dest = (-1000, -500)
+        self.angles = angles_360(4)
+        self.border_check = True
+        self.gfx_idx = (0, 1)
+
 
 class Convoy_ship_enemy(Shooter):
 
@@ -615,6 +623,7 @@ class Convoy_ship_enemy(Shooter):
         self.target = (-100, y)
         self.angles = angles_360(4)
         self.health = Enemy.health + 4
+        self.max_health = self.health
 
     # def move(self):
     #     self.hitbox.move_ip(self.speed, 0)
