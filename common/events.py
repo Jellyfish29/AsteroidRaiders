@@ -195,7 +195,7 @@ class Events():
             cls.bs_dest = (950, 400)
             data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -200), target=cls.bs_dest))
             for _ in range(cls.bs_defence_wave_strength):
-                data.ENEMY_DATA.append(Event_shooter(get_random_point(), spawn=1))
+                data.ENEMY_DATA.append(Event_shooter(get_random_point(), standart_spawn=1))
             timer.ticker.update({"wave_timer": 600})
             cls.battleship_defence_set_up = False
 
@@ -204,7 +204,7 @@ class Events():
                 if timer.timer_key_trigger(cls.bs_defence_wave_trigger, key="wave_timer"):
                     spawn = random.randint(1, 4)
                     for _ in range(cls.bs_defence_wave_strength):
-                        data.ENEMY_DATA.append(Event_shooter(get_random_point(), spawn=spawn))
+                        data.ENEMY_DATA.append(Event_shooter(get_random_point(), standart_spawn=spawn))
                     cls.bs_defence_wave_trigger -= 60
                     cls.bs_defence_wave_counter += 1
                     cls.bs_defence_wave_strength += 1
@@ -252,6 +252,11 @@ class Events():
                 if timer.trigger(60):
                     cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
                     data.ENEMY_DATA.append(Convoy_ship_enemy(cls.c_a_y))
+                    if not isinstance(cls.c_a_ship, str):
+                        if cls.c_a_ship % 3 == 0:
+                            for i in [150, -150]:
+                                data.ENEMY_DATA.append(Event_shooter(
+                                    (-200, cls.c_a_y + i), special_spawn=(2000, cls.c_a_y + i), border_check=True))
             else:
                 if cls.convoy_attack_wave_counter < cls.convoy_attack_wave_amount:
                     cls.convoy_attack_wave_counter += 1
@@ -260,8 +265,10 @@ class Events():
                     cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
                     cls.c_a_y = random.randint(300, 800)
                     timer.timer_key_delay(reset=True, key="c_spawn")
+                    if cls.convoy_attack_wave_counter == 4:
+                        Elites.spawn()
                 else:
-                    if timer.trigger(240):
+                    if timer.trigger(600):
                         cls.convoy_attack_reset()
                         Background.bg_move = True
 
@@ -288,7 +295,7 @@ class Events():
             (cls.event_mine_field, 0),
             (cls.event_convoy_escort, 6),
             (cls.event_battleship_defence, 6),
-            # (cls.event_convoy_atack, 0),
+            (cls.event_convoy_atack, 12),
         ]
 
 

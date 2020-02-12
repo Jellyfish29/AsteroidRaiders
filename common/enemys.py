@@ -552,13 +552,16 @@ spez_spawn_table = [Jumper, Seeker]
 
 class Event_shooter(Shooter):
 
-    def __init__(self, dest, spawn=None):
-        if spawn is None:
-            spawn = random.randint(1, 4)
-        super().__init__(spawn=spawn)
+    def __init__(self, dest, standart_spawn=None,
+                 special_spawn=None, border_check=False):
+        if standart_spawn is None:
+            standart_spawn = random.randint(1, 4)
+        super().__init__(spawn=standart_spawn)
+        if special_spawn is not None:
+            self.hitbox.center = special_spawn
         self.dest = dest
+        self.border_check = border_check
         self.gfx_hook = (-50, -50)
-        self.border_check = False
         self.health = Enemy.health + 6
         self.max_health = self.health
         self.fire_rate = 80
@@ -623,7 +626,7 @@ class Convoy_ship_enemy(Shooter):
         self.orig_direction = self.direction
         self.target = (-100, y)
         self.angles = angles_360(4)
-        self.health = Enemy.health + 4
+        self.health = Enemy.health + 7
         self.max_health = self.health
 
     # def move(self):

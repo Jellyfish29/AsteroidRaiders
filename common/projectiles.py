@@ -80,7 +80,9 @@ class Projectile(Timer):
             delay = 0
         if self.timer_delay(limit=delay):
             if self.hitbox.colliderect(obj.hitbox):
-                if self.flag != "secondary" and not self.hit_event:
+                if all([self.flag != "secondary",
+                        not self.hit_event,
+                        self.flag == "player"]):
                     self.gfx_hit()
                     if not isinstance(obj, type):
                         data.TURRET.hit_locations.append(self)

@@ -446,7 +446,7 @@ class Turret:
                     damage=dmg,
                     gfx_idx=11,
                     target=pygame.mouse.get_pos(),
-                    piercing=piercing
+                    piercing=piercing,
                 ))
 
     @classmethod

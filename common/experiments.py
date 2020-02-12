@@ -4,11 +4,10 @@ import time
 import random
 
 
-top = 400
+x = [1, 2, 3, 4, 5, 6]
+y = ["a", "b", "c"]
 
-bottom = 800
+v = [[e] + y for e in x if e % 2 == 0]
 
-r = 450
 
-print(abs(400 - 450))
-abs(800 - 400)
+print(v)
