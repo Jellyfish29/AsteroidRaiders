@@ -357,7 +357,7 @@ class Shooter(Enemy):
             spawn,
             Enemy.health + 2,
             (80, 80),
-            (0, 1),
+            (7, 8),
             (0, 0),
             Enemy.spez_sprites
         )
@@ -439,7 +439,7 @@ class Strafer(Enemy):
             spawn,
             Enemy.health + 2,
             (80, 80),
-            (7, 8),
+            (0, 1),
             (0, 0),
             Enemy.spez_sprites
         )
@@ -561,6 +561,7 @@ class Event_shooter(Shooter):
         self.border_check = False
         self.health = Enemy.health + 6
         self.max_health = self.health
+        self.fire_rate = 80
 
     def move(self):
         self.direction = degrees(
@@ -572,7 +573,7 @@ class Event_shooter(Shooter):
 
         if self.hitbox.collidepoint(self.dest):
             self.angles = angles_360(0)
-            self.gfx_idx = (14, 14)
+            self.gfx_idx = (15, 15)
 
     def gfx_animation(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
@@ -607,7 +608,7 @@ class Event_shooter(Shooter):
         self.dest = (-1000, -500)
         self.angles = angles_360(4)
         self.border_check = True
-        self.gfx_idx = (0, 1)
+        self.gfx_idx = (7, 8)
 
 
 class Convoy_ship_enemy(Shooter):
