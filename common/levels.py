@@ -120,17 +120,21 @@ class Levels:
         if data.ENEMY.spez_spawn_time < 60:
             data.ENEMY.spez_spawn_time = 60
         if cls.level == 1:
-            data.ENEMY.set_spawn_table(Seeker)
             data.ENEMY.set_spawn_table(Jumper)
+        #     data.ENEMY.set_spawn_table(Shooter)
+        #     data.ENEMY.set_spawn_table(Mine_layer)
+        #     data.ENEMY.set_spawn_table(Strafer)
+        #     data.ENEMY.set_spawn_table(Miner)
         if cls.level == 6:
-            data.ENEMY.set_spawn_table(Shooter)
+            data.ENEMY.set_spawn_table(Seeker)
         elif cls.level == 12:
-            data.ENEMY.set_spawn_table(Mine_layer)
+            data.ENEMY.set_spawn_table(Shooter)
         elif cls.level == 18:
             data.ENEMY.set_spawn_table(Strafer)
         elif cls.level == 24:
-            data.ENEMY.set_spawn_table(Miner)
+            data.ENEMY.set_spawn_table(Mine_layer)
         elif cls.level == 30:
+            data.ENEMY.set_spawn_table(Miner)
             pass
         elif cls.level == 36:
             pass

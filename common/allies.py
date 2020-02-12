@@ -222,7 +222,7 @@ class Convoy_ship_allie(Allied_entity):
 class Battleship_allie(Allied_entity):
 
     def __init__(self, spawn_point=0, target=None):
-        super().__init__(speed=Background.scroll_speed, health=100, spawn_point=spawn_point,
+        super().__init__(speed=Background.scroll_speed, health=125, spawn_point=spawn_point,
                          target=target, size=(200, 200), gfx_idx=(4, 4), gfx_hook=(0, 0))
         self.hitable = True
         self.rot_sprite = False

@@ -178,15 +178,6 @@ class Gfx(Timer):
         win.blit(Gfx.cursor_sprites[2], (rect.topleft[0] - 9, rect.topleft[1] - 10))
 
     @classmethod
-    def update(cls):
-        if Gfx.bg_move:
-            Gfx.y += Gfx.scroll_speed
-        win.blit(Gfx.bg[8], (0, Gfx.y - 4040))
-        win.blit(Gfx.bg[8], (0, Gfx.y - 1480))
-        if Gfx.y >= 4040:
-            Gfx.y = 0
-
-    @classmethod
     def layer_1_update(cls):
         for effect in Gfx.gfx_layer_1_lst:
             if effect.draw():  # if animation over
@@ -217,11 +208,12 @@ class Background(Timer):
     bg_color = [0, 0, 30]
     bg_objs = []
     bg_obj_spawn_rate = 1200
+    bg_sprite_main = pygame.transform.scale(bg_sprites[1], (1920, 1080))
 
     def __init__(self, y=None):
         if y is None:
             y = -1000
-        self.gfx_idx = random.randint(2, 9)
+        self.gfx_idx = random.randint(2, 14)
         self.x = random.randint(100, 1800)
         self.y = y
         self.kill = False
