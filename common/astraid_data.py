@@ -1,3 +1,5 @@
+# from profilehooks import profile
+
 ENEMY_DATA = []
 ENEMY_PROJECTILE_DATA = []
 
@@ -20,6 +22,7 @@ ALLIE = None
 INTERFACE = None
 
 
+# @profile
 def GAME_UPDATE():
 
     for phenom in PHENOMENON_DATA:

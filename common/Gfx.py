@@ -246,14 +246,14 @@ class Background(Timer):
     @classmethod
     @timer
     def update(cls, timer):
-        if not any([data.LEVELS.boss_fight, not cls.bg_move]):
-            if timer.trigger(cls.bg_obj_spawn_rate):
-                cls.bg_objs.append(Background())
+        # if not any([data.LEVELS.boss_fight, not cls.bg_move]):
+        #     if timer.trigger(cls.bg_obj_spawn_rate):
+        #         cls.bg_objs.append(Background())
 
-        for bg_obj in cls.bg_objs:
-            bg_obj.gfx_animation()
-            if bg_obj.kill:
-                cls.bg_objs.remove(bg_obj)
+        # for bg_obj in cls.bg_objs:
+        #     bg_obj.gfx_animation()
+        #     if bg_obj.kill:
+        #         cls.bg_objs.remove(bg_obj)
 
         if any([data.LEVELS.after_boss,
                 not data.LEVELS.special_events and not data.LEVELS.boss_fight

@@ -20,6 +20,8 @@ from items_misc import *
 from phenomenon import *
 from bosses_def import *
 
+from profilehooks import profile
+
 
 def test_mode():
     Levels.display_level += 1
@@ -37,7 +39,10 @@ def test_mode():
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
 
 
+# @profile
 def main():
+
+    Player.health += 40000
 
     right, left, up, down = [False, False, False, False]
 
@@ -51,12 +56,17 @@ def main():
 
     components = [Player, Turret, Enemy, Phenomenon, Interface, Levels, Items]
 
+    # @profile
+    def components_update():
+        for component in components:
+            component.update()
+
     # Background Setup
     Background.update()
     Background.bg_objs += [Background(y=0), Background(y=1000)]
 
     # Item Setup
-    # Items.drop((winwidth / 2, 400), target=Item_missile((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_star_fire((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
 
@@ -80,8 +90,7 @@ def main():
 
         Gfx.layer_2_update()
 
-        for component in components:
-            component.update()
+        components_update()
 
         Gfx.layer_1_update()
 

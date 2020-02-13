@@ -124,24 +124,25 @@ def rot_center(image, angle):
 
 
 def run_once(f):
-    def wrapper(*args, **kwargs):
-        if not wrapper.has_run:
-            wrapper.has_run = True
+    def run_once_inner(*args, **kwargs):
+        if not run_once_inner.has_run:
+            run_once_inner.has_run = True
             return f(*args, **kwargs)
-    wrapper.has_run = False
-    return wrapper
+    run_once_inner.has_run = False
+    return run_once_inner
 
 
 # Positional Arguments müssen vor das timer arguments geschrieben werden Keyword dahinter
 # @timer
 # foo(pos_arg_1, pos_arg_2, timer, kw_arg=0)
+
 def timer(f):
     timer = Timer()
 
-    def wrapper(*args, timer=timer, **kwargs):
+    def timer_inner(*args, timer=timer, **kwargs):
         timer.timer_tick()
         return f(*args, timer, **kwargs)
-    return wrapper
+    return timer_inner
 
 
 class Timer:
@@ -260,6 +261,6 @@ class Run_limiter:
 def run_limiter(f):
     rl = Run_limiter()
 
-    def wrapper(*args, limiter=rl, **kwargs):
+    def run_limiter_inner(*args, limiter=rl, **kwargs):
         return f(*args, limiter, **kwargs)
-    return wrapper
+    return run_limiter_inner
