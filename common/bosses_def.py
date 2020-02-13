@@ -607,32 +607,32 @@ class Elites(Bosses):
         pass
 
     @classmethod
-    def spawn(cls, special_spawn=None, special_dest=None):
+    def spawn(cls, special_spawn=None, special_dest=None, drop=True):
         data.ENEMY_DATA.append(random.choice([
             lambda: Elites(
                 health=Elites.health, speed=2, fire_rate=120,
                 elite_skill=Boss_skills.skill_salvo_charlie, gfx_idx=(8, 9),
-                special_spawn=special_spawn, special_dest=special_dest),
+                special_spawn=special_spawn, special_dest=special_dest, drop=drop),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.2, speed=4, fire_rate=120,
                 elite_skill=Boss_skills.skill_missile, gfx_idx=(2, 3),
-                special_spawn=special_spawn, special_dest=special_dest),
+                special_spawn=special_spawn, special_dest=special_dest, drop=drop),
             lambda: Elites(
                 health=Elites.health - Elites.health * 0.2, speed=8, fire_rate=80,
                 elite_skill=Boss_skills.skill_jumpdrive, gfx_idx=(4, 5),
-                special_spawn=special_spawn, special_dest=special_dest),
+                special_spawn=special_spawn, special_dest=special_dest, drop=drop),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.7, speed=3, fire_rate=100,
                 elite_skill=Boss_skills.skill_salvo_delta, gfx_idx=(6, 7),
-                special_spawn=special_spawn, special_dest=special_dest),
+                special_spawn=special_spawn, special_dest=special_dest, drop=drop),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.1, speed=2, fire_rate=100,
                 elite_skill=Boss_skills.skill_main_gun, gfx_idx=(0, 1),
-                special_spawn=special_spawn, special_dest=special_dest),
+                special_spawn=special_spawn, special_dest=special_dest, drop=drop),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.1, speed=6, fire_rate=100,
                 elite_skill=Boss_skills.skill_wave_motion_gun, gfx_idx=(10, 11),
-                special_spawn=special_spawn, special_dest=special_dest)
+                special_spawn=special_spawn, special_dest=special_dest, drop=drop)
         ])())
 
 
