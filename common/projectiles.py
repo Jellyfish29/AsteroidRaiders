@@ -126,6 +126,9 @@ class Projectile(Timer):
     def get_name(self):
         return self.__class__.__name__
 
+    def get_bases_names(self):
+        return [base.__name__ for base in self.__class__.__bases__]
+
     def tick(self):
         if self.decay is not None:
             if self.timer_trigger(self.decay):

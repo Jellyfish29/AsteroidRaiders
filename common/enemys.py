@@ -219,6 +219,9 @@ class Enemy(Timer):
     def get_name(self):
         return self.__class__.__name__
 
+    def get_bases_names(self):
+        return [base.__name__ for base in self.__class__.__bases__]
+
     def tick(self):
         self.gfx_animation()
         self.gfx_health_bar()
@@ -372,7 +375,7 @@ class Shooter(Enemy):
 
     def skill(self):
         # print(f"shooter {self.timer_calls_per_tick}")
-        if len(data.PLAYER_DATA) == 0:
+        if len([a for a in data.PLAYER_DATA if a.hitable]) == 0:
             target = data.PLAYER.hitbox.center
         else:
             target = random.choices([

@@ -42,7 +42,7 @@ def test_mode():
 # @profile
 def main():
 
-    Player.health += 40000
+    # Player.health += 40000
 
     right, left, up, down = [False, False, False, False]
 
@@ -115,23 +115,28 @@ def main():
                 elif event.key == K_s:
                     down = True
                     move_condition(left, "left down", right, "right down", "down")
+
                 elif event.key == K_1:
                     Player.use_heal()
+
                 elif event.key == K_2:
                     Player.shield.toggle()
                     Player.shield.activation_effect()
+
                 elif event.key == K_r:
                     try:
                         Items.inventory_dic[0].toggle()
                         Items.inventory_dic[0].activation_effect()
                     except AttributeError:
                         pass  # Fehlersound
+
                 elif event.key == K_f:
                     try:
                         Items.inventory_dic[1].toggle()
                         Items.inventory_dic[1].activation_effect()
                     except AttributeError:
                         pass
+
                 elif event.key == K_e:
                     try:
                         Items.inventory_dic[2].toggle()
@@ -139,21 +144,20 @@ def main():
                     except AttributeError:
                         pass
 
-                elif event.key == K_p:
-                    Interface.pause_menu(True)
-
-                elif event.key == K_i:
-                    Items.spawm_items_test()
-
-                elif event.key == K_m:
-                    test_mode()
                 elif event.key == K_SPACE:
                     if not Player.jumpdrive_disabled:
                         Player.jumpdrive.toggle()
                         Player.jumpdrive.activation_effect()
+
                 elif event.key == K_LSHIFT:
                     Player.afterburner.toggle()
                     Player.afterburner.activation_effect()
+
+                elif event.key == K_LALT:
+                    Player.interaction_button(True)
+
+                elif event.key == K_p:
+                    Interface.pause_menu(True)
 
                 elif event.key == K_l:
                     if not Levels.boss_fight:
@@ -161,8 +165,15 @@ def main():
                             data.LEVELS.load_game().load_save()
                         except FileNotFoundError:
                             pass
+                elif event.key == K_i:
+                    Items.spawm_items_test()
+
+                elif event.key == K_m:
+                    test_mode()
+
             elif event.type == MOUSEBUTTONDOWN:
                 Turret.fire(True)
+
             elif event.type == KEYUP:
                 if event.key == K_w:
                     up = False
@@ -172,26 +183,34 @@ def main():
                     right = False
                 elif event.key == K_a:
                     left = False
+
                 elif event.key == K_r:
                     try:
                         Items.inventory_dic[0].end_activation()
                     except AttributeError:
                         pass
+
                 elif event.key == K_f:
                     try:
                         Items.inventory_dic[1].end_activation()
                     except AttributeError:
                         pass
+
                 elif event.key == K_e:
                     try:
                         Items.inventory_dic[2].end_activation()
                     except AttributeError:
                         pass
+
                 elif event.key == K_SPACE:
                     if not Player.jumpdrive_disabled:
                         Player.jumpdrive.end_activation()
+
                 elif event.key == K_LSHIFT:
                     Player.afterburner.end_activation()
+
+                elif event.key == K_LALT:
+                    Player.interaction_button(False)
 
                 elif event.key == K_ESCAPE:
                     pygame.quit()

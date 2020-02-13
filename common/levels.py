@@ -210,8 +210,8 @@ class Levels:
             cls.level_interval += 3
             cls.scaling()
             cls.interval_score = 0
-            if not cls.level % 6 == 0:
-                cls.skill_points += 1
+            # if not cls.level % 6 == 0:
+            #     cls.skill_points += 1
 
 
 data.LEVELS = Levels

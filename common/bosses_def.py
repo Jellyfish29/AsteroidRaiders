@@ -512,23 +512,38 @@ class Elites(Bosses):
             health=0,
             speed=0,
             fire_rate=0,
-            skill=[],
+            elite_skill=[],
             gfx_idx=(0, 1),
-            gfx_hook=(-30, -30)
+            gfx_hook=(-30, -30),
+            drop=True,
+            special_spawn=None,
+            special_dest=None
     ):
         self.health = health
         self.speed = speed
         self.fire_rate = fire_rate
-        self.elite_skill = skill
         self.gfx_idx = gfx_idx
         self.gfx_hook = gfx_hook
-
+        self.drop = drop
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]
         self.size = (100, 100)
         self.drop_amount = 0
         self.score_amount = 100
         self.flag = "elite"
         super().__init__()
+        self.skills_lst.append(elite_skill)
+        if special_spawn is not None:
+            self.hitbox.center = special_spawn
+            self.special_move = True
+            self.speed = Background.scroll_speed
+            self.skills_lst.append(self.skill_hold_position)
+            self.drop = False
+        if special_dest is not None:
+            self.checkpoints = {0: special_dest}
+            self.move_pattern = [0, 0]
+            self.drop = False
+            self.skills_lst.append(self.skill_zone_capture)
+            self.zone_reset = True
         self.sprites = Elites.sprites
 
     def phases(self):
@@ -539,31 +554,41 @@ class Elites(Bosses):
                           (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300),
                           explo=True)
         data.LEVELSelite_fight = False
-        if random.randint(0, 100) > 90:
-            data.ITEMS.drop((self.hitbox.topleft), amount=1)
-        else:
-            random.choice([
-                lambda: data.ITEMS.drop(
-                    (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100))),
-                lambda: data.ITEMS.drop(
-                    (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100))),
-                lambda: data.ITEMS.drop(
-                    (self.hitbox.topleft), target=Item_upgrade_point_crate((100, 100, 100)))
-            ])()
+        if self.drop:
+            if random.randint(0, 100) > 90:
+                data.ITEMS.drop((self.hitbox.topleft), amount=1)
+            else:
+                random.choice([
+                    lambda: data.ITEMS.drop(
+                        (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100))),
+                    lambda: data.ITEMS.drop(
+                        (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100))),
+                    lambda: data.ITEMS.drop(
+                        (self.hitbox.topleft), target=Item_upgrade_point_crate((100, 100, 100)))
+                ])()
         self.kill = True
 
-    def boss_skills(self):
-        self.elite_skill(self)
+    # def boss_skills(self):
+    #     self.elite_skill(self)
 
     def gfx_animation(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         animation_ticker = self.timer_animation_ticker(8)
-        gfx_angle = degrees(
-            data.PLAYER.hitbox.center[1],
-            self.hitbox.center[1],
-            data.PLAYER.hitbox.center[0],
-            self.hitbox.center[0]
-        )
+        if len(data.PLAYER_DATA) == 0:
+            gfx_angle = degrees(
+                data.PLAYER.hitbox.center[1],
+                self.hitbox.center[1],
+                data.PLAYER.hitbox.center[0],
+                self.hitbox.center[0]
+            )
+        else:
+            gfx_angle = degrees(
+                data.PLAYER_DATA[random.randint(0, len(data.PLAYER_DATA) - 1)].hitbox.center[1],
+                self.hitbox.center[1],
+                data.PLAYER_DATA[random.randint(0, len(data.PLAYER_DATA) - 1)].hitbox.center[0],
+                self.hitbox.center[0]
+            )
+
         if animation_ticker < 4:
             win.blit(gfx_rotate(
                 self.sprites[self.gfx_idx[0]], gfx_angle),
@@ -584,26 +609,32 @@ class Elites(Bosses):
         pass
 
     @classmethod
-    def spawn(cls):
+    def spawn(cls, special_spawn=None, special_dest=None):
         data.ENEMY_DATA.append(random.choice([
             lambda: Elites(
                 health=Elites.health, speed=2, fire_rate=120,
-                skill=Boss_skills.skill_salvo_charlie, gfx_idx=(8, 9)),
+                elite_skill=Boss_skills.skill_salvo_charlie, gfx_idx=(8, 9),
+                special_spawn=special_spawn, special_dest=special_dest),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.2, speed=4, fire_rate=120,
-                skill=Boss_skills.skill_missile, gfx_idx=(2, 3)),
+                elite_skill=Boss_skills.skill_missile, gfx_idx=(2, 3),
+                special_spawn=special_spawn, special_dest=special_dest),
             lambda: Elites(
                 health=Elites.health - Elites.health * 0.2, speed=8, fire_rate=80,
-                skill=Boss_skills.skill_jumpdrive, gfx_idx=(4, 5)),
+                elite_skill=Boss_skills.skill_jumpdrive, gfx_idx=(4, 5),
+                special_spawn=special_spawn, special_dest=special_dest),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.7, speed=3, fire_rate=100,
-                skill=Boss_skills.skill_salvo_delta, gfx_idx=(6, 7)),
+                elite_skill=Boss_skills.skill_salvo_delta, gfx_idx=(6, 7),
+                special_spawn=special_spawn, special_dest=special_dest),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.1, speed=2, fire_rate=100,
-                skill=Boss_skills.skill_main_gun, gfx_idx=(0, 1)),
+                elite_skill=Boss_skills.skill_main_gun, gfx_idx=(0, 1),
+                special_spawn=special_spawn, special_dest=special_dest),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.1, speed=6, fire_rate=100,
-                skill=Boss_skills.skill_wave_motion_gun, gfx_idx=(10, 11))
+                elite_skill=Boss_skills.skill_wave_motion_gun, gfx_idx=(10, 11),
+                special_spawn=special_spawn, special_dest=special_dest)
         ])())
 
 

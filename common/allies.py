@@ -6,6 +6,7 @@ from astraid_funcs import *
 import astraid_data as data
 from Gfx import Gfx, Background
 from projectiles import Projectile
+from phenomenon import Defence_zone
 from items_misc import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
 
 
@@ -33,6 +34,7 @@ class Allied_entity(Timer):
         self.rot_sprite = True
         self.kill = False
         self.hitable = True
+        self.super_hitable = True
         self.hide_healthbar = False
         self.border_check = True
         self.flag = "allie"
@@ -100,13 +102,15 @@ class Allied_entity(Timer):
                                               )))
 
     def gfx_animation(self):
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         animation_ticker = self.timer_animation_ticker(16)
-        gfx_angle = degrees(
-            self.target[1], self.hitbox.center[1],
-            self.target[0], self.hitbox.center[0]
-        )
         if not self.rot_sprite:
             gfx_angle = 0
+        else:
+            gfx_angle = degrees(
+                self.target[1], self.hitbox.center[1],
+                self.target[0], self.hitbox.center[0]
+            )
         if animation_ticker < 8:
             win.blit(rot_center(
                 Allied_entity.allied_sprites[self.gfx_idx[0]], gfx_angle),
@@ -303,6 +307,96 @@ class Battleship_allie(Allied_entity):
     def death(self):
         Background.bg_move = True
         self.kill = True
+
+
+class Comrelay(Allied_entity):
+
+    def __init__(self, spawn_point=0, target=None):
+        super().__init__(speed=Background.scroll_speed, health=100, spawn_point=spawn_point,
+                         target=target, size=(70, 200), gfx_idx=(7, 8), gfx_hook=(35, 50))
+        self.hitable = False
+        self.super_hitable = False
+        self.rot_sprite = False
+        self.run_limiter = Run_limiter()
+        self.border_check = False
+        self.interaction_hitbox = pygame.Rect(self.hitbox.center[0], self.hitbox.center[1], 300, 300)
+        self.hack_progress = 0
+        self.healthbar_height = 8
+        self.healthbar_max_len = 100
+
+    def move(self):
+        self.hitbox.move_ip(0, self.speed)
+        self.interaction_hitbox.center = self.hitbox.center
+
+    def gfx_health_bar(self):
+        pygame.draw.rect(win, (200, 200, 200),
+                         (pygame.Rect(self.hitbox.topleft[0],
+                                      self.hitbox.topleft[1] - 80,
+                                      self.healthbar_max_len,
+                                      self.healthbar_height
+                                      )))
+
+        pygame.draw.rect(win, (0, 0, 200),
+                         (pygame.Rect(self.hitbox.topleft[0],
+                                      self.hitbox.topleft[1] - 80,
+                                      self.hack_progress,
+                                      self.healthbar_height
+                                      )))
+
+    def script(self):
+        if not Background.bg_move:
+            self.speed = 0
+        else:
+            self.speed = Background.scroll_speed
+
+        # if data.PLAYER.interaction_button_pressed:
+        if self.interaction_hitbox.colliderect(data.PLAYER.hitbox):
+            if self.hack_progress < 100:
+                if self.timer_trigger(5):
+                    self.hack_progress += 1
+
+        if self.hack_progress >= 100:
+            if self.run_limiter.run_block_once():
+                data.EVENTS.hack_stations_hacked += 1
+                self.gfx_idx = (7, 9)
+                self.border_check = True
+                self.hide_healthbar = True
+        if len(data.LEVELS.special_event_queue) == 0:
+            self.border_check = True
+            self.hide_healthbar = True
+
+    def dest_reached(self):
+        if self.hitbox.center[1] > 700:
+            return True
+
+
+class Battlecruiser_ally(Battleship_allie):
+
+    def __init__(self, spawn_point=None, target=None):
+        super().__init__(spawn_point=spawn_point, target=target)
+        self.gfx_idx = (10, 11)
+        self.hitable = False
+        self.hide_healthbar = True
+        self.health = 30
+        self.angles = angles_360(3)
+
+    def script(self):
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        if Background.bg_move:
+            if self.hitbox.bottom >= self.target[1]:
+                self.gfx_idx = (12, 12)
+                self.angles = angles_360(0)
+                for loc in [
+                    (700, 200), (1000, 200), (1300, 200),
+                    (700, 500), (1300, 500),
+                    (700, 800), (1000, 800), (1300, 800)
+                ]:
+                    data.PHENOMENON_DATA.append(Defence_zone(loc))
+                Background.bg_move = False
+        else:
+            if len([z for z in data.PHENOMENON_DATA if not z.captured]) == 0:
+                self.hitable = True
+                self.hide_healthbar = False
 
 
 data.ALLIE = Allied_entity

@@ -29,6 +29,7 @@ class Bosses(Shooter, Boss_skills):
             8: (winwidth / 2, 600),
             9: (winwidth / 2, 610)
         }
+        self.orig_check_points = self.checkpoints
         self.cp_ticker = 0
         self.direction = 0
         self.angles = angles_360(self.speed)
@@ -50,6 +51,7 @@ class Bosses(Shooter, Boss_skills):
         self.projectile_speed = 20
         self.special_attack = False
         self.special_skills_lst = []
+        self.skills_lst = []
         Boss_skills.__init__(self)
         Timer.__init__(self)
         # Health
@@ -232,7 +234,10 @@ class Bosses(Shooter, Boss_skills):
 
     def boss_skills(self):
         for skill in self.skills_lst:
-            skill()
+            try:
+                skill()
+            except TypeError:
+                skill(self)
 
     def boss_special_skills(self):
         for skill in self.special_skills_lst:

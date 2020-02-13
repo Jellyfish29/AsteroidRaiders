@@ -13,6 +13,7 @@ class Player:
 
     hitbox = pygame.Rect(winwidth / 2, winheight / 2, 70, 50)
     flag = "player"
+    interaction_button_pressed = False
 
     # Health
     health = 5
@@ -193,6 +194,10 @@ class Player:
     @classmethod
     def get_name(cls):
         return cls.__name__
+
+    @classmethod
+    def interaction_button(cls, p):
+        cls.interaction_button_pressed = p
 
     @classmethod
     @timer

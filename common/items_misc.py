@@ -11,7 +11,7 @@ class Item_supply_crate(Items):
         super().__init__("Supply Container", "Provides New Supplies", (38, 38))
         self.color = color
         self.flag = "supply_con"
-        self.base_effect = 4
+        self.base_effect = 6
         if level is None:
             self.lvl = random.choices([0, 1, 2, 3], weights=[50, 30, 20, 10], k=1)[0]
         else:

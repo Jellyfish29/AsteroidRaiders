@@ -39,8 +39,12 @@ class Events():
     convoy_attack_wave_amount = 5
     convoy_attack_wave_counter = 0
     convoy_attack_c_destroyed = 0
-
     # Station hack
+    hack_set_up = True
+    hack_stations_hacked = 0
+    # Zone defence
+    z_def_set_up = True
+    active_zones = []
 
     @classmethod
     def event_wave(cls, enemy=None, spawn=None, amount=None, scaling=None):
@@ -60,7 +64,8 @@ class Events():
         else:
             cls.comet_storm_set_up = True
             data.ITEMS.drop(
-                (1000, 400), target=Item_supply_crate((100, 100, 100), level=random.randint(0, 1)))
+                (1000, 400), target=Item_supply_crate((100, 100, 100), level=1))
+
             return "stop_event"
 
     @classmethod
@@ -94,11 +99,11 @@ class Events():
                     sp = get_random_point()
                     random.choice([
                         lambda: data.ITEMS.drop(
-                            sp, target=Item_supply_crate((100, 100, 100), level=3)),
+                            sp, target=Item_supply_crate((100, 100, 100), level=2)),
                         lambda: data.ITEMS.drop(
                             sp, target=Item_heal_crate((100, 100, 100), level=3)),
                         lambda: data.ITEMS.drop(
-                            sp, target=Item_upgrade_point_crate((100, 100, 100), level=3))
+                            sp, target=Item_upgrade_point_crate((100, 100, 100), level=2))
                     ])()
 
                 if cls.mine_field_stage >= cls.mine_field_max_stages:
@@ -167,11 +172,6 @@ class Events():
                     cls.convoy_ship_amount = (i for i in range(4))
                 if cls.convoy_wave == 3:
                     Elites.spawn()
-                # wave = next(cls.convoy_wave_amount, "stop")
-                # if wave != "stop":
-                #     cls.convoy_ship_amount = (i for i in range(4))
-                # if wave == 1:
-                #     Elites.spawn()
 
             if cls.convoy_wave >= cls.convoy_wave_amount:
                 if len([s for s in data.PLAYER_DATA if isinstance(s, Convoy_ship_allie)]) == 0:
@@ -205,11 +205,11 @@ class Events():
                     spawn = random.randint(1, 4)
                     for _ in range(cls.bs_defence_wave_strength):
                         data.ENEMY_DATA.append(Event_shooter(get_random_point(), standart_spawn=spawn))
-                    cls.bs_defence_wave_trigger -= 60
+                    cls.bs_defence_wave_trigger -= 65
                     cls.bs_defence_wave_counter += 1
                     cls.bs_defence_wave_strength += 1
                     if cls.bs_defence_wave_counter == 4:
-                        Elites.spawn()
+                        Elites.spawn(drop=False)
 
                 if timer.trigger(1000):
                     data.LEVELS.execute_event(5)
@@ -265,8 +265,10 @@ class Events():
                     cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
                     cls.c_a_y = random.randint(300, 800)
                     timer.timer_key_delay(reset=True, key="c_spawn")
-                    if cls.convoy_attack_wave_counter == 4:
-                        Elites.spawn()
+                    if any([cls.convoy_attack_wave_counter == 3,
+                            cls.convoy_attack_wave_counter == 4,
+                            cls.convoy_attack_wave_counter == 5]):
+                        Elites.spawn(drop=False)
                 else:
                     if timer.trigger(600):
                         cls.convoy_attack_reset()
@@ -286,16 +288,85 @@ class Events():
     @classmethod
     @timer
     def event_station_hack(cls, timer):
-        pass
+        cls.set_bg_color()
+        if cls.hack_set_up:
+            for i in [-200, -300, -600]:
+                spawn = (random.randint(200, 1700), i)
+                data.PLAYER_DATA.append(Comrelay(spawn_point=spawn))
+                Elites.spawn(special_spawn=spawn)
+            cls.hack_set_up = False
+
+        if Background.bg_move:
+            if any([a.dest_reached() for a in data.PLAYER_DATA if isinstance(a, Comrelay)]):
+                Background.bg_move = False
+                for elite in [e for e in data.ENEMY_DATA if isinstance(e, Elites)]:
+                    elite.skills_lst.pop(1)
+                    elite.special_move = False
+
+        else:
+            elite_amount = len([e for e in data.ENEMY_DATA if isinstance(e, Elites)])
+            if elite_amount == 2:
+                if timer.timer_key_trigger(400, key="wave_trigger"):
+                    data.LEVELS.execute_event(random.choice([5, 3]))
+            elif elite_amount == 1:
+                if timer.timer_key_trigger(260, key="wave_trigger"):
+                    data.LEVELS.execute_event(random.choice([5, 3]))
+            elif elite_amount == 0:
+                if timer.timer_key_trigger(160, key="wave_trigger"):
+                    data.LEVELS.execute_event(random.choice([5, 3]))
+
+            if cls.hack_stations_hacked == 3:
+                data.ITEMS.drop((1000, 500), amount=1)
+                Background.bg_move = True
+                cls.hack_reset()
+
+                return "stop_event"
+
+            if timer.timer_key_delay(2700, key="hack_time_limit"):
+                # INTERFACE
+                if cls.hack_stations_hacked == 2:
+                    data.ITEMS.drop(
+                        (1000, 500), target=Item_upgrade_point_crate((100, 100, 100), level=3))
+                elif cls.hack_stations_hacked == 1:
+                    data.ITEMS.drop(
+                        (1000, 500), target=Item_upgrade_point_crate((100, 100, 100), level=1))
+                Background.bg_move = True
+                cls.hack_reset()
+
+                return "stop_event"
+
+    @classmethod
+    def hack_reset(cls):
+        cls.hack_set_up = True
+        cls.hacK_stations_hacked = 0
+
+    @classmethod
+    @timer
+    def event_zone_defence(cls, timer):
+        if cls.z_def_set_up:
+            data.PLAYER_DATA.append(Battlecruiser_ally(spawn_point=(900, -250), target=(1000, 600)))
+            timer.ticker.update({"elite_spawn": 450})
+            cls.z_def_set_up = False
+        if not Background.bg_move:
+            if timer.timer_key_trigger(700, key="elite_spawn"):
+                if len(cls.active_zones) == 0:
+                    cls.active_zones = [z.loc for z in data.PHENOMENON_DATA if not z.captured]
+                else:
+                    Elites.spawn(special_dest=(cls.active_zones.pop(random.randint(0, len(cls.active_zones) - 1))))
+
+            if timer.trigger(1400):
+                data.LEVELS.execute_event(7)
 
     @classmethod
     def get_special_events_lst(cls):
         return [
-            (cls.event_comet_storm, 0),
-            (cls.event_mine_field, 0),
-            (cls.event_convoy_escort, 6),
-            (cls.event_battleship_defence, 6),
-            (cls.event_convoy_atack, 12),
+            # (cls.event_comet_storm, 0),
+            # (cls.event_mine_field, 0),
+            # (cls.event_convoy_escort, 6),
+            # (cls.event_battleship_defence, 6),
+            # (cls.event_convoy_atack, 12),
+            # (cls.event_station_hack, 12),
+            (cls.event_zone_defence, 0),
         ]
 
 

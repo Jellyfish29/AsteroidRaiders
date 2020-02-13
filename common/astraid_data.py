@@ -46,6 +46,21 @@ def GAME_UPDATE():
                 if phenom.flag != "player":
                     phenom.hit(projectile)
 
+    for pl_obj in PLAYER_DATA:
+
+        if pl_obj.destroy():
+            PLAYER_DATA.remove(pl_obj)
+        else:
+            pl_obj.tick()
+
+            if pl_obj.super_hitable:
+                for projectile in ENEMY_PROJECTILE_DATA:
+                    if projectile.hit(pl_obj):
+                        if not projectile.piercing:
+                            projectile.kill = True
+                        if pl_obj.hitable:
+                            pl_obj.take_damage(projectile.apply_damage())
+
     for projectile in ENEMY_PROJECTILE_DATA:
 
         if projectile.destroy():
@@ -102,22 +117,8 @@ def GAME_UPDATE():
 
         enemy.hit(PLAYER)
 
-    for pl_obj in PLAYER_DATA:
-
-        if pl_obj.destroy():
-            PLAYER_DATA.remove(pl_obj)
-        else:
-            pl_obj.tick()
-
-            for projectile in ENEMY_PROJECTILE_DATA:
-                if projectile.hit(pl_obj):
-                    if not projectile.piercing:
-                        projectile.kill = True
-                    if pl_obj.hitable:
-                        pl_obj.take_damage(projectile.apply_damage())
-
-            # for phenom in PHENOMENON_DATA:
-            #     if phenom.flag != "player":
-            #         if phenom.hit(pl_obj):
-            #             if phenom.hitable:
-            #                 pl_obj.take_damage(phenom.apply_damage())
+        # for phenom in PHENOMENON_DATA:
+        #     if phenom.flag != "player":
+        #         if phenom.hit(pl_obj):
+        #             if phenom.hitable:
+        #                 pl_obj.take_damage(phenom.apply_damage())

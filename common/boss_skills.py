@@ -32,6 +32,7 @@ class Boss_skills(Timer):
         self.jump_chance = 1100
         self.chaser_hit = False
         self.pd_envelope = pygame.Rect(1500, 0, winwidth - 1500, winheight)
+        self.zero_speed = angles_360(0)
         self.run_limiter_1 = Run_limiter()
 
     def skill_mines(self, **kwargs):
@@ -162,7 +163,8 @@ class Boss_skills(Timer):
         if not self.jump_charge:
             jumpdrive_trigger = random.randint(1, self.jump_chance)
             if jumpdrive_trigger == 1:
-                self.jump_point = self.checkpoints[random.choice([1, 2, 3, 4])]
+                if len(self.checkpoints) > 1:
+                    self.jump_point = self.checkpoints[random.choice([i for i in range(0, len(self.checkpoints) - 1)])]
                 jumpdrive_trigger = 0
                 self.jump_charge = True
         if self.jump_charge:
@@ -667,3 +669,14 @@ class Boss_skills(Timer):
 
     def get_sinus_wave_target(self):
         return pygame.Rect(data.PLAYER.hitbox.center[0], data.PLAYER.hitbox.center[1], 1, 1)
+
+# Event Skills
+
+    def skill_hold_position(self):
+        if Background.bg_move:
+            self.hitbox.move_ip(0, self.speed)
+
+    def skill_zone_capture(self):
+        if self.hitbox.collidepoint(self.checkpoints[0]):
+            self.angles = self.zero_speed
+            self.skills_lst.pop(1)

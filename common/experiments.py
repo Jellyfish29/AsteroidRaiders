@@ -4,10 +4,19 @@ import time
 import random
 
 
-x = [1, 2, 3, 4, 5, 6]
-y = ["a", "b", "c"]
+class a(object):
+    """docstring for a"""
 
-v = [[e] + y for e in x if e % 2 == 0]
+    def __init__(self):
+        pass
 
 
-print(v)
+class b(a):
+    """docstring for b"""
+
+    def __init__(self):
+        pass
+
+
+for i in range(0, 0):
+    pass

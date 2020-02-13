@@ -38,6 +38,8 @@ TODO:
     - controllpunkte
     - Geschicklichkeits Zeug
     - #Battleship defence/repair
+
+    - Planeten Landungen ???
     -...
 - Mehr Items
     - Heal als upgradebares stnadart Item

@@ -5,6 +5,7 @@ from astraid_funcs import *
 from init import *
 from Gfx import Background
 from projectiles import Projectile
+from enemys import Shooter
 import astraid_data as data
 
 
@@ -337,3 +338,43 @@ class Force_field(Timer):
         if self.hitbox.center[1] > 1200:
             self.kill = True
         self.timer_tick()
+
+
+class Defence_zone(Timer):
+
+    def __init__(self, loc):
+        Timer.__init__(self)
+        self.loc = loc
+        self.hitbox = pygame.Rect(0, 0, 300, 300)
+        self.hitbox.center = loc
+        self.kill = False
+        self.flag = "player"
+        self.gfx_idx = 16
+        self.capture_counter = 0
+        self.captured = False
+        self.reset = True
+
+    def hit(self, obj):
+        if obj.get_name() == "Elites":
+            if obj.hitbox.colliderect(self.hitbox):
+                if self.timer_key_trigger(5, key="capture"):
+                    self.capture_counter += 1
+                if self.captured:
+                    if obj.zone_reset:
+                        obj.angles = angles_360(obj.speed)
+                        obj.checkpoints = obj.orig_check_points
+                        obj.move_pattern = [random.randint(0, 9) for _ in range(40)]
+                        obj.zone_reset = False
+
+    def script(self):
+        if self.capture_counter >= 100:
+            self.gfx_idx = 17
+            self.captured = True
+
+    def destroy(self):
+        return self.kill
+
+    def tick(self):
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        self.script()
+        win.blit(Phenomenon.phenom_sprites[self.gfx_idx], self.hitbox.topleft)

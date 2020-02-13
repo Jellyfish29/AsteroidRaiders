@@ -2,7 +2,8 @@ import pygame
 import os
 import math
 import random
-
+import functools
+from profilehooks import profile
 
 winwidth = 1920
 winheight = 1080
@@ -135,13 +136,15 @@ def run_once(f):
 # Positional Arguments müssen vor das timer arguments geschrieben werden Keyword dahinter
 # @timer
 # foo(pos_arg_1, pos_arg_2, timer, kw_arg=0)
-
 def timer(f):
     timer = Timer()
+    # @profile
 
+    @functools.wraps(f)
     def timer_inner(*args, timer=timer, **kwargs):
         timer.timer_tick()
         return f(*args, timer, **kwargs)
+
     return timer_inner
 
 
