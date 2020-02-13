@@ -328,7 +328,7 @@ class Turret:
                         speed=cls.projectile_speed,
                         size=cls.projectile_size,
                         start_point=data.PLAYER.hitbox.center,
-                        damage=data.PLAYER.damage,
+                        damage=data.PLAYER.damage * 1.5,
                         gfx_idx=15,
                         target=pygame.mouse.get_pos(),
                     ))

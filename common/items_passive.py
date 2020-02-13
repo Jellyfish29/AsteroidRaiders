@@ -124,7 +124,7 @@ class Item_improved_feeding(Items):
         super().__init__("Improved Ammo Feeding System (passiv)", "Increases Fire Rate", (20, 21))
         self.color = color
         self.flag = "improved_feeding"
-        self.base_effect = 0.6
+        self.base_effect = 0.5
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "Shots/s")
 
     def get_upgrade_desc(self):

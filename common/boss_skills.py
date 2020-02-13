@@ -165,8 +165,8 @@ class Boss_skills(Timer):
             if jumpdrive_trigger == 1:
                 if len(self.checkpoints) > 1:
                     self.jump_point = self.checkpoints[random.choice([i for i in range(0, len(self.checkpoints) - 1)])]
-                jumpdrive_trigger = 0
-                self.jump_charge = True
+                    jumpdrive_trigger = 0
+                    self.jump_charge = True
         if self.jump_charge:
             # pygame.draw.rect(win, (0, 0, 100), pygame.Rect(self.jump_point, self.size))
             if self.__class__.__name__ == "Boss_cruiser":

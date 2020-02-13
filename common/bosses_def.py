@@ -543,7 +543,6 @@ class Elites(Bosses):
             self.move_pattern = [0, 0]
             self.drop = False
             self.skills_lst.append(self.skill_zone_capture)
-            self.zone_reset = True
         self.sprites = Elites.sprites
 
     def phases(self):
@@ -574,21 +573,20 @@ class Elites(Bosses):
     def gfx_animation(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         animation_ticker = self.timer_animation_ticker(8)
-        if len(data.PLAYER_DATA) == 0:
-            gfx_angle = degrees(
-                data.PLAYER.hitbox.center[1],
-                self.hitbox.center[1],
-                data.PLAYER.hitbox.center[0],
-                self.hitbox.center[0]
-            )
-        else:
+        if len(data.PLAYER_DATA) == 1:
             gfx_angle = degrees(
                 data.PLAYER_DATA[random.randint(0, len(data.PLAYER_DATA) - 1)].hitbox.center[1],
                 self.hitbox.center[1],
                 data.PLAYER_DATA[random.randint(0, len(data.PLAYER_DATA) - 1)].hitbox.center[0],
                 self.hitbox.center[0]
             )
-
+        else:
+            gfx_angle = degrees(
+                data.PLAYER.hitbox.center[1],
+                self.hitbox.center[1],
+                data.PLAYER.hitbox.center[0],
+                self.hitbox.center[0]
+            )
         if animation_ticker < 4:
             win.blit(gfx_rotate(
                 self.sprites[self.gfx_idx[0]], gfx_angle),

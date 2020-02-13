@@ -29,7 +29,7 @@ class Bosses(Shooter, Boss_skills):
             8: (winwidth / 2, 600),
             9: (winwidth / 2, 610)
         }
-        self.orig_check_points = self.checkpoints
+        self.orig_checkpoints = self.checkpoints
         self.cp_ticker = 0
         self.direction = 0
         self.angles = angles_360(self.speed)

@@ -7,6 +7,7 @@ from enemys import *
 from allies import *
 from bosses_def import Elites
 from Gfx import Gfx, Background
+from items_misc import Item_supply_crate, Item_heal_crate, Item_upgrade_point_crate
 
 
 class Events():
@@ -44,7 +45,8 @@ class Events():
     hack_stations_hacked = 0
     # Zone defence
     z_def_set_up = True
-    active_zones = []
+    z_def_bc_destroyed = False
+    z_def_active_zones = []
 
     @classmethod
     def event_wave(cls, enemy=None, spawn=None, amount=None, scaling=None):
@@ -343,30 +345,66 @@ class Events():
     @classmethod
     @timer
     def event_zone_defence(cls, timer):
+        cls.set_bg_color()
         if cls.z_def_set_up:
             data.PLAYER_DATA.append(Battlecruiser_ally(spawn_point=(900, -250), target=(1000, 600)))
             timer.ticker.update({"elite_spawn": 450})
             cls.z_def_set_up = False
         if not Background.bg_move:
-            if timer.timer_key_trigger(700, key="elite_spawn"):
-                if len(cls.active_zones) == 0:
-                    cls.active_zones = [z.loc for z in data.PHENOMENON_DATA if not z.captured]
-                else:
-                    Elites.spawn(special_dest=(cls.active_zones.pop(random.randint(0, len(cls.active_zones) - 1))))
+            if timer.timer_key_trigger(600, key="elite_spawn"):
+                if len(cls.z_def_active_zones) == 0:
+                    cls.z_def_active_zones = [z.loc for z in data.PHENOMENON_DATA if not z.captured]
+                if len(cls.z_def_active_zones) > 0:
+                    Elites.spawn(special_dest=(cls.z_def_active_zones.pop(random.randint(0, len(cls.z_def_active_zones) - 1))))
 
             if timer.trigger(1400):
                 data.LEVELS.execute_event(7)
 
+            if len([z for z in data.PHENOMENON_DATA if not z.captured]) == 0:
+                cls.zone_defence_reset_elites()
+
+                if len(data.PLAYER_DATA) == 0:
+                    cls.end_zone_defence()
+
+                    return "stop_event"
+
+        if timer.trigger(7200):
+            cls.zone_defence_reset_elites()
+            cls.end_zone_defence()
+
+            return "stop_event"
+
+    @classmethod
+    def zone_defence_reset_elites(cls):
+        data.PHENOMENON_DATA.clear()
+        for elite in [e for e in data.ENEMY_DATA if e.get_name() == "Elites"]:
+            if len(elite.checkpoints) == 1:
+                elite.angles = angles_360(elite.speed)
+                elite.checkpoints = elite.orig_checkpoints
+                elite.move_pattern = [random.randint(0, 9) for _ in range(40)]
+
+    @classmethod
+    def end_zone_defence(cls):
+        if not cls.z_def_bc_destroyed:
+            data.ITEMS.drop(
+                (1000, 500), target=Item_upgrade_point_crate((100, 100, 100), level=3))
+            data.ITEMS.drop(
+                (1000, 500), target=Item_supply_crate((100, 100, 100), level=3))
+        cls.z_def_set_up = True
+        cls.z_def_bc_destroyed = False
+        cls.z_def_active_zones = []
+        Background.bg_move = True
+
     @classmethod
     def get_special_events_lst(cls):
         return [
-            # (cls.event_comet_storm, 0),
-            # (cls.event_mine_field, 0),
-            # (cls.event_convoy_escort, 6),
-            # (cls.event_battleship_defence, 6),
-            # (cls.event_convoy_atack, 12),
-            # (cls.event_station_hack, 12),
-            (cls.event_zone_defence, 0),
+            (cls.event_comet_storm, 0),
+            (cls.event_mine_field, 0),
+            (cls.event_convoy_escort, 6),
+            (cls.event_battleship_defence, 6),
+            (cls.event_convoy_atack, 12),
+            (cls.event_station_hack, 12),
+            (cls.event_zone_defence, 18),
         ]
 
 

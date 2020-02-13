@@ -253,7 +253,7 @@ class Planet(Phenomenon):
         # else:
         if self.hitbox.colliderect(obj.hitbox):
             if obj.get_name() == "Player":
-                if slef.timer_trigger(60):
+                if self.timer_trigger(40):
                     obj.take_damage(1)
             try:
                 obj.gfx_hit()
@@ -347,12 +347,14 @@ class Defence_zone(Timer):
         self.loc = loc
         self.hitbox = pygame.Rect(0, 0, 300, 300)
         self.hitbox.center = loc
+        self.loc = loc
         self.kill = False
         self.flag = "player"
         self.gfx_idx = 16
         self.capture_counter = 0
         self.captured = False
         self.reset = True
+        self.zone_reset = True
 
     def hit(self, obj):
         if obj.get_name() == "Elites":
@@ -360,11 +362,22 @@ class Defence_zone(Timer):
                 if self.timer_key_trigger(5, key="capture"):
                     self.capture_counter += 1
                 if self.captured:
-                    if obj.zone_reset:
-                        obj.angles = angles_360(obj.speed)
-                        obj.checkpoints = obj.orig_check_points
-                        obj.move_pattern = [random.randint(0, 9) for _ in range(40)]
-                        obj.zone_reset = False
+                    if self.zone_reset:
+                        self.zone_reset = False
+                        for obj in [e for e in data.ENEMY_DATA if e.get_name() == "Elites"]:
+                            if obj.checkpoints[0] == self.loc:
+                                obj.angles = angles_360(obj.speed)
+                                if len(data.EVENTS.z_def_active_zones) == 0:
+                                    data.EVENTS.z_def_active_zones = [
+                                        z.loc for z in data.PHENOMENON_DATA if not z.captured
+                                    ]
+                                try:
+                                    obj.checkpoints = {
+                                        0: data.EVENTS.z_def_active_zones.pop(random.randint(0, len(data.EVENTS.z_def_active_zones) - 1))
+                                    }
+                                    obj.skills_lst.append(obj.skill_zone_capture)
+                                except (IndexError, ValueError):
+                                    pass
 
     def script(self):
         if self.capture_counter >= 100:

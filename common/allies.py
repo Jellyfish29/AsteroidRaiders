@@ -377,26 +377,37 @@ class Battlecruiser_ally(Battleship_allie):
         self.gfx_idx = (10, 11)
         self.hitable = False
         self.hide_healthbar = True
-        self.health = 30
+        self.health = 15
+        self.max_health = self.health
         self.angles = angles_360(3)
 
     def script(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         if Background.bg_move:
-            if self.hitbox.bottom >= self.target[1]:
-                self.gfx_idx = (12, 12)
-                self.angles = angles_360(0)
-                for loc in [
-                    (700, 200), (1000, 200), (1300, 200),
-                    (700, 500), (1300, 500),
-                    (700, 800), (1000, 800), (1300, 800)
-                ]:
-                    data.PHENOMENON_DATA.append(Defence_zone(loc))
-                Background.bg_move = False
+            if len(data.LEVELS.special_event_queue) == 0:
+                self.angles = angles_360(4)
+            else:
+                if not self.hitable:
+                    if self.hitbox.bottom >= self.target[1]:
+                        self.gfx_idx = (12, 12)
+                        self.angles = angles_360(0)
+                        for loc in [
+                            (700, 200), (1000, 200), (1300, 200),
+                            (700, 500), (1300, 500),
+                            (700, 800), (1000, 800), (1300, 800)
+                        ]:
+                            data.PHENOMENON_DATA.append(Defence_zone(loc))
+                        Background.bg_move = False
         else:
             if len([z for z in data.PHENOMENON_DATA if not z.captured]) == 0:
                 self.hitable = True
                 self.hide_healthbar = False
+                self.angles = angles_360(1)
+
+    def death(self):
+        data.EVENTS.z_def_bc_destroyed = True
+        self.gfx_hit()
+        self.kill = True
 
 
 data.ALLIE = Allied_entity
