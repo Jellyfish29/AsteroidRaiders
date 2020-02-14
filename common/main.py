@@ -63,7 +63,7 @@ def main():
 
     # Background Setup
     Background.update()
-    Background.bg_objs += [Background(y=0), Background(y=1000)]
+    Background.bg_objs += [Background(y=0), Background(y=1000), Background(y=-1000)]
 
     # Item Setup
     # Items.drop((winwidth / 2, 400), target=Item_star_fire((100, 100, 200)))
@@ -72,7 +72,7 @@ def main():
 
     # Interface Setup
     Interface.create()
-    Interface.main_menu(True)
+    # Interface.main_menu(True)
 
     # Enemy Setup
     Levels.spez_add()

@@ -373,7 +373,8 @@ class Defence_zone(Timer):
                                     ]
                                 try:
                                     obj.checkpoints = {
-                                        0: data.EVENTS.z_def_active_zones.pop(random.randint(0, len(data.EVENTS.z_def_active_zones) - 1))
+                                        0: data.EVENTS.z_def_active_zones.pop(
+                                            random.randint(0, len(data.EVENTS.z_def_active_zones) - 1))
                                     }
                                     obj.skills_lst.append(obj.skill_zone_capture)
                                 except (IndexError, ValueError):

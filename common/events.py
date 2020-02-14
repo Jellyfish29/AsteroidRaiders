@@ -267,7 +267,7 @@ class Events():
                     cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
                     cls.c_a_y = random.randint(300, 800)
                     timer.timer_key_delay(reset=True, key="c_spawn")
-                    if any([cls.convoy_attack_wave_counter == 3,
+                    if any([cls.convoy_attack_wave_counter == 2,
                             cls.convoy_attack_wave_counter == 4,
                             cls.convoy_attack_wave_counter == 5]):
                         Elites.spawn(drop=False)
@@ -377,7 +377,7 @@ class Events():
     @classmethod
     def zone_defence_reset_elites(cls):
         data.PHENOMENON_DATA.clear()
-        for elite in [e for e in data.ENEMY_DATA if e.get_name() == "Elites"]:
+        for elite in [e for e in data.ENEMY_DATA if isinstance(e, Elites)]:
             if len(elite.checkpoints) == 1:
                 elite.angles = angles_360(elite.speed)
                 elite.checkpoints = elite.orig_checkpoints
@@ -402,7 +402,7 @@ class Events():
             (cls.event_mine_field, 0),
             (cls.event_convoy_escort, 6),
             (cls.event_battleship_defence, 6),
-            (cls.event_convoy_atack, 12),
+            (cls.event_convoy_atack, 6),
             (cls.event_station_hack, 12),
             (cls.event_zone_defence, 18),
         ]

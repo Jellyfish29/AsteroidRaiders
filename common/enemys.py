@@ -621,15 +621,17 @@ class Convoy_ship_enemy(Shooter):
 
     def __init__(self, y):
         super().__init__()
+        self.x = random.randint(1950, 2050)
+        self.y = random.randint(-50, 50)
         self.gfx_idx = (11, 12)
-        self.spawn_points = [(2000, y)]
+        self.spawn_points = [(self.x, y + self.y)]
         self.spawn_point = 0
-        self.hitbox.center = (2000, y)
-        self.direction = degrees(-100, 2000, y, y)
+        self.hitbox.center = (self.x, y + self.y)
+        self.direction = degrees(-100, self.x, y + self.y, y + self.y)
         self.orig_direction = self.direction
-        self.target = (-100, y)
+        self.target = (-100, y + self.y)
         self.angles = angles_360(4)
-        self.health = Enemy.health + 7
+        self.health = Enemy.health + 10
         self.max_health = self.health
 
     # def move(self):

@@ -238,7 +238,7 @@ class Item_rail_gun(Active_Items):
         self.color = color
         self.flag = "rail_gun"
         self.base_effect = 4
-        self.cd_len = 600
+        self.cd_len = 300
         self.effect_strength = self.get_lvl_effects()[self.lvl]
         self.engage = False
 
