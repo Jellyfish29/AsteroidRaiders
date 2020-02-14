@@ -46,8 +46,8 @@ class Levels:
 
     @classmethod
     def scaling(cls):
-        data.ENEMY.health += 0.5
-        Elites.health += Elites.health * 0.1
+        data.ENEMY.health += 0.6
+        Elites.health += Elites.health * 0.12
         cls.event_trigger_time = (cls.event_trigger_time[0] - 60, cls.event_trigger_time[1] - 75)
         if cls.event_trigger_time[0] <= 200:
             cls.event_trigger_time = (200, 500)

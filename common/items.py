@@ -3,6 +3,7 @@ from pygame.locals import *
 import random
 
 from init import *
+from ui import *
 from astraid_funcs import *
 import astraid_data as data
 from Gfx import Gfx
@@ -58,6 +59,11 @@ class Items(Timer):
                 if slot is None:
                     self.hitbox.topleft = (Items.inv_grid_cords[idx][0] + 25, Items.inv_grid_cords[idx][1] + 25)
                     Items.inventory_dic[idx] = self
+                    Gui.add(Gui_image(
+                        loc=data.INTERFACE.item_slots[idx], flag=self.flag, img_idx=1, sprites=Gui.item_small_sprites))
+                    Gui.add(Gui_text(loc=(data.INTERFACE.item_slots[idx][0], data.INTERFACE.item_slots[idx][1] + 12),
+                                     text=lambda: Items.inventory_dic[idx].text if Items.inventory_dic[idx] is not None else f" "))
+
                     break
             else:
                 if any([isinstance(self, item) for item in Items.consumables]):
@@ -100,18 +106,18 @@ class Items(Timer):
         for item in Items.dropped_lst:
             if self != item:
                 if self.hitbox.colliderect(item.hitbox):
-                    self.hitbox.move_ip(random.choice([50, -50]), 0)
+                    self.hitbox.move_ip(random.choice([100, -100]), 0)
             for phenom in data.PHENOMENON_DATA:
                 if self.hitbox.colliderect(phenom.hitbox):
-                    self.hitbox.move_ip(random.choice([50, -50]), 0)
+                    self.hitbox.move_ip(random.choice([100, -100]), 0)
             if item.hitbox[0] < 0:
-                item.hitbox.center = (50, item.hitbox.center[1])
+                item.hitbox.center = (100, item.hitbox.center[1])
             elif item.hitbox[0] > winwidth:
-                item.hitbox.center = (winwidth - 50, item.hitbox.center[1])
+                item.hitbox.center = (winwidth - 100, item.hitbox.center[1])
             elif item.hitbox[1] < 0:
-                item.hitbox.center = (item.hitbox.center[1], 50)
-            elif item.hitbox[1] > winheight:
-                item.hitbox.center = (item.hitbox.center[1], winheight - 50)
+                item.hitbox.center = (item.hitbox.center[1], 100)
+            # elif item.hitbox[1] > winheight:
+            #     item.hitbox.center = (item.hitbox.center[1], winheight - 100)
 
     def decay(self):
         if not any([data.LEVELS.after_boss,

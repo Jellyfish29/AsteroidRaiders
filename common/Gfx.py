@@ -175,7 +175,7 @@ class Gfx(Timer):
     @classmethod
     def cursor(cls):
         rect = pygame.Rect(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], 0, 0)
-        win.blit(Gfx.cursor_sprites[2], (rect.topleft[0] - 9, rect.topleft[1] - 10))
+        win.blit(Gfx.cursor_sprites[2], (rect.topleft[0] - 25, rect.topleft[1] - 23))
 
     @classmethod
     def layer_1_update(cls):

@@ -1,4 +1,5 @@
 # from profilehooks import profile
+import pygame
 
 ENEMY_DATA = []
 ENEMY_PROJECTILE_DATA = []
@@ -7,6 +8,8 @@ PLAYER_DATA = []
 PLAYER_PROJECTILE_DATA = []
 
 PHENOMENON_DATA = []
+
+GUI_DATA = []
 
 PLAYER = None
 TURRET = None
@@ -108,17 +111,16 @@ def GAME_UPDATE():
                         if enemy.hitable:
                             enemy.take_damage(phenom.apply_damage())
 
-            # for pl_obj in PLAYER_DATA:
-            #     if pl_obj.hit(enemy):
-            #         if pl_obj.hitable:
-            #             pl_obj.kill = True
-            #         if enemy.hitable:
-            #             enemy.kill = True
-
         enemy.hit(PLAYER)
 
-        # for phenom in PHENOMENON_DATA:
-        #     if phenom.flag != "player":
-        #         if phenom.hit(pl_obj):
-        #             if phenom.hitable:
-        #                 pl_obj.take_damage(phenom.apply_damage())
+
+def GUI_UPDATE():
+
+    for gui_element in GUI_DATA:
+
+        if gui_element.kill:
+            GUI_DATA.remove(gui_element)
+        else:
+            gui_element.draw()
+            gui_element.tick()
+            gui_element.button()

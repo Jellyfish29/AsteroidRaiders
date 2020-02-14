@@ -4,19 +4,19 @@ import time
 import random
 
 
-class a(object):
-    """docstring for a"""
-
-    def __init__(self):
-        pass
+i = 0
 
 
-class b(a):
-    """docstring for b"""
+class off:
 
-    def __init__(self):
-        pass
+    def __init__(self, e):
+        self.e = e
+
+    def foo(self):
+        return self.e()
 
 
-for i in range(0, 0):
-    pass
+x = off(lambda: f"{i} ist cool")
+
+if callable(x.e):
+    print("foo")

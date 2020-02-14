@@ -10,3 +10,4 @@ fps = 60
 win = pygame.display.set_mode((winwidth, winheight), pygame.FULLSCREEN | pygame.DOUBLEBUF | pygame.HWSURFACE)
 # win = pygame.display.set_mode((winwidth, winheight), pygame.FULLSCREEN | pygame.HWSURFACE)
 # win = pygame.display.set_mode((winwidth, winheight))
+pygame.mouse.set_visible(False)

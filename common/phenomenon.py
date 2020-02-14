@@ -30,6 +30,8 @@ class Phenomenon(Timer):
     def move(self):
         self.hitbox.move_ip(0, self.speed)
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+
+    def decay_update(self):
         if self.decay is not None:
             if self.timer_trigger(self.decay):
                 self.kill = True
@@ -65,6 +67,7 @@ class Phenomenon(Timer):
     def tick(self):
         if Background.bg_move:
             self.move()
+        self.decay_update()
         self.gfx_draw()
         self.border_collision()
         self.player_collision()

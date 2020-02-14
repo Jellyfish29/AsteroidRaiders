@@ -5,6 +5,7 @@ from init import *
 from astraid_funcs import *
 import astraid_data as data
 from interface import *
+from interface_new import *
 from player import *
 from turret import *
 from enemys import *
@@ -19,6 +20,7 @@ from items_passive import *
 from items_misc import *
 from phenomenon import *
 from bosses_def import *
+from ui import *
 
 from profilehooks import profile
 
@@ -29,11 +31,13 @@ def test_mode():
     Levels.events_disabled = True
     Levels.scaling()
     Levels.display_score += 400
-    Player.health += 40000
+    # Player.health += 40000
     Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
     Levels.execute_special_event()
+    Player.health = 20
+    Player.max_health = 20
     # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
@@ -41,8 +45,6 @@ def test_mode():
 
 # @profile
 def main():
-
-    # Player.health += 40000
 
     right, left, up, down = [False, False, False, False]
 
@@ -54,7 +56,7 @@ def main():
         else:
             Player.move(str_3)
 
-    components = [Player, Turret, Enemy, Phenomenon, Interface, Levels, Items]
+    components = [Player, Turret, Enemy, Phenomenon, Levels, Items]  # Interface,
 
     # @profile
     def components_update():
@@ -71,7 +73,8 @@ def main():
     Levels.after_boss = True
 
     # Interface Setup
-    Interface.create()
+    # Interface.create()
+    Interface_new.create()
     # Interface.main_menu(True)
 
     # Enemy Setup
@@ -91,6 +94,10 @@ def main():
         components_update()
 
         Gfx.layer_1_update()
+
+        data.GUI_UPDATE()
+
+        Interface_new.update()
 
         for event in pygame.event.get():
 

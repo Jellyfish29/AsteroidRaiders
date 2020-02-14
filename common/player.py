@@ -21,6 +21,7 @@ class Player:
     raw_max_health = max_health
     heal_amount = 1
     health_limit = 20
+    heal_strenght = 3
     hitable = True
     # Movement
     speed = 6
