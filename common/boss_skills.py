@@ -242,7 +242,6 @@ class Boss_skills(Timer):
                     self.dart_salvo_start_point = iter(
                         [i for i in range(0, self.size[1], int(self.size[1] / 5))]
                     )
-                    print(self.timer_calls_per_tick)
                     self.timer_key_delay(reset=True, key="darts")
                 else:
                     data.ENEMY_PROJECTILE_DATA.append(Impactor(
@@ -437,7 +436,6 @@ class Boss_skills(Timer):
                         self.dart_salvo_start_point = iter(
                             [i for i in range(0, self.size[1], int(self.size[1] / self.dart_missiles))]
                         )
-                        print(self.timer_calls_per_tick)
                         self.timer_key_delay(reset=True, key="darts2")
                     else:
                         data.ENEMY_PROJECTILE_DATA.append(Impactor(

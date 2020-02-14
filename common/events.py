@@ -241,7 +241,7 @@ class Events():
 
     @classmethod
     @timer
-    def event_convoy_atack(cls, timer):
+    def event_convoy_attack(cls, timer):
         cls.set_bg_color()
         if cls.convoy_attack_set_up:
             Background.bg_move = False
@@ -402,7 +402,7 @@ class Events():
             (cls.event_mine_field, 0),
             (cls.event_convoy_escort, 6),
             (cls.event_battleship_defence, 6),
-            (cls.event_convoy_atack, 6),
+            (cls.event_convoy_attack, 6),
             (cls.event_station_hack, 12),
             (cls.event_zone_defence, 18),
         ]

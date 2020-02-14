@@ -224,8 +224,10 @@ def main():
                     ]:
                         if con:
                             Player.move(cmd)
+
             elif event.type == MOUSEBUTTONUP:
                 Turret.fire(False)
+
             elif event.type == QUIT:
                 pygame.quit()
                 exit()
