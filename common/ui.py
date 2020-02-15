@@ -30,18 +30,20 @@ class Gui(Timer):
         60: pygame.font.SysFont("Consolas", 60),
     }
 
-    def __init__(self, loc=(0, 0), anchor=None, anchor_x=0, anchor_y=0, flag=""):
+    def __init__(self, loc=(0, 0), anchor=None, anchor_x=0, anchor_y=0, flag="", decay=None):
         self.loc = loc
         self.x_loc = loc[0]
         self.y_loc = loc[1]
         self.anchor = anchor
         self.anchor_x = anchor_x
         self.anchor_y = anchor_y
-        if self.anchor is not None:
-            self.loc = self.anchor
         self.flag = "standart_gui"
+        self.decay = decay
         self.kill = False
         Timer.__init__(self)
+
+    def draw(self):
+        pass
 
     def button(self):
         pass
@@ -50,7 +52,12 @@ class Gui(Timer):
         self.kill = True
 
     def tick(self):
+        if self.decay is not None:
+            if self.timer_trigger(self.decay):
+                self.kill = True
         self.timer_tick()
+        self.draw()
+        self.button()
 
     @classmethod
     def add(cls, element):
@@ -70,16 +77,15 @@ class Gui_text(Gui):
         text=" ",
         text_size=25,
         text_color=(189, 233, 193),  # bde9c1
-        end_text=" ",
         anchor=None,
         anchor_x=0,
-        anchor_y=0
+        anchor_y=0,
+        decay=None
     ):
-        super().__init__(loc, anchor, anchor_x, anchor_y, flag)
+        super().__init__(loc, anchor, anchor_x, anchor_y, flag, decay)
         self.text = text
         self.text_size = text_size
         self.text_color = text_color
-        self.end_text = end_text
         if not callable(self.text):
             self.render_text = Gui.fonts[self.text_size].render(self.text, True, self.text_color)
 
@@ -87,6 +93,9 @@ class Gui_text(Gui):
         return self.text()
 
     def draw(self):
+        if self.anchor is not None:
+            self.loc = self.anchor.topleft
+
         if callable(self.text):
             self.render_text = Gui.fonts[self.text_size].render(
                 self._get_text(), True, self.text_color)
@@ -105,9 +114,10 @@ class Gui_image(Gui):
         anchor=None,
         anchor_x=0,
         anchor_y=0,
-        animation_interval=None
+        animation_interval=None,
+        decay=None
     ):
-        super().__init__(loc, anchor, anchor_x, anchor_y, flag)
+        super().__init__(loc, anchor, anchor_x, anchor_y, flag, decay)
         self.img_idx = img_idx
         self.sprites = sprites
         self.animation_interval = animation_interval
@@ -115,6 +125,9 @@ class Gui_image(Gui):
             self.img_idx = (self.img_idx, 0)
 
     def draw(self):
+        if self.anchor is not None:
+            self.loc = self.anchor.topleft
+
         if self.animation_interval is None:
             win.blit(self.sprites[self.img_idx],
                      (self.loc[0] + self.anchor_x, self.loc[1] + self.anchor_y))

@@ -8,7 +8,7 @@ from init import *
 class Item_auto_repair(Items):
 
     def __init__(self, color):
-        super().__init__("Repair Drones (passiv)", "Drones passively repair the Ship over time", (10, 11))
+        super().__init__("Repair Drones (passiv)", "Drones passively repair the Ship over time", (6, 8))
         self.color = color
         self.flag = "auto_repair"
         self.base_effect = 3000
@@ -29,7 +29,7 @@ class Item_auto_repair(Items):
 class Item_damage_core(Items):
 
     def __init__(self, color):
-        super().__init__("Damage Core (passiv)", "Massivily increases Weapon Damage", (12, 13))
+        super().__init__("Damage Core (passiv)", "Massivily increases Weapon Damage", (7, 9))
         self.color = color
         self.flag = "damage_core"
         self.base_effect = 1.4
@@ -52,7 +52,7 @@ class Item_damage_core(Items):
 class Item_ablativ_armor(Items):
 
     def __init__(self, color):
-        super().__init__("Ablativ Armor (passiv)", "Massivily increases Ship Strength", (14, 15))
+        super().__init__("Ablativ Armor (passiv)", "Massivily increases Ship Strength", (8, 10))
         self.color = color
         self.flag = "ablativ_armor"
         self.base_effect = 10
@@ -75,7 +75,7 @@ class Item_ablativ_armor(Items):
 class Item_engine_core(Items):
 
     def __init__(self, color):
-        super().__init__("Engine Core (passiv)", "Massivily increases Ship Speed", (16, 17))
+        super().__init__("Engine Core (passiv)", "Massivily increases Ship Speed", (9, 11))
         self.color = color
         self.flag = "engine_core"
         self.base_effect = 5
@@ -98,7 +98,7 @@ class Item_engine_core(Items):
 class Item_ammo_racks(Items):
 
     def __init__(self, color):
-        super().__init__("Ammo Racks (passiv)", "Reduces all Cooldowns by 30 %", (18, 19))
+        super().__init__("Ammo Racks (passiv)", "Reduces all Cooldowns by 30 %", (10, 12))
         self.color = color
         self.flag = "ammo_racks"
         self.base_effect = 0.3
@@ -121,7 +121,7 @@ class Item_ammo_racks(Items):
 class Item_improved_feeding(Items):
 
     def __init__(self, color):
-        super().__init__("Improved Ammo Feeding System (passiv)", "Increases Fire Rate", (20, 21))
+        super().__init__("Improved Ammo Feeding System (passiv)", "Increases Fire Rate", (11, 13))
         self.color = color
         self.flag = "improved_feeding"
         self.base_effect = 0.5
@@ -141,33 +141,10 @@ class Item_improved_feeding(Items):
             data.TURRET.set_fire_rate(-(data.TURRET.base_fire_rate * self.get_lvl_effects(reverse=True)[self.lvl]))
 
 
-class Item_targeting_scanner(Items):
-
-    def __init__(self, color):
-        super().__init__("Improved Targeting Scanner (passiv)", "Increases Crit Chance", (40, 40))
-        self.color = color
-        self.flag = "targeting_scanner"
-        self.base_effect = 25
-        # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "Shots/s")
-
-    def get_upgrade_desc(self):
-        return f"Bonus Crit Chance: {int(self.get_lvl_effects(reverse=True)[self.lvl])}%"
-
-    def effect(self):
-        if self.flag not in Items.active_flag_lst:
-            Items.active_flag_lst.append(self.flag)
-            data.PLAYER.set_player_crit_chance(int(self.get_lvl_effects(reverse=True)[self.lvl]))
-
-    def end_effect(self):
-        if self.flag in Items.active_flag_lst:
-            Items.active_flag_lst.remove(self.flag)
-            data.PLAYER.set_player_crit_chance(-int(self.get_lvl_effects(reverse=True)[self.lvl]))
-
-
 class Item_hyper_shields(Items):
 
     def __init__(self, color):
-        super().__init__("Hyper Shields (passiv)", "Massivliy Increases Shield Duration", (22, 23))
+        super().__init__("Hyper Shields (passiv)", "Massivliy Increases Shield Duration", (12, 14))
         self.color = color
         self.flag = "hyper_shields"
         self.base_effect = 4
@@ -192,7 +169,7 @@ class Item_hyper_shields(Items):
 class Item_fan_shot(Items):
 
     def __init__(self, color):
-        super().__init__("MULTI Cannon (shot mod)", "Fires 2 extra shots every 4 shots", (28, 29))
+        super().__init__("MULTI Cannon (shot mod)", "Fires 2 extra shots every 4 shots", (15, 17))
         self.color = color
         self.flag = "fan_shot"
         self.base_effect = 6
@@ -209,7 +186,7 @@ class Item_fan_shot(Items):
 class Item_hammer_shot(Items):
 
     def __init__(self, color):
-        super().__init__("HAMMER Cannon (shot mod)", "Every 5th shot deals increased Damage", (30, 31))
+        super().__init__("HAMMER Cannon (shot mod)", "Every 5th shot deals increased Damage", (16, 18))
         self.color = color
         self.flag = "hammer_shot"
         self.base_effect = 15
@@ -226,7 +203,7 @@ class Item_hammer_shot(Items):
 class Item_hyper_velocity_rounds(Items):
 
     def __init__(self, color):
-        super().__init__("Hyper Velocity Rounds (shot mod)", "Increases Projectile Speed and Damage", (34, 35))
+        super().__init__("Hyper Velocity Rounds (shot mod)", "Increases Projectile Speed and Damage", (18, 20))
         self.color = color
         self.flag = "hyper_vel_rounds"
         self.base_effect = 1
@@ -251,7 +228,7 @@ class Item_hyper_velocity_rounds(Items):
 class Item_overdrive(Items):
 
     def __init__(self, color):
-        super().__init__("Weapons system Overdrive (passive)", "Every Kill increases Damage and Fire Rate until taking Damage", (36, 37))
+        super().__init__("Weapons system Overdrive (passive)", "Every Kill increases Damage and Fire Rate until taking Damage", (19, 21))
         self.color = color
         self.flag = "overdrive"
         self.base_effect = 30
@@ -273,6 +250,29 @@ class Item_overdrive(Items):
             Items.active_flag_lst.remove(self.flag)
 
 
+class Item_targeting_scanner(Items):
+
+    def __init__(self, color):
+        super().__init__("Improved Targeting Scanner (passiv)", "Increases Crit Chance", (1, 1))
+        self.color = color
+        self.flag = "targeting_scanner"
+        self.base_effect = 25
+        # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "Shots/s")
+
+    def get_upgrade_desc(self):
+        return f"Bonus Crit Chance: {int(self.get_lvl_effects(reverse=True)[self.lvl])}%"
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+            Items.active_flag_lst.append(self.flag)
+            data.PLAYER.set_player_crit_chance(int(self.get_lvl_effects(reverse=True)[self.lvl]))
+
+    def end_effect(self):
+        if self.flag in Items.active_flag_lst:
+            Items.active_flag_lst.remove(self.flag)
+            data.PLAYER.set_player_crit_chance(-int(self.get_lvl_effects(reverse=True)[self.lvl]))
+
+
 Items.set_drop_table([
     (Item_auto_repair, (255, 0, 0)),
     (Item_targeting_scanner, (0, 0, 0)),
@@ -285,5 +285,5 @@ Items.set_drop_table([
     (Item_fan_shot, (12, 64, 1)),
     (Item_hammer_shot, (99, 140, 3)),
     (Item_hyper_velocity_rounds, (1, 169, 201)),
-    (Item_overdrive, (89, 1, 37)),
+    # (Item_overdrive, (89, 1, 37)),
 ])

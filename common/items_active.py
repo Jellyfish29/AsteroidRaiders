@@ -1,5 +1,6 @@
 from items import Active_Items, Items
 from Gfx import Gfx
+from ui import Gui, Gui_image, Gui_text
 import astraid_data as data
 from astraid_funcs import *
 from init import *
@@ -8,7 +9,7 @@ from init import *
 class Item_pd(Active_Items):
 
     def __init__(self, color, start=False):
-        super().__init__(color, "Pointdefence (active)", "shoots down incoming enemy weapons", (4, 5))
+        super().__init__(color, "Pointdefence (active)", "shoots down incoming enemy weapons", (3, 5))
         self.color = color
         self.flag = "point_defence"
         self.cd_len = 2000
@@ -27,13 +28,13 @@ class Item_pd(Active_Items):
 class Item_missile(Active_Items):
 
     def __init__(self, color):
-        super().__init__(color, "Heat seeking Missiles (acive)", "Fires two heat seeking Missile at the Target", (6, 7))
+        super().__init__(color, "Heat seeking Missiles (acive)", "Fires two heat seeking Missile at the Target", (4, 6))
         self.color = color
         self.flag = "missile"
         self.base_effect = 6  # cooldown time
         self.cd_len = 300
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
-        self.active_time = 1
+        self.active_time = None
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
 
     def get_upgrade_desc(self):
@@ -46,7 +47,7 @@ class Item_missile(Active_Items):
 class Item_nuke(Active_Items):
 
     def __init__(self, color):
-        super().__init__(color, "Nuclear Warhead (active)", "Fires a 45 Megaton nuclear Warhead", (2, 3))
+        super().__init__(color, "Nuclear Warhead (active)", "Fires a 45 Megaton nuclear Warhead", (2, 4))
         self.color = color
         self.flag = "nuke"
         self.base_effect = 5400  # cooldown time
@@ -68,7 +69,7 @@ class Item_nuke(Active_Items):
 class Item_he_rounds(Active_Items):
 
     def __init__(self, color, start=False):
-        super().__init__(color, "HE Rounds (active)", "On Activation fires Powerful HE Rounds that explode on impact", (8, 9))
+        super().__init__(color, "HE Rounds (active)", "On Activation fires Powerful HE Rounds that explode on impact", (5, 7))
         self.color = color
         self.flag = "he_rounds"
         self.cd_len = 1800
@@ -86,7 +87,7 @@ class Item_he_rounds(Active_Items):
 class Item_piercing_shot(Active_Items):
 
     def __init__(self, color):
-        super().__init__(color, "Hyper Penetrator rounds (active)", "Rounds pierce the target and deal damge depending on traveltime", (32, 33))
+        super().__init__(color, "Hyper Penetrator rounds (active)", "Rounds pierce the target and deal damge depending on traveltime", (17, 19))
         self.color = color
         self.flag = "piercing_shot"
         self.base_effect = 1.5
@@ -104,7 +105,7 @@ class Item_piercing_shot(Active_Items):
 class Item_rapid_fire(Active_Items):
 
     def __init__(self, color):
-        super().__init__(color, "Rapid Fire (active)", "On Activation massivly increases Fire Rate", (41, 42))
+        super().__init__(color, "Rapid Fire (active)", "On Activation massivly increases Fire Rate", (20, 22))
         self.color = color
         self.flag = "rapid_fire"
         self.base_effect = 3600   # cooldown time
@@ -124,7 +125,7 @@ class Item_rapid_fire(Active_Items):
 class Item_star_fire(Active_Items):
 
     def __init__(self, color, start=False):
-        super().__init__(color, "Star Fire (active)", "On Activation the ship fire from additional fixed tubes", (43, 44))
+        super().__init__(color, "Star Fire (active)", "On Activation the ship fire from additional fixed tubes", (21, 23))
         self.color = color
         self.flag = "star_fire"
         self.base_effect = 3600  # cooldwon time
@@ -144,7 +145,7 @@ class Item_star_fire(Active_Items):
 class Item_burst_fire(Active_Items):
 
     def __init__(self, color):
-        super().__init__(color, "Burst Fire (active)", "Fires a short Burst at the target location", (40, 40))
+        super().__init__(color, "Burst Fire (active)", "Fires a short Burst at the target location", (1, 1))
         self.color = color
         self.flag = "burst_fire"
         self.base_effect = 10
@@ -161,7 +162,7 @@ class Item_burst_fire(Active_Items):
 class Item_scatter_fire(Active_Items):
 
     def __init__(self, color):
-        super().__init__(color, "Scatter Fire (active)", "Fires a scattered Burst at the target location", (40, 40))
+        super().__init__(color, "Scatter Fire (active)", "Fires a scattered Burst at the target location", (1, 1))
         self.color = color
         self.flag = "scatter_fire"
         self.base_effect = 4
@@ -178,7 +179,7 @@ class Item_scatter_fire(Active_Items):
 class Item_fragmentation_rounds(Active_Items):
 
     def __init__(self, color, start=False):
-        super().__init__(color, "Fragmentation Rounds (active)", "On Activation fires Powerful Frag Rounds that fragment on impact", (40, 40))
+        super().__init__(color, "Fragmentation Rounds (active)", "On Activation fires Powerful Frag Rounds that fragment on impact", (1, 1))
         self.color = color
         self.flag = "frag_rounds"
         self.cd_len = 1200
@@ -196,7 +197,7 @@ class Item_fragmentation_rounds(Active_Items):
 class Item_gravity_bomb(Active_Items):
 
     def __init__(self, color, start=False):
-        super().__init__(color, "Gravity Bomb (active)", "Fires a Missile that upon Impact slows all Object in its Radius", (40, 40))
+        super().__init__(color, "Gravity Bomb (active)", "Fires a Missile that upon Impact slows all Object in its Radius", (1, 1))
         self.color = color
         self.flag = "gravity_bomb"
         self.base_effect = 3600  # cooldwon time
@@ -215,7 +216,7 @@ class Item_gravity_bomb(Active_Items):
 class Item_black_hole_bomb(Active_Items):
 
     def __init__(self, color, start=False):
-        super().__init__(color, "Balck Hole Bomb (active)", "Fires a Missile that upon Impact creates a micro singularity", (40, 40))
+        super().__init__(color, "Balck Hole Bomb (active)", "Fires a Missile that upon Impact creates a micro singularity", (1, 1))
         self.color = color
         self.flag = "black_hole_bomb"
         self.base_effect = 2700  # cooldwon time
@@ -234,7 +235,7 @@ class Item_black_hole_bomb(Active_Items):
 class Item_rail_gun(Active_Items):
 
     def __init__(self, color, start=False):
-        super().__init__(color, "Rail Gun (active)", "Drains Energy from the Ship to Fire One massive Rail Gun Round", (40, 40))
+        super().__init__(color, "Rail Gun (active)", "Drains Energy from the Ship to Fire One massive Rail Gun Round", (1, 1))
         self.color = color
         self.flag = "rail_gun"
         self.base_effect = 4
@@ -258,7 +259,7 @@ class Item_rail_gun(Active_Items):
 class Item_jump_drive(Active_Items):
 
     def __init__(self, color):
-        super().__init__(color, "Jump Drive (active)", "Jumps the ship to the marked location", (0, 1))
+        super().__init__(color, "Jump Drive (active)", "Jumps the ship to the marked location", (0, 0))
         self.color = color
         self.flag = "jump_drive"
         self.base_effect = 600  # cooldown time
@@ -274,7 +275,7 @@ class Item_jump_drive(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
     def get_active_str(self):
-        return "Charging"
+        return " " #"Charging"
 
     def get_inventory_key(self):
         return 0
@@ -289,7 +290,7 @@ class Item_jump_drive(Active_Items):
 class Item_shield(Active_Items):
 
     def __init__(self, color, start=False):
-        super().__init__(color, "Shield", f"Shields the ship from hits", (40, 40))
+        super().__init__(color, "Shield", f"Shields the ship from hits", (0, 0))
         self.color = color
         self.flag = "shield"
         self.lvl = 0
@@ -308,7 +309,7 @@ class Item_shield(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
     def get_active_str(self):
-        return str(data.PLAYER.shield_strength)
+        return " "#str(data.PLAYER.shield_strength)
 
     def get_inventory_key(self):
         return 0
@@ -320,7 +321,7 @@ class Item_shield(Active_Items):
 class Item_afterburner(Active_Items):
 
     def __init__(self, color, start=False):
-        super().__init__(color, "Afterburner", f"A short speedboost in the current direction", (40, 40))
+        super().__init__(color, "Afterburner", f"A short speedboost in the current direction", (0, 0))
         self.color = color
         self.flag = "afterburner"
         self.lvl = 3

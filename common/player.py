@@ -4,6 +4,7 @@ from pygame.locals import *
 from init import *
 from astraid_funcs import *
 from Gfx import Gfx, Background
+from ui import *
 import astraid_data as data
 from projectiles import Projectile, Missile
 from items_active import Item_shield, Item_jump_drive, Item_afterburner

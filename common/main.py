@@ -31,8 +31,8 @@ def test_mode():
     Levels.events_disabled = True
     Levels.scaling()
     Levels.display_score += 400
-    # Player.health += 40000
-    Player.damage += 10
+    Player.health += 40000
+    Player.damage += 102
     Items.upgrade_points += 400
     Levels.skill_points += 100
     Levels.execute_special_event()
@@ -43,7 +43,7 @@ def test_mode():
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
 
 
-# @profile
+@profile
 def main():
 
     right, left, up, down = [False, False, False, False]
@@ -68,7 +68,7 @@ def main():
     Background.bg_objs += [Background(y=0), Background(y=1000), Background(y=-1000)]
 
     # Item Setup
-    # Items.drop((winwidth / 2, 400), target=Item_star_fire((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_pd((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
 
@@ -128,24 +128,29 @@ def main():
                     Player.shield.toggle()
                     Player.shield.activation_effect()
 
-                elif event.key == K_r:
+                elif event.key == K_q:
                     try:
                         Items.inventory_dic[0].toggle()
                         Items.inventory_dic[0].activation_effect()
                     except AttributeError:
                         pass  # Fehlersound
-
-                elif event.key == K_f:
+                elif event.key == K_e:
                     try:
                         Items.inventory_dic[1].toggle()
                         Items.inventory_dic[1].activation_effect()
                     except AttributeError:
                         pass
-
-                elif event.key == K_e:
+                elif event.key == K_r:
                     try:
                         Items.inventory_dic[2].toggle()
                         Items.inventory_dic[2].activation_effect()
+                    except AttributeError:
+                        pass  # Fehlersound
+
+                elif event.key == K_f:
+                    try:
+                        Items.inventory_dic[3].toggle()
+                        Items.inventory_dic[3].activation_effect()
                     except AttributeError:
                         pass
 
@@ -189,21 +194,27 @@ def main():
                 elif event.key == K_a:
                     left = False
 
-                elif event.key == K_r:
+                elif event.key == K_q:
                     try:
                         Items.inventory_dic[0].end_activation()
                     except AttributeError:
                         pass
 
-                elif event.key == K_f:
+                elif event.key == K_e:
                     try:
                         Items.inventory_dic[1].end_activation()
                     except AttributeError:
                         pass
 
-                elif event.key == K_e:
+                elif event.key == K_r:
                     try:
                         Items.inventory_dic[2].end_activation()
+                    except AttributeError:
+                        pass
+
+                elif event.key == K_f:
+                    try:
+                        Items.inventory_dic[3].end_activation()
                     except AttributeError:
                         pass
 
@@ -239,7 +250,6 @@ def main():
                 pygame.quit()
                 exit()
 
-        Gfx.cursor()
         Clock.tick(fps)
         pygame.display.update()
         # pygame.display.flip()

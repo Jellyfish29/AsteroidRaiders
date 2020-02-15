@@ -8,7 +8,7 @@ from init import *
 class Item_supply_crate(Items):
 
     def __init__(self, color, level=None):
-        super().__init__("Supply Container", "Provides New Supplies", (38, 38))
+        super().__init__("Supply Container", "Provides New Supplies", (24, 0))
         self.color = color
         self.flag = "supply_con"
         self.base_effect = 6
@@ -34,7 +34,7 @@ class Item_supply_crate(Items):
 class Item_upgrade_point_crate(Items):
 
     def __init__(self, color, level=None):
-        super().__init__("Scrap", "Used to updgrade Items", (49, 49))
+        super().__init__("Scrap", "Used to updgrade Items", (22, 0))
         self.color = color
         self.flag = "upgrade_con"
         self.base_effect = 4
@@ -60,7 +60,7 @@ class Item_upgrade_point_crate(Items):
 class Item_heal_crate(Items):
 
     def __init__(self, color, level=None):
-        super().__init__("Spare Part Container", "Spare Parts to restore the Ship to full Strength", (39, 39))
+        super().__init__("Spare Part Container", "Spare Parts to restore the Ship to full Strength", (23, 0))
         self.color = color
         self.flag = "heal_con"
         self.base_effect = 4

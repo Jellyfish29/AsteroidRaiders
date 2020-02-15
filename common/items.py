@@ -12,11 +12,12 @@ from Gfx import Gfx
 class Items(Timer):
 
     dropped_lst = []
-    inventory_dic = {0: None, 1: None, 2: None, 3: None, 4: None, 5: None}
-    inv_grid_cords = [(200, 300), (350, 300), (500, 300), (200, 500), (350, 500), (500, 500)]
+    # inventory_dic = {0: None, 1: None, 2: None, 3: None, 4: None, 5: None}
+    inventory_dic = {i: None for i in range(8)}
+    inv_grid_cords = [(200, 300), (350, 300), (500, 300), (200, 500), (350, 500), (500, 500), (0, 0), (0, 0)]
     active_flag_lst = []
     drop_table = []
-    icon_sprites = get_images("items")
+    icon_sprites = get_images("gui_items_icon_large")
     lvl_sprites = get_images("item_lvl")
     tt_delay = 15
     font_20 = pygame.font.SysFont("arial", 20, 10)
@@ -50,26 +51,42 @@ class Items(Timer):
         self.effect()
 
     def add_to_inventory(self, dropped=False):
+        """BIGGO OOF"""
         if self.hitbox.colliderect(data.PLAYER.hitbox) or dropped:
             try:
                 Items.dropped_lst.remove(self)
             except ValueError:
                 pass
             for idx, slot in Items.inventory_dic.items():
-                if slot is None:
-                    self.hitbox.topleft = (Items.inv_grid_cords[idx][0] + 25, Items.inv_grid_cords[idx][1] + 25)
-                    Items.inventory_dic[idx] = self
-                    Gui.add(Gui_image(
-                        loc=data.INTERFACE.item_slots[idx], flag=self.flag, img_idx=1, sprites=Gui.item_small_sprites))
-                    Gui.add(Gui_text(loc=(data.INTERFACE.item_slots[idx][0], data.INTERFACE.item_slots[idx][1] + 12),
-                                     text=lambda: Items.inventory_dic[idx].text if Items.inventory_dic[idx] is not None else f" "))
+                if idx < 4 and issubclass(self.__class__, Active_Items):
+                    if slot is None:
+                        self.hitbox.topleft = (Items.inv_grid_cords[idx][0] + 25, Items.inv_grid_cords[idx][1] + 25)
+                        Items.inventory_dic[idx] = self
+                        self.add_ui_elements(idx)
 
-                    break
+                        break
+                elif idx >= 4 and not issubclass(self.__class__, Active_Items):
+                    if slot is None:
+                        self.hitbox.topleft = (Items.inv_grid_cords[idx][0] + 25, Items.inv_grid_cords[idx][1] + 25)
+                        Items.inventory_dic[idx] = self
+                        self.add_ui_elements(idx)
+
+                        break
+
             else:
                 if any([isinstance(self, item) for item in Items.consumables]):
                     self.effect()
                 else:
                     Items.dropped_lst.append(self)
+
+    def add_ui_elements(self, idx):
+        data.INTERFACE.inventory[idx].append(Gui_image(
+            loc=data.INTERFACE.item_slots[idx], flag=self.flag,
+            img_idx=self.gfx_idx[1], sprites=Gui.item_small_sprites))
+
+        data.INTERFACE.inventory[idx].append(Gui_text(
+            loc=(data.INTERFACE.item_slots[idx][0] + 15, data.INTERFACE.item_slots[idx][1] + 12),
+            text=lambda: Items.inventory_dic[idx].text if Items.inventory_dic[idx] is not None else f" "))
 
     def remove_from_inventory(self, key):
         self.hitbox.center = (data.PLAYER.hitbox.center[0], data.PLAYER.hitbox.center[1] + 100)
@@ -142,20 +159,23 @@ class Items(Timer):
         if self.hitbox.collidepoint(pygame.mouse.get_pos()):
             if self.timer_key_delay(limit=Items.tt_delay, key=self.flag + "tt"):
                 # Name
-                win.blit(Items.font_20.render(self.item_name, True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1]))
+                win.blit(Gui.fonts[20].render(self.item_name, True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1]))
                 # Desc
-                win.blit(Items.font_15.render(self.discription, True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 30))
+                win.blit(Gui.fonts[15].render(self.discription, True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 30))
                 # level
-                win.blit(Items.font_15.render(f"Item Level: {self.lvl + 1}/4  Cost: {self.upgrade_cost_base[self.lvl]}", True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 55))
+                win.blit(Gui.fonts[15].render(f"Item Level: {self.lvl + 1}/4  Cost: {self.upgrade_cost_base[self.lvl]}", True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 55))
                 # lvl_effect
-                win.blit(Items.font_15.render(self.get_upgrade_desc(), True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 75))
+                win.blit(Gui.fonts[15].render(self.get_upgrade_desc(), True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 75))
         else:
             self.timer_key_delay(key=self.flag + "tt", reset=True)
 
     def gfx_draw(self):
         if self.lvl is not None:
-            win.blit(Items.lvl_sprites[self.lvl], (self.hitbox.topleft[0] - 26, self.hitbox.topleft[1] - 25))
-        win.blit(Items.icon_sprites[self.gfx_idx[1]], (self.hitbox.topleft[0] - 10, self.hitbox.topleft[1] - 10))
+            if any([self.flag == "supply_con", self.flag == "upgrade_con", self.flag == "heal_con"]):
+                win.blit(Items.lvl_sprites[self.lvl + 5], (self.hitbox.topleft[0] - 10, self.hitbox.topleft[1] - 10))
+            else:
+                win.blit(Items.lvl_sprites[self.lvl + 1], (self.hitbox.topleft[0] - 10, self.hitbox.topleft[1] - 10))
+        win.blit(Items.icon_sprites[self.gfx_idx[0]], (self.hitbox.topleft[0] - 10, self.hitbox.topleft[1] - 10))
 
     def get_lvl_effects(self, reverse=False):
         effects = [self.base_effect * (i / 100) for i in (100, 80, 65, 45)]
@@ -285,13 +305,14 @@ class Active_Items(Items):
         self.active = False
         self.cooldown = False
         self.cd_len = 0
-        self.text = "/"
+        self.text = " "
         self.active_time = None
         self.effect_name = None
         self.engage = False
+        self.set_cd_img = False
 
     def effect(self):
-        if self.get_inventory_key() < 3:
+        if self.get_inventory_key() < 4:
             if self.flag not in Items.active_flag_lst:
                 Items.active_flag_lst.append(self.flag)
 
@@ -306,13 +327,14 @@ class Active_Items(Items):
                 if self.timer_key_trigger(self.get_cd_len(), key="cd"):
                     self.cooldown = False
 
-                self.text = self.get_cd_str() + "s"
+                self.text = self.get_cd_str()
 
             else:
-                self.text = self.get_key_str()
+                pass
+                self.text = " "  # self.get_key_str()
         else:
             self.end_effect()
-            self.text = "/"
+            self.text = " "
 
         self.timer_tick()
 
@@ -324,6 +346,7 @@ class Active_Items(Items):
     def end_active(self):
         if self.active:
             self.cooldown = True
+            self.set_cd_img = True
         if self.engage:
             self.engage = False
         self.active = False
@@ -331,6 +354,7 @@ class Active_Items(Items):
     def toggle(self):
         if not self.active and not self.cooldown:
             self.active = True
+            self.set_cd_img = True
 
     def activation_effect(self):
         if self.effect_name is not None:

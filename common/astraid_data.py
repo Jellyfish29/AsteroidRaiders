@@ -121,6 +121,4 @@ def GUI_UPDATE():
         if gui_element.kill:
             GUI_DATA.remove(gui_element)
         else:
-            gui_element.draw()
             gui_element.tick()
-            gui_element.button()

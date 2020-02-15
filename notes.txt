@@ -52,6 +52,7 @@ TODO:
     - #Spez neu
     - Mehr Planeten mit untershiedlichen Größen
     - Player ship neu
+        - Je stärker man wird desto mehr Turrets
     - Boss Instance background effekte
     - Event Effekte
 - Interface

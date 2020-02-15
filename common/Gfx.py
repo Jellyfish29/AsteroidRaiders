@@ -11,7 +11,6 @@ class Gfx(Timer):
     gfx_layer_2_lst = []
     gfx_layer_3_lst = []
     effect_sprites = get_images("effects")
-    cursor_sprites = get_images("cursor")
     explosion_sprites = get_images("explosions")
     gun_sprites = get_images("guns")
     font = pygame.font.SysFont("arial", 20)
@@ -171,11 +170,6 @@ class Gfx(Timer):
             Gfx.gfx_layer_1_lst.append(
                 Gfx(typ, interval, anchor, hover, follow, x, y, text, text_color, explo, pl_shield, rot)
             )
-
-    @classmethod
-    def cursor(cls):
-        rect = pygame.Rect(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], 0, 0)
-        win.blit(Gfx.cursor_sprites[2], (rect.topleft[0] - 25, rect.topleft[1] - 23))
 
     @classmethod
     def layer_1_update(cls):
