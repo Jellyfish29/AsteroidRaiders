@@ -4,7 +4,6 @@ from pygame.locals import *
 from init import *
 from astraid_funcs import *
 import astraid_data as data
-from interface import *
 from interface_new import *
 from menus import *
 from player import *
@@ -33,7 +32,7 @@ def test_mode():
     Levels.scaling()
     Levels.display_score += 400
     Player.health += 40000
-    Player.damage += 102
+    Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
     Levels.execute_special_event()
@@ -57,9 +56,9 @@ def main():
         else:
             Player.move(str_3)
 
-    components = [Player, Turret, Enemy, Phenomenon, Levels, Items]  # Interface,
-
+    components = [Player, Turret, Enemy, Phenomenon, Levels, Items]
     # @profile
+
     def components_update():
         for component in components:
             component.update()
@@ -69,14 +68,13 @@ def main():
     Background.bg_objs += [Background(y=0), Background(y=1000), Background(y=-1000)]
 
     # Item Setup
-    Items.drop((winwidth / 2, 400), target=Item_supply_crate((100, 100, 200)))
-    Items.drop((winwidth / 2, 400), target=Item_upgrade_point_crate((100, 100, 200)))
-    Items.drop((winwidth / 2, 400), target=Item_upgrade_point_crate((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_supply_crate((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_upgrade_point_crate((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_upgrade_point_crate((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
 
     # Interface Setup
-    # Interface.create()
     Interface_new.create()
     upgrade_menu = Upgrade_menu()
 
@@ -92,7 +90,6 @@ def main():
 
         win.fill(Background.bg_color)
         Background.update()
-        # win.blit(Gui.image_sprites[10], (0, 0))
 
         Gfx.layer_3_update()
 
@@ -114,9 +111,11 @@ def main():
 
             if event.type == KEYDOWN:
                 if event.key == K_TAB:
+                    upgrade_menu.bg_state = Background.bg_move
                     Background.bg_move = False
                     upgrade_menu.menu_active = True
                     right, left, up, down = [False, False, False, False]
+                    Turret.fire(False)
                 elif event.key == K_d:
                     right = True
                     move_condition(up, "right up", down, "right down", "right")

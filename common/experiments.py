@@ -4,10 +4,5 @@ import time
 import random
 
 
-inventory = {i: [] for i in range(10)}
-
-print(inventory)
-
-x = 23
-y = int(x / 6) * 6
-print(y)
+for i in range(245, 1000, 60):
+    print(i)

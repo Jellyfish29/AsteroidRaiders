@@ -200,6 +200,7 @@ class Background(Timer):
     scroll_speed = 1
     bg_move = True
     bg_color = [0, 0, 30]
+    standart_color = [0, 0, 30]
     bg_objs = []
     bg_obj_spawn_rate = 1200
     bg_sprite_main = pygame.transform.scale(bg_sprites[1], (1920, 1080))
@@ -222,20 +223,23 @@ class Background(Timer):
 
     @classmethod
     @timer
-    def bg_color_change(cls, timer, color=None, speed=None, sub=False):
+    def bg_color_change(cls, timer, color=None, speed=None, instant=False):
         if color is None:
-            color = (0, 0, 30)
-        if speed is None:
-            speed = 5
-        if timer.trigger(speed):
-            if not all([cls.bg_color[i] == color[i] for i in range(3)]):
-                for i in range(3):
-                    if not cls.bg_color[i] == color[i]:
-                        if cls.bg_color[i] < color[i]:
-                            cls.bg_color[i] += 1
-                        else:
-                            cls.bg_color[i] -= 1
-                # return True
+            color = cls.standart_color
+        if instant:
+            Background.bg_color = color
+        else:
+            if speed is None:
+                speed = 5
+            if timer.trigger(speed):
+                if not all([cls.bg_color[i] == color[i] for i in range(3)]):
+                    for i in range(3):
+                        if not cls.bg_color[i] == color[i]:
+                            if cls.bg_color[i] < color[i]:
+                                cls.bg_color[i] += 1
+                            else:
+                                cls.bg_color[i] -= 1
+            # return True
 
     @classmethod
     @timer

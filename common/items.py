@@ -14,7 +14,7 @@ class Items(Timer):
     dropped_lst = []
     # inventory_dic = {0: None, 1: None, 2: None, 3: None, 4: None, 5: None}
     inventory_dic = {i: None for i in range(8)}
-    inv_grid_cords = [(200, 300), (350, 300), (500, 300), (200, 500), (350, 500), (500, 500), (0, 0), (0, 0)]
+    inv_grid_cords = [(420, y) for y in range(145, 678, 76)]
     active_flag_lst = []
     drop_table = []
     icon_sprites = get_images("gui_items_icon_large")
@@ -60,14 +60,14 @@ class Items(Timer):
             for idx, slot in Items.inventory_dic.items():
                 if idx < 4 and issubclass(self.__class__, Active_Items):
                     if slot is None:
-                        self.hitbox.topleft = (Items.inv_grid_cords[idx][0] + 25, Items.inv_grid_cords[idx][1] + 25)
+                        self.hitbox.topleft = (Items.inv_grid_cords[idx][0] + 0, Items.inv_grid_cords[idx][1] + 0)
                         Items.inventory_dic[idx] = self
                         self.add_ui_elements(idx)
 
                         break
                 elif idx >= 4 and not issubclass(self.__class__, Active_Items):
                     if slot is None:
-                        self.hitbox.topleft = (Items.inv_grid_cords[idx][0] + 25, Items.inv_grid_cords[idx][1] + 25)
+                        self.hitbox.topleft = (Items.inv_grid_cords[idx][0] + 0, Items.inv_grid_cords[idx][1] + 0)
                         Items.inventory_dic[idx] = self
                         self.add_ui_elements(idx)
 
@@ -109,12 +109,31 @@ class Items(Timer):
             Items.inventory_dic[key] = None
             for idx, slot in enumerate(inventory):
                 if self.hitbox.colliderect(slot):
-                    if Items.inventory_dic[idx] is not None:
-                        Items.inventory_dic[idx].add_to_inventory(dropped=True)
-                        Items.inventory_dic[idx] = None
-                    Items.inventory_dic[idx] = self
-                    self.hitbox.topleft = (slot.topleft[0] + 25, slot.topleft[1] + 25)
-                    break
+                    if idx < 4 and issubclass(self.__class__, Active_Items):
+                        if Items.inventory_dic[idx] is not None:
+                            Items.inventory_dic[idx].add_to_inventory(dropped=True)
+                            Items.inventory_dic[idx] = None
+                        Items.inventory_dic[idx] = self
+                        self.hitbox.topleft = (slot.topleft[0] + 0, slot.topleft[1] + 0)
+                        break
+                    elif idx >= 4 and issubclass(self.__class__, Active_Items):
+                        Items.inventory_dic[key] = self
+                        Items.inventory_dic[key].hitbox.topleft = (Items.inv_grid_cords[key][0] + 0, Items.inv_grid_cords[key][1] + 0)
+                        break
+
+                    elif idx >= 4 and not issubclass(self.__class__, Active_Items):
+                        if Items.inventory_dic[idx] is not None:
+                            Items.inventory_dic[idx].add_to_inventory(dropped=True)
+                            Items.inventory_dic[idx] = None
+                        Items.inventory_dic[idx] = self
+                        self.hitbox.topleft = (slot.topleft[0] + 0, slot.topleft[1] + 0)
+                        break
+
+                    elif idx < 4 and not issubclass(self.__class__, Active_Items):
+                        Items.inventory_dic[key] = self
+                        Items.inventory_dic[key].hitbox.topleft = (Items.inv_grid_cords[key][0] + 0, Items.inv_grid_cords[key][1] + 0)
+                        break
+
             else:
                 self.remove_from_inventory(key)
             self.drag = False
@@ -259,7 +278,7 @@ class Items(Timer):
 
     @classmethod
     def get_item(cls, flag=""):
-        item = [cls.inventory_dic[i] for i in range(6) if cls.inventory_dic[i] is not None and cls.inventory_dic[i].flag == flag]
+        item = [cls.inventory_dic[i] for i in range(len(cls.inventory_dic)) if cls.inventory_dic[i] is not None and cls.inventory_dic[i].flag == flag]
         if len(item) == 0:
             return Item_mock_test((0, 0, 0))
         else:

@@ -30,6 +30,7 @@ class Interface_new(Timer):
 
     }
     inventory = {i: [] for i in range(11)}
+    item_bar = None
     # Indicators
     indicators = {}
     show_skill_upgrade = True
@@ -38,7 +39,7 @@ class Interface_new(Timer):
     @classmethod
     def set_up_standart_ui(cls):
         # Item bar
-        cls.inventory.update({10: [Gui_image(loc=(750, 995), img_idx=1)]})
+        cls.item_bar = Gui_image(loc=(750, 995), img_idx=1)
 
         # Score board
         cls.standat_ui.append(Gui_image(loc=(0, 0), img_idx=2))
@@ -147,6 +148,8 @@ class Interface_new(Timer):
                     cls.inventory[key].remove(element)
                 else:
                     element.tick()
+
+        cls.item_bar.tick()
 
     @classmethod
     def update_standart_item_ui(cls):

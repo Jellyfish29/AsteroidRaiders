@@ -259,7 +259,7 @@ class Item_rail_gun(Active_Items):
 class Item_jump_drive(Active_Items):
 
     def __init__(self, color):
-        super().__init__(color, "Jump Drive (active)", "Jumps the ship to the marked location", (0, 0))
+        super().__init__(color, "Jump Drive (active)", "Jumps the ship to the marked location", (25, 3))
         self.color = color
         self.flag = "jump_drive"
         self.base_effect = 600  # cooldown time
@@ -275,7 +275,7 @@ class Item_jump_drive(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
     def get_active_str(self):
-        return " " #"Charging"
+        return " "  # "Charging"
 
     def get_inventory_key(self):
         return 0
@@ -290,7 +290,7 @@ class Item_jump_drive(Active_Items):
 class Item_shield(Active_Items):
 
     def __init__(self, color, start=False):
-        super().__init__(color, "Shield", f"Shields the ship from hits", (0, 0))
+        super().__init__(color, "Shield", f"Shields the ship from hits", (1, 1))
         self.color = color
         self.flag = "shield"
         self.lvl = 0
@@ -309,7 +309,7 @@ class Item_shield(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
     def get_active_str(self):
-        return " "#str(data.PLAYER.shield_strength)
+        return " "  # str(data.PLAYER.shield_strength)
 
     def get_inventory_key(self):
         return 0

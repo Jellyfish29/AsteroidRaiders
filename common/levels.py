@@ -32,7 +32,7 @@ class Levels:
     elite_fight = False
     special_events = False
     second_elite = False
-    death_score_panalties = {1: 30, 6: 50, 12: 80, 18: 150,
+    death_score_panalties = {0: 30, 6: 50, 12: 80, 18: 150,
                              24: 250, 30: 370, 36: 500, 42: 700}
     # Events
     event_trigger_time = (3600, 5000)
