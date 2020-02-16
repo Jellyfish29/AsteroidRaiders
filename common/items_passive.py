@@ -253,7 +253,7 @@ class Item_overdrive(Items):
 class Item_targeting_scanner(Items):
 
     def __init__(self, color):
-        super().__init__("Improved Targeting Scanner (passiv)", "Increases Crit Chance", (1, 1))
+        super().__init__("Improved Targeting Scanner (passiv)", "Increases Crit Chance", (32, 30))
         self.color = color
         self.flag = "targeting_scanner"
         self.base_effect = 25
@@ -273,6 +273,28 @@ class Item_targeting_scanner(Items):
             data.PLAYER.set_player_crit_chance(-int(self.get_lvl_effects(reverse=True)[self.lvl]))
 
 
+class Item_expert_damage_control(Items):
+
+    def __init__(self, color):
+        super().__init__("Expert Damage Controll (passiv)", "Increases Damage Control Power Up Efficiency", (13, 15))
+        self.color = color
+        self.flag = "ex_damage_control"
+        self.base_effect = 8
+
+    def get_upgrade_desc(self):
+        return f"Bonus Heal: {int(self.get_lvl_effects(reverse=True)[self.lvl])}"
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+            Items.active_flag_lst.append(self.flag)
+            data.PLAYER.heal_strenght += int(self.get_lvl_effects(reverse=True)[self.lvl])
+
+    def end_effect(self):
+        if self.flag in Items.active_flag_lst:
+            Items.active_flag_lst.remove(self.flag)
+            data.PLAYER.heal_strenght -= int(self.get_lvl_effects(reverse=True)[self.lvl])
+
+
 Items.set_drop_table([
     (Item_auto_repair, (255, 0, 0)),
     (Item_targeting_scanner, (0, 0, 0)),
@@ -285,5 +307,6 @@ Items.set_drop_table([
     (Item_fan_shot, (12, 64, 1)),
     (Item_hammer_shot, (99, 140, 3)),
     (Item_hyper_velocity_rounds, (1, 169, 201)),
+    (Item_expert_damage_control, (0, 0, 0)),
     # (Item_overdrive, (89, 1, 37)),
 ])

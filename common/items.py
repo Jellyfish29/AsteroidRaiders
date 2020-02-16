@@ -191,7 +191,7 @@ class Items(Timer):
     def gfx_draw(self):
         if self.lvl is not None:
             if any([self.flag == "supply_con", self.flag == "upgrade_con", self.flag == "heal_con"]):
-                win.blit(Items.lvl_sprites[self.lvl + 5], (self.hitbox.topleft[0] - 10, self.hitbox.topleft[1] - 10))
+                win.blit(Items.lvl_sprites[self.lvl + 5], (self.hitbox.topleft[0] - 20, self.hitbox.topleft[1] - 20))
             else:
                 win.blit(Items.lvl_sprites[self.lvl + 1], (self.hitbox.topleft[0] - 10, self.hitbox.topleft[1] - 10))
         win.blit(Items.icon_sprites[self.gfx_idx[0]], (self.hitbox.topleft[0] - 10, self.hitbox.topleft[1] - 10))
@@ -335,6 +335,7 @@ class Active_Items(Items):
         self.effect_name = None
         self.engage = False
         self.set_cd_img = False
+        self.ticker.update({"cd": 0, "active_time": 0})
 
     def effect(self):
         if self.get_inventory_key() < 4:

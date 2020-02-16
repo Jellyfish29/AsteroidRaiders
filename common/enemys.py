@@ -531,7 +531,8 @@ class Mine_layer(Enemy):
 
 
 class Comet(Enemy):
-    def __init__(self,):
+    def __init__(self, special=False):
+
         super().__init__(
             0,
             20,
@@ -542,6 +543,10 @@ class Comet(Enemy):
             (-50, -50),
             Enemy.spez_sprites
         )
+        if special:
+            self.hitbox.center = random.choice([(60, -100), (1860, -100)])
+            self.target = (self.hitbox.center[0], 2000)
+            self.direction = 90
         self.hitable = False
         self.score_amount = 8
         self.fire_rate = 180

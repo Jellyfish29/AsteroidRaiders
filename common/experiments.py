@@ -4,5 +4,6 @@ import time
 import random
 
 
-for i in range(245, 1000, 60):
-    print(i)
+x = [1, 12, 3, 5]
+
+x + [5]

@@ -253,8 +253,9 @@ class Bosses(Shooter, Boss_skills):
         data.LEVELS.display_score += self.score_amount
 
         data.ITEMS.drop((800, 500), amount=self.drop_amount)
-        data.ITEMS.drop((800, 500), target=Item_upgrade_point_crate((100, 100, 100)))
-        data.ITEMS.drop((800, 500), target=Item_heal_crate((0, 255, 0)))
+        data.ITEMS.drop((800, 500), target=Item_upgrade_point_crate((100, 100, 100)), level=3)
+        data.ITEMS.drop((800, 500), target=Item_supply_crate((100, 100, 100)), level=3)
+        data.ITEMS.drop((800, 500), target=Item_heal_crate((0, 255, 0)), level=3)
 
         data.ENEMY_PROJECTILE_DATA.clear()
         Background.bg_move = True

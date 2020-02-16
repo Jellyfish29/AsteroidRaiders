@@ -23,11 +23,11 @@ class Upgrade_menu(Timer):
         self.menu.append(Gui_text(loc=(585, 96), text=lambda: f"{data.ITEMS.upgrade_points}"))
         # Skill number
         self.menu.append(Gui_text(loc=(1420, 190), text=lambda: f"{data.PLAYER.speed}", text_size=20))
-        self.menu.append(Gui_text(loc=(1420, 250), text=lambda: f"{data.PLAYER.health}", text_size=20))
+        self.menu.append(Gui_text(loc=(1420, 250), text=lambda: f"{data.PLAYER.max_health}", text_size=20))
         self.menu.append(Gui_text(loc=(1420, 314), text=lambda: f"{int(data.PLAYER.damage * 10)}", text_size=20))
         self.menu.append(Gui_text(loc=(1420, 374), text=lambda: f"{100 - data.PLAYER.crit_chance}", text_size=20))
         self.menu.append(Gui_text(loc=(1415, 434), text=lambda: f"{round(data.TURRET.fire_rate, 1)}", text_size=20))
-        self.menu.append(Gui_text(loc=(1420, 494), text=lambda: f"{data.ACTIVE_ITEMS.cd_reduction}", text_size=20))
+        self.menu.append(Gui_text(loc=(1420, 494), text=lambda: f"{int(data.ACTIVE_ITEMS.cd_reduction * 100)}", text_size=20))
         # Skill Buttons
         self.menu.append(Gui_button(loc=(1458, 185), btn_idx=(1, 2),
                                     btn_effect=lambda: self.speed_upgrade_btn_effect()))
@@ -140,7 +140,7 @@ class Upgrade_menu(Timer):
     def damage_upgrade_btn_effect(self):
         if data.LEVELS.skill_points > 0:
             data.LEVELS.skill_points -= 1
-            data.PLAYER.damage += 0.10
+            data.PLAYER.damage += 0.101
 
     def crit_chance_upgrade_btn_effect(self):
         if data.LEVELS.skill_points > 0:
@@ -152,13 +152,13 @@ class Upgrade_menu(Timer):
     def fire_rate_upgrade_btn_effect(self):
         if data.LEVELS.skill_points > 0:
             data.LEVELS.skill_points -= 1
-            data.TURRET.set_fire_rate(data.TURRET.base_fire_rate * 0.04)
+            data.TURRET.set_fire_rate(data.TURRET.base_fire_rate * 0.06)
             if data.TURRET.fire_rate == data.TURRET.fire_rate_limit:
                 data.LEVELS.skill_points += 1
 
     def cd_reduction_upgrade_btn_effect(self):
         if data.LEVELS.skill_points > 0:
             data.LEVELS.skill_points -= 1
-            data.ACTIVE_ITEMS.set_cd_reduction(0.04)
+            data.ACTIVE_ITEMS.set_cd_reduction(0.03)
             if data.ACTIVE_ITEMS.cd_reduction == data.ACTIVE_ITEMS.cd_limit:
                 data.LEVELS.skill_points += 1

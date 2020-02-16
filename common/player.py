@@ -20,9 +20,9 @@ class Player:
     health = 5
     max_health = 5
     raw_max_health = max_health
-    heal_amount = 1
+    heal_amount = 2
     health_limit = 20
-    heal_strenght = 3
+    heal_strenght = 4
     hitable = True
     # Movement
     speed = 6
@@ -34,7 +34,7 @@ class Player:
     jumpdrive_disabled = False
     afterburner = Item_afterburner((0, 0, 0,))
     # Damage
-    base_damage = 0.6
+    base_damage = 1
     damage = base_damage
     crit_chance = 95
     raw_crit_chance = crit_chance
@@ -94,7 +94,6 @@ class Player:
             # reset save
         else:
             data.LEVELS.save_game()
-            data.INTERFACE.pause_menu(True)
 
     @classmethod
     def reset_overdrive(cls):
@@ -113,7 +112,7 @@ class Player:
             Gfx.create_effect(
                 "heal", 20, (cls.hitbox.topleft[0] - 25, cls.hitbox.topleft[1] - 25), hover=True)
             cls.heal_amount -= 1
-            cls.health += 3
+            cls.health += cls.heal_strenght
             if cls.health > cls.max_health:
                 cls.health = cls.max_health
 

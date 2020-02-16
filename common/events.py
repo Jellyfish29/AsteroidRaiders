@@ -62,6 +62,8 @@ class Events():
             cls.set_bg_color()
             if timer.trigger(17):
                 data.ENEMY_PROJECTILE_DATA.append(Comet())
+            if timer.trigger(60):
+                data.ENEMY_PROJECTILE_DATA.append(Comet(special=True))
         else:
             cls.comet_storm_set_up = True
             data.ITEMS.drop(

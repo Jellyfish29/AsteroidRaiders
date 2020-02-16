@@ -17,7 +17,7 @@ class Turret:
     projectile_speed = 35
     firing = False
     direction = None
-    base_fire_rate = 2.4
+    base_fire_rate = 2.6
     fire_rate = base_fire_rate  # attacks per second
     raw_fire_rate = fire_rate
     fire_rate_limit = 6

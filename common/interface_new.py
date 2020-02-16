@@ -55,7 +55,7 @@ class Interface_new(Timer):
         # standart Items
         cls.inventory[8].append(Gui_image(
             loc=cls.item_slots[8], flag="shield",
-            img_idx=1, sprites=Gui.item_small_sprites))
+            img_idx=31, sprites=Gui.item_small_sprites))
 
         cls.inventory[8].append(Gui_text(
             loc=(cls.item_slots[8][0] + 15, cls.item_slots[8][1] + 12),
@@ -115,6 +115,7 @@ class Interface_new(Timer):
                 cls.shield_x_pos -= 15
         else:
             cls.shield_bar.clear()
+            cls.shield_x_pos = 0
 
         for element in cls.shield_bar:
             element.tick()
@@ -129,13 +130,13 @@ class Interface_new(Timer):
                             if item.active_time is not None:
                                 cls.inventory[key].insert(1, (Gui_image(
                                     loc=data.INTERFACE.item_slots[key], img_idx=2,
-                                    sprites=Gui.item_small_sprites, decay=item.active_time)
+                                    sprites=Gui.item_small_sprites, decay=item.active_time - item.ticker['active_time'])
                                 ))
                                 item.set_cd_img = False
                         elif item.cooldown:
                             cls.inventory[key].insert(1, (Gui_image(
                                 loc=data.INTERFACE.item_slots[key], img_idx=2,
-                                sprites=Gui.item_small_sprites, decay=item.cd_len)
+                                sprites=Gui.item_small_sprites, decay=item.cd_len - item.ticker["cd"])
                             ))
                             item.set_cd_img = False
             else:
@@ -173,7 +174,8 @@ class Interface_new(Timer):
     def indicator_update(cls):
         if data.LEVELS.skill_points > 0:
             cls.indicators["skill_up"].tick()
-        if any([data.ITEMS.inventory_dic[k].upgradeable() for k in data.ITEMS.inventory_dic if data.ITEMS.inventory_dic[k] is not None]):
+        if any([data.ITEMS.inventory_dic[k].upgradeable() for k in data.ITEMS.inventory_dic if data.ITEMS.inventory_dic[k] is not None] +
+               [data.PLAYER.shield.upgradeable(), data.PLAYER.jumpdrive.upgradeable()]):
             cls.indicators["item_up"].tick()
             if data.LEVELS.skill_points > 0:
                 cls.indicators["skill_up"].ticker = cls.indicators["item_up"].ticker
