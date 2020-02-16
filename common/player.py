@@ -87,7 +87,8 @@ class Player:
     def quit_game_WIP(cls):
         state = data.LEVELS.load_game()
         state.load_save()
-        data.LEVELS.display_score -= data.LEVELS.death_score_panalties[data.LEVELS.level]
+        penalty_lvl = int(data.LEVELS.level / 6) * 6
+        data.LEVELS.display_score -= data.LEVELS.death_score_panalties[penalty_lvl]
         if data.LEVELS.display_score < 0:
             quit()
             # reset save

@@ -57,7 +57,6 @@ class Events():
     @timer
     def event_comet_storm(cls, timer):
         if cls.comet_storm_set_up:
-            data.PHENOMENON_DATA.append(Planet())
             cls.comet_storm_set_up = False
         if not timer.trigger(1400):
             cls.set_bg_color()

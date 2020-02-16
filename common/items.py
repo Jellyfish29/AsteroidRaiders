@@ -195,6 +195,12 @@ class Items(Timer):
                 self.upgrade_cost = self.upgrade_cost_base[self.lvl]
                 self.set_effect_strength()
 
+    def upgradeable(self):
+        try:
+            return Items.upgrade_points >= self.upgrade_cost_base[self.lvl]
+        except TypeError:
+            pass
+
     def set_effect_strength(self):
         pass
 

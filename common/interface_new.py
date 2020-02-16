@@ -29,16 +29,16 @@ class Interface_new(Timer):
         9: (1276, 1016),
 
     }
-    inventory = {i: [] for i in range(10)}
+    inventory = {i: [] for i in range(11)}
     # Indicators
-    indicators = []
+    indicators = {}
     show_skill_upgrade = True
     show_item_upgrade = True
 
     @classmethod
     def set_up_standart_ui(cls):
         # Item bar
-        cls.standat_ui.append(Gui_image(loc=(750, 995), img_idx=1))
+        cls.inventory.update({10: [Gui_image(loc=(750, 995), img_idx=1)]})
 
         # Score board
         cls.standat_ui.append(Gui_image(loc=(0, 0), img_idx=2))
@@ -69,10 +69,10 @@ class Interface_new(Timer):
             text=lambda: data.PLAYER.jumpdrive.text))
 
         # Upgrade Indicators
-        cls.indicators.append(Gui_image(loc=(0, 100), img_idx=9, animation_interval=80))  # Skill upgrade
-        cls.indicators.append(Gui_image(loc=(0, 150), img_idx=8, animation_interval=80))  # Item Upgrade
-        cls.indicators.append(Gui_image(loc=(1222, 1016), img_idx=2, sprites=Gui.item_small_sprites))  # Shield active
-        cls.indicators.append(Gui_image(loc=(1276, 1016), img_idx=2, sprites=Gui.item_small_sprites))  # Jumpdrive disalbed
+        cls.indicators.update({"skill_up": Gui_image(loc=(0, 100), img_idx=9, animation_interval=80)})
+        cls.indicators.update({"item_up": Gui_image(loc=(0, 150), img_idx=8, animation_interval=80)})
+        cls.indicators.update({"shield": Gui_image(loc=(1222, 1016), img_idx=2, sprites=Gui.item_small_sprites)})
+        cls.indicators.update({"jumpdrive": Gui_image(loc=(1276, 1016), img_idx=2, sprites=Gui.item_small_sprites)})
 
     @classmethod
     def standart_ui_update(cls):
@@ -169,13 +169,15 @@ class Interface_new(Timer):
     @classmethod
     def indicator_update(cls):
         if data.LEVELS.skill_points > 0:
-            cls.indicators[0].tick()
-        if data.ITEMS.upgrade_points > 1:
-            cls.indicators[1].tick()
+            cls.indicators["skill_up"].tick()
+        if any([data.ITEMS.inventory_dic[k].upgradeable() for k in data.ITEMS.inventory_dic if data.ITEMS.inventory_dic[k] is not None]):
+            cls.indicators["item_up"].tick()
+            if data.LEVELS.skill_points > 0:
+                cls.indicators["skill_up"].ticker = cls.indicators["item_up"].ticker
         if data.PLAYER.shield.active:
-            cls.indicators[2].tick()
+            cls.indicators["shield"].tick()
         if data.PLAYER.jumpdrive_disabled:
-            cls.indicators[3].tick()
+            cls.indicators["jumpdrive"].tick()
 
     @classmethod
     def cursor_update(cls):

@@ -6,6 +6,7 @@ from astraid_funcs import *
 import astraid_data as data
 from interface import *
 from interface_new import *
+from menus import *
 from player import *
 from turret import *
 from enemys import *
@@ -43,7 +44,7 @@ def test_mode():
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
 
 
-@profile
+# @profile
 def main():
 
     right, left, up, down = [False, False, False, False]
@@ -68,13 +69,20 @@ def main():
     Background.bg_objs += [Background(y=0), Background(y=1000), Background(y=-1000)]
 
     # Item Setup
-    # Items.drop((winwidth / 2, 400), target=Item_pd((100, 100, 200)))
+    Items.drop((winwidth / 2, 400), target=Item_supply_crate((100, 100, 200)))
+    Items.drop((winwidth / 2, 400), target=Item_upgrade_point_crate((100, 100, 200)))
+    Items.drop((winwidth / 2, 400), target=Item_upgrade_point_crate((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
 
     # Interface Setup
     # Interface.create()
     Interface_new.create()
+    upgrade_menu = Upgrade_menu()
+
+    def menus_update():
+        if upgrade_menu.menu_active:
+            upgrade_menu.tick()
     # Interface.main_menu(True)
 
     # Enemy Setup
@@ -84,6 +92,7 @@ def main():
 
         win.fill(Background.bg_color)
         Background.update()
+        # win.blit(Gui.image_sprites[10], (0, 0))
 
         Gfx.layer_3_update()
 
@@ -99,14 +108,14 @@ def main():
 
         Interface_new.update()
 
+        menus_update()
+
         for event in pygame.event.get():
 
             if event.type == KEYDOWN:
                 if event.key == K_TAB:
-                    scrollspeed_temp = Background.scroll_speed
-                    # Background.scroll_speed = 0
-                    Interface.upgrades_menu(True)
-                    Background.scroll_speed = scrollspeed_temp
+                    Background.bg_move = False
+                    upgrade_menu.menu_active = True
                     right, left, up, down = [False, False, False, False]
                 elif event.key == K_d:
                     right = True
