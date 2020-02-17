@@ -54,7 +54,7 @@ class Gui(Timer):
 
     def tick(self):
         if self.decay is not None:
-            if self.timer_trigger(self.decay):
+            if self.timer_key_trigger(self.decay, key="decay"):
                 self.kill = True
         self.timer_tick()
         self.draw()
@@ -92,7 +92,7 @@ class Gui_text(Gui):
         if not callable(self.text):
             self.render_text = Gui.fonts[self.text_size].render(self.text, True, self.text_color)
 
-    def _get_text(self):
+    def get_text(self):
         return self.text()
 
     def draw(self):
@@ -101,7 +101,80 @@ class Gui_text(Gui):
 
         if callable(self.text):
             self.render_text = Gui.fonts[self.text_size].render(
-                self._get_text(), True, self.text_color)
+                self.get_text(), True, self.text_color)
+
+        if self.animation_interval is None:
+            win.blit(self.render_text, (self.loc[0] + self.anchor_x, self.loc[1] + self.anchor_y))
+        else:
+            animation_ticker = self.timer_animation_ticker(self.animation_interval)
+
+            if animation_ticker < self.animation_interval * 0.5:
+                win.blit(self.render_text, (self.loc[0] + self.anchor_x, self.loc[1] + self.anchor_y))
+            else:
+                pass
+
+
+class Gui_tw_text(Gui):
+
+    def __init__(
+        self,
+        loc=(0, 0),
+        flag="tw_text",
+        text=None,
+        text_size=25,
+        text_color=(189, 233, 193),  # bde9c1
+        anchor=None,
+        anchor_x=0,
+        anchor_y=0,
+        rm_on_end=True,
+        decay=None,
+        animation_interval=None,
+        type_speed=3
+    ):
+        Gui.__init__(self, loc, anchor, anchor_x, anchor_y, flag, decay)
+        try:
+            self.text = iter(list(text))
+        except TypeError:
+            self.text = text
+        self.text_size = text_size
+        self.text_color = text_color
+        self.animation_interval = animation_interval
+        self.rm_on_end = rm_on_end
+        self.type_speed = type_speed
+        self.display_text = ""
+        self.draw_text = True
+
+    def get_text(self):
+        if self.draw_text:
+            if self.timer_trigger(self.type_speed):
+                try:
+                    ltr = next(self.text)
+                except StopIteration:
+                    if self.rm_on_end:
+                        if self.timer_trigger(40):
+                            self.delete("tw_text")
+                    return self.display_text
+                if ltr == "/":
+                    try:
+                        decay = self.decay - self.ticker["decay"]
+                    except KeyError:
+                        decay = None
+                    if self.anchor is None:
+                        Gui.add(Gui_tw_text(loc=(self.loc[0], self.loc[1] + 30), text=self.text, decay=decay))
+                    else:
+                        Gui.add(Gui_tw_text(text=self.text, anchor=self.anchor,
+                                            anchor_x=self.anchor_x, anchor_y=self.anchor_y + 30, decay=decay))
+                    self.draw_text = False
+                else:
+                    self.display_text += ltr
+        return self.display_text
+
+    def draw(self):
+        if self.anchor is not None:
+            self.loc = self.anchor.topleft
+
+        self.render_text = Gui.fonts[self.text_size].render(
+            self.get_text(), True, self.text_color)
 
         if self.animation_interval is None:
             win.blit(self.render_text, (self.loc[0] + self.anchor_x, self.loc[1] + self.anchor_y))

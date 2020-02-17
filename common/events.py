@@ -14,6 +14,8 @@ from ui import *
 class Events():
 
     special_events_lst = []
+    # Intro Event
+    intro_set_up = True
     # Comet Storm
     comet_storm_set_up = True
     # Minefield
@@ -48,6 +50,34 @@ class Events():
     z_def_set_up = True
     z_def_bc_destroyed = False
     z_def_active_zones = []
+
+    @classmethod
+    def intro_event(cls):
+        if cls.intro_set_up:
+            starting_station = Docile_allied_station(spawn_point=(400, 200))
+            data.PLAYER_DATA.append(starting_station)
+
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["intro"], anchor=starting_station.hitbox, anchor_x=90, rm_on_end=True))
+            Background.bg_move = False
+            cls.intro_set_up = False
+
+        if len(data.GUI_DATA) == 0:
+            Gui.add(Gui_text(loc=(800, 40), flag="intro_1", text="BEGINN MISSION"))
+            Gui.add(Gui_image(loc=(700, 20), flag="intro_1", img_idx=11, animation_interval=60))
+            Gui.add(Gui_image(loc=(1060, 20), flag="intro_1", img_idx=11, animation_interval=60))
+
+        if data.PLAYER.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):
+            data.PLAYER.hitbox.center = (data.PLAYER.hitbox.center[0], winheight)
+
+            data.PLAYER_DATA.clear()
+
+            Background.y += 1080
+            Background.bg_objs.append(Background(y=random.randint(100, 800)))
+
+            Gui.delete("intro_1")
+            Background.bg_move = True
+
+            return "stop_event"
 
     @classmethod
     def event_wave(cls, enemy=None, spawn=None, amount=None, scaling=None):
@@ -87,10 +117,12 @@ class Events():
                              text_size=50, decay=360, animation_interval=60))
             cls.mine_field_set_up = False
         if timer.timer_trigger_delay(400):
-            Gui.add(Gui_text(loc=(800, 40), flag="mine", text="ESCAPE THE MINE FIELD",
+            Gui.add(Gui_text(loc=(800, 40), flag="mine_1", text="ESCAPE THROUGH THE MINE FIELD",
                              text_size=30, animation_interval=60))
-            Gui.add(Gui_text(loc=(970, 980), flag="mine", text="JUMPDRIVE DISABLED",
+            Gui.add(Gui_text(loc=(970, 980), flag="mine_2", text="JUMPDRIVE DISABLED",
                              text_size=25, animation_interval=60))
+            Gui.add(Gui_image(loc=(700, 20), flag="mine_1", img_idx=11, animation_interval=60))
+            Gui.add(Gui_image(loc=(1320, 20), flag="mine_1", img_idx=11, animation_interval=60))
             Background.bg_move = False
 
         if not Background.bg_move:
@@ -98,8 +130,10 @@ class Events():
                 data.PLAYER.hitbox.center = (data.PLAYER.hitbox.center[0], winheight)
 
                 data.ENEMY_PROJECTILE_DATA.clear()
+                data.ENEMY_DATA.clear()
                 data.PHENOMENON_DATA.clear()
                 data.ITEMS.dropped_lst.clear()
+                Gui.delete("mine_1")
 
                 Background.bg_objs.clear()
                 Background.y += 1080
@@ -138,7 +172,7 @@ class Events():
         cls.mine_field_set_up = True
         cls.mine_amount = 8
         cls.mine_field_stage = 0
-        Gui.delete("mine")
+        Gui.delete("mine_2")
 
     @classmethod
     def spawn_mine_field(cls, start=True):

@@ -234,6 +234,8 @@ class Player:
 
                     data.ITEMS.dropped_lst.clear()
                     data.PHENOMENON_DATA.clear()
+                    data.PLAYER_DATA.clear()
+                    data.ENEMY_DATA.clear()
 
                     data.LEVELS.save_game()
 

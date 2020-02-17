@@ -66,17 +66,18 @@ def main():
     # Background Setup
     Background.update()
     Background.bg_objs += [Background(y=0), Background(y=1000), Background(y=-1000)]
-
-    # Item Setup
-    # Items.drop((winwidth / 2, 400), target=Item_supply_crate((100, 100, 200), level=3))
-    # Items.drop((winwidth / 2, 400), target=Item_supply_crate((100, 100, 200)))
-    # Items.drop((winwidth / 2, 400), target=Item_supply_crate((100, 100, 200)))
-    Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
-    Levels.after_boss = True
+    starting_station = Docile_allied_station(spawn_point=(400, 200))
+    data.PLAYER_DATA.append(starting_station)
 
     # Interface Setup
     Interface_new.create()
     upgrade_menu = Upgrade_menu()
+    Gui.add(Gui_tw_text(text=data.EVENT_TEXT["intro"], anchor=starting_station.hitbox, anchor_x=90, rm_on_end=True))
+
+    # Item Setup
+    Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
+    Levels.special_events = True
+    Levels.special_event_queue.append(Events.intro_event)
 
     def menus_update():
         if upgrade_menu.menu_active:

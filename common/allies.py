@@ -200,6 +200,16 @@ class Space_station_allie(Allied_entity):
                 data.LEVELS.convoy_points = 0
 
 
+class Docile_allied_station(Space_station_allie):
+
+    def __init__(self, spawn_point=(0, 0)):
+        super().__init__(spawn_point=spawn_point)
+        self.speed = 0
+
+    def script(self):
+        pass
+
+
 class Convoy_ship_allie(Allied_entity):
 
     def __init__(self, spawn_point=0, target=(0, 0),):

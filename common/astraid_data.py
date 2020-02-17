@@ -1,4 +1,5 @@
-# from profilehooks import profile
+import json
+import os
 
 ENEMY_DATA = []
 ENEMY_PROJECTILE_DATA = []
@@ -22,6 +23,9 @@ EVENTS = None
 ENEMY = None
 ALLIE = None
 INTERFACE = None
+
+with open(os.path.join(os.getcwd()[:-7], f"data\\event_text.json")) as f:
+    EVENT_TEXT = json.load(f)
 
 
 # @profile
