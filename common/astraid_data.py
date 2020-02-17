@@ -1,5 +1,4 @@
 # from profilehooks import profile
-import pygame
 
 ENEMY_DATA = []
 ENEMY_PROJECTILE_DATA = []

@@ -51,7 +51,6 @@ class Bosses(Shooter, Boss_skills):
         self.projectile_speed = 20
         self.special_attack = False
         self.special_skills_lst = []
-        self.skills_lst = []
         Boss_skills.__init__(self)
         Timer.__init__(self)
         # Health

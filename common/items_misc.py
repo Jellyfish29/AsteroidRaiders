@@ -32,6 +32,9 @@ class Item_supply_crate(Items):
                 if item == self:
                     Items.inventory_dic[key] = None
 
+    def get_lvl_effects(self, reverse=False):
+        return [1, 2, 4, 6]
+
 
 class Item_upgrade_point_crate(Items):
 
@@ -96,7 +99,7 @@ class Item_heal_crate(Items):
 class Event_item_boss_snare(Items):
 
     def __init__(self, color, start=False):
-        super().__init__("Snare", "", (38, 38))
+        super().__init__("Snare", "", (1, 0))
         self.color = color
         self.flag = "boss_snare"
         self.base_effect = 4
@@ -118,31 +121,6 @@ class Event_item_boss_snare(Items):
         self.hitbox.move_ip(0, 8)
         if rect_not_on_sreen(self.hitbox):
             Items.dropped_lst.remove(self)
-
-
-class Event_item_battleship_heal(Items):
-
-    def __init__(self, color, start=False):
-        super().__init__("Repair Parts", "", (38, 38))
-        self.color = color
-        self.flag = "bs_heal"
-        self.base_effect = 4
-        self.lvl = 0
-
-    def get_upgrade_desc(self):
-        return f" "
-
-    def effect(self):
-        if "bs_heal" not in Items.active_flag_lst:
-
-            data.EVENTS.bs_heals += 1
-
-            for key, item in Items.inventory_dic.items():
-                if item == self:
-                    Items.inventory_dic[key] = None
-
-    def decay(self):
-        pass
 
 
 Items.consumables = [

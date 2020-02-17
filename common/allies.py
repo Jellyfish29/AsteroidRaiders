@@ -182,6 +182,8 @@ class Space_station_allie(Allied_entity):
 
                 data.ITEMS.drop(
                     (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100), level=2))
+                data.ITEMS.drop(
+                    (self.hitbox.topright), target=Item_supply_crate((100, 100, 100), level=1))
 
                 if data.EVENTS.convoy_points >= 12:
                     data.ITEMS.drop((self.hitbox.topright), amount=1)
@@ -262,20 +264,11 @@ class Battleship_allie(Allied_entity):
                 data.ITEMS.drop(
                     (1000, 400), target=Item_heal_crate((100, 100, 100), level=2))
 
-                if self.health >= self.max_health * 0.85:
+                if self.health >= self.max_health * 0.5:
                     data.ITEMS.drop((self.hitbox.topright), amount=1)
-                elif self.health >= self.max_health * 0.7:
+                else:
                     data.ITEMS.drop(
                         (1000, 400), target=Item_supply_crate((100, 100, 100), level=3))
-                elif self.health >= self.max_health * 0.4:
-                    data.ITEMS.drop(
-                        (1000, 400), target=Item_supply_crate((100, 100, 100), level=2))
-                elif self.health >= self.max_health * 0.2:
-                    data.ITEMS.drop(
-                        (1000, 400), target=Item_supply_crate((100, 100, 100), level=1))
-                elif self.health > 0:
-                    data.ITEMS.drop(
-                        (1000, 400), target=Item_supply_crate((100, 100, 100), level=0))
         else:
             self._draw_damage_effect()
 

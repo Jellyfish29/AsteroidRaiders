@@ -204,6 +204,16 @@ class Timer:
         else:
             return True
 
+    def timer_trigger_delay(self, limit=0):
+        self.timer_calls_per_tick += 1
+        if self.timer_calls_per_tick not in self.ticker:
+            self.ticker.update({self.timer_calls_per_tick: 0})
+        if self.ticker[self.timer_calls_per_tick] == limit:
+            self.ticker[self.timer_calls_per_tick] += 1
+            return True
+        else:
+            self.ticker[self.timer_calls_per_tick] += 1
+
     def timer_animation_ticker(self, limit):
         self.timer_calls_per_tick += 1
         if self.timer_calls_per_tick not in self.ticker:

@@ -8,6 +8,7 @@ from allies import *
 from bosses_def import Elites
 from Gfx import Gfx, Background
 from items_misc import Item_supply_crate, Item_heal_crate, Item_upgrade_point_crate
+from ui import *
 
 
 class Events():
@@ -57,19 +58,23 @@ class Events():
     @timer
     def event_comet_storm(cls, timer):
         if cls.comet_storm_set_up:
+            data.GUI_DATA.append(Gui_text(loc=(600, 100), text="ALERT: COMET STORM INBOUND",
+                                          text_size=50, decay=400, animation_interval=60))
             cls.comet_storm_set_up = False
-        if not timer.trigger(1400):
-            cls.set_bg_color()
-            if timer.trigger(17):
-                data.ENEMY_PROJECTILE_DATA.append(Comet())
-            if timer.trigger(60):
-                data.ENEMY_PROJECTILE_DATA.append(Comet(special=True))
-        else:
-            cls.comet_storm_set_up = True
-            data.ITEMS.drop(
-                (1000, 400), target=Item_supply_crate((100, 100, 100), level=1))
+        cls.set_bg_color()
+        if timer.timer_delay(120):
+            if not timer.trigger(1400):
+                if timer.trigger(17):
+                    data.ENEMY_PROJECTILE_DATA.append(Comet())
+                if timer.trigger(60):
+                    data.ENEMY_PROJECTILE_DATA.append(Comet(special=True))
+            else:
+                cls.comet_storm_set_up = True
+                timer.timer_reset()
+                data.ITEMS.drop(
+                    (1000, 400), target=Item_supply_crate((100, 100, 100), level=1))
 
-            return "stop_event"
+                return "stop_event"
 
     @classmethod
     @timer
@@ -78,9 +83,16 @@ class Events():
         if cls.mine_field_set_up:
             data.PLAYER.jumpdrive_disabled = True
             cls.spawn_mine_field()
+            Gui.add(Gui_text(loc=(500, 100), text="ALERT: APROACHING GRAVITON MINE FIELD",
+                             text_size=50, decay=360, animation_interval=60))
             cls.mine_field_set_up = False
-        if timer.trigger(400):
+        if timer.timer_trigger_delay(400):
+            Gui.add(Gui_text(loc=(800, 40), flag="mine", text="ESCAPE THE MINE FIELD",
+                             text_size=30, animation_interval=60))
+            Gui.add(Gui_text(loc=(970, 980), flag="mine", text="JUMPDRIVE DISABLED",
+                             text_size=25, animation_interval=60))
             Background.bg_move = False
+
         if not Background.bg_move:
             if data.PLAYER.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):
                 data.PLAYER.hitbox.center = (data.PLAYER.hitbox.center[0], winheight)
@@ -112,6 +124,7 @@ class Events():
                 if cls.mine_field_stage >= cls.mine_field_max_stages:
                     Background.bg_move = True
                     Background.y += 1080
+                    timer.timer_reset()
                     cls.mine_field_reset()
                     data.PLAYER.jumpdrive_disabled = False
 
@@ -125,6 +138,7 @@ class Events():
         cls.mine_field_set_up = True
         cls.mine_amount = 8
         cls.mine_field_stage = 0
+        Gui.delete("mine")
 
     @classmethod
     def spawn_mine_field(cls, start=True):
@@ -256,7 +270,7 @@ class Events():
                     cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
                     data.ENEMY_DATA.append(Convoy_ship_enemy(cls.c_a_y))
                     if not isinstance(cls.c_a_ship, str):
-                        if cls.c_a_ship % 3 == 0:
+                        if cls.c_a_ship % 4 == 0:
                             for i in [150, -150]:
                                 data.ENEMY_DATA.append(Event_shooter(
                                     (-200, cls.c_a_y + i), special_spawn=(2000, cls.c_a_y + i), border_check=True))
@@ -268,8 +282,7 @@ class Events():
                     cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
                     cls.c_a_y = random.randint(300, 800)
                     timer.timer_key_delay(reset=True, key="c_spawn")
-                    if any([cls.convoy_attack_wave_counter == 2,
-                            cls.convoy_attack_wave_counter == 4,
+                    if any([cls.convoy_attack_wave_counter == 4,
                             cls.convoy_attack_wave_counter == 5]):
                         Elites.spawn(drop=False)
                 else:
@@ -293,7 +306,7 @@ class Events():
     def event_station_hack(cls, timer):
         cls.set_bg_color()
         if cls.hack_set_up:
-            for i in [-200, -300, -600]:
+            for i in [-200, -300, -600, -450]:
                 spawn = (random.randint(200, 1700), i)
                 data.PLAYER_DATA.append(Comrelay(spawn_point=spawn))
                 Elites.spawn(special_spawn=spawn)
@@ -318,8 +331,12 @@ class Events():
                 if timer.timer_key_trigger(160, key="wave_trigger"):
                     data.LEVELS.execute_event(random.choice([5, 3]))
 
-            if cls.hack_stations_hacked == 3:
+            if cls.hack_stations_hacked == 4:
                 data.ITEMS.drop((1000, 500), amount=1)
+                data.ITEMS.drop(
+                    ((1000, 500)), target=Item_heal_crate((100, 100, 100), level=2))
+                data.ITEMS.drop(
+                    ((1000, 500)), target=Item_supply_crate((100, 100, 100), level=1))
                 Background.bg_move = True
                 cls.hack_reset()
 
@@ -327,12 +344,18 @@ class Events():
 
             if timer.timer_key_delay(2700, key="hack_time_limit"):
                 # INTERFACE
-                if cls.hack_stations_hacked == 2:
+                if cls.hack_stations_hacked > 0:
+                    data.ITEMS.drop(
+                        ((1000, 500)), target=Item_heal_crate((100, 100, 100), level=2))
+                    data.ITEMS.drop(
+                        ((1000, 500)), target=Item_supply_crate((100, 100, 100), level=1))
+                if cls.hack_stations_hacked == 3:
                     data.ITEMS.drop(
                         (1000, 500), target=Item_upgrade_point_crate((100, 100, 100), level=3))
-                elif cls.hack_stations_hacked == 1:
+                elif cls.hack_stations_hacked == 2:
                     data.ITEMS.drop(
-                        (1000, 500), target=Item_upgrade_point_crate((100, 100, 100), level=1))
+                        (1000, 500), target=Item_upgrade_point_crate((100, 100, 100), level=2))
+
                 Background.bg_move = True
                 cls.hack_reset()
 
@@ -341,7 +364,7 @@ class Events():
     @classmethod
     def hack_reset(cls):
         cls.hack_set_up = True
-        cls.hacK_stations_hacked = 0
+        cls.hack_stations_hacked = 0
 
     @classmethod
     @timer
@@ -399,13 +422,13 @@ class Events():
     @classmethod
     def get_special_events_lst(cls):
         return [
-            (cls.event_comet_storm, 0),
+            # (cls.event_comet_storm, 0),
             (cls.event_mine_field, 0),
-            (cls.event_convoy_escort, 6),
-            (cls.event_battleship_defence, 6),
-            (cls.event_convoy_attack, 6),
-            (cls.event_station_hack, 12),
-            (cls.event_zone_defence, 18),
+            # (cls.event_convoy_escort, 6),
+            # (cls.event_battleship_defence, 6),
+            # (cls.event_convoy_attack, 12),
+            # (cls.event_station_hack, 12),
+            # (cls.event_zone_defence, 18),
         ]
 
 

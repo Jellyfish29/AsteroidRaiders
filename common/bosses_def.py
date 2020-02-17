@@ -30,7 +30,6 @@ class Boss_mine_boat(Bosses):
 
     def phase_1(self):
         self.angles = angles_360(5)
-        # self.special_gfx = True
         self.special_move = True
         data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.15, self, (0, -110)))
         self.skills_lst.append(self.skill_chaser)
@@ -49,8 +48,7 @@ class Boss_mine_boat(Bosses):
         self.skills_lst.append(self.skill_missile)
 
     def phase_3(self):
-        Background.bg_move = True
-        self.agles = self.angles = angles_360(7)
+        self.agles = angles_360(7)
         self.fire_rate -= 25
         self.set_health(-25, (0, 255, 0))
         self.skills_lst.append(self.skill_mines)
@@ -108,7 +106,8 @@ class Boss_frigatte(Bosses):
 
     def phase_3(self):
 
-        self.skills_lst += [self.skill_turret_defence_matrix, self.skill_star_shot]
+        self.angles = angles_360(2)
+        self.skills_lst += [self.skill_turret_defence_matrix]
         for i in range(6):
             spawn_loaction = (random.randint(300, 1700), random.randint(150, 900))
             data.ENEMY_PROJECTILE_DATA.append(Impactor(
@@ -531,6 +530,7 @@ class Elites(Bosses):
         self.score_amount = 100
         self.flag = "elite"
         super().__init__()
+        self.skills_lst = []
         self.skills_lst.append(elite_skill)
         if special_spawn is not None:
             self.hitbox.center = special_spawn
@@ -552,14 +552,13 @@ class Elites(Bosses):
         Gfx.create_effect("explosion_3", 2,
                           (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300),
                           explo=True)
-        data.LEVELSelite_fight = False
+        data.LEVELS.elite_fight = False
+        data.ITEMS.drop((self.hitbox.topleft), target=Item_supply_crate((100, 100, 100), level=0))
         if self.drop:
             if random.randint(0, 100) > 90:
                 data.ITEMS.drop((self.hitbox.topleft), amount=1)
             else:
                 random.choice([
-                    lambda: data.ITEMS.drop(
-                        (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100))),
                     lambda: data.ITEMS.drop(
                         (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100))),
                     lambda: data.ITEMS.drop(

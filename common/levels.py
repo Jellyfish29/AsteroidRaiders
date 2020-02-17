@@ -19,7 +19,7 @@ class Levels:
     display_level = 1
     level = 1
     level_interval = 35
-    enemy_amount = 3  # at Start
+    enemy_amount = 5  # at Start
     skill_points = 0
     # elite/Elites
     elite_max_spawn_time = 4000
@@ -262,6 +262,7 @@ class STAGE_SAVE():
         data.PHENOMENON_DATA.clear()
         data.PLAYER_DATA.clear()
         data.ITEMS.dropped_lst.clear()
+        data.ITEMS.active_flag_lst.clear()
 
         Levels.after_boss = False
         Levels.special_events = False

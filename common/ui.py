@@ -30,14 +30,15 @@ class Gui(Timer):
         60: pygame.font.SysFont("Consolas", 60),
     }
 
-    def __init__(self, loc=(0, 0), anchor=None, anchor_x=0, anchor_y=0, flag="", decay=None):
+    def __init__(self, loc=(0, 0), anchor=None, anchor_x=0, anchor_y=0,
+                 flag="standart_gui", decay=None):
         self.loc = loc
         self.x_loc = loc[0]
         self.y_loc = loc[1]
         self.anchor = anchor
         self.anchor_x = anchor_x
         self.anchor_y = anchor_y
-        self.flag = "standart_gui"
+        self.flag = flag
         self.decay = decay
         self.kill = False
         Timer.__init__(self)
@@ -80,12 +81,14 @@ class Gui_text(Gui):
         anchor=None,
         anchor_x=0,
         anchor_y=0,
-        decay=None
+        decay=None,
+        animation_interval=None
     ):
         super().__init__(loc, anchor, anchor_x, anchor_y, flag, decay)
         self.text = text
         self.text_size = text_size
         self.text_color = text_color
+        self.animation_interval = animation_interval
         if not callable(self.text):
             self.render_text = Gui.fonts[self.text_size].render(self.text, True, self.text_color)
 
@@ -100,7 +103,15 @@ class Gui_text(Gui):
             self.render_text = Gui.fonts[self.text_size].render(
                 self._get_text(), True, self.text_color)
 
-        win.blit(self.render_text, (self.loc[0] + self.anchor_x, self.loc[1] + self.anchor_y))
+        if self.animation_interval is None:
+            win.blit(self.render_text, (self.loc[0] + self.anchor_x, self.loc[1] + self.anchor_y))
+        else:
+            animation_ticker = self.timer_animation_ticker(self.animation_interval)
+
+            if animation_ticker < self.animation_interval * 0.5:
+                win.blit(self.render_text, (self.loc[0] + self.anchor_x, self.loc[1] + self.anchor_y))
+            else:
+                pass
 
 
 class Gui_image(Gui):

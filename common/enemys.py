@@ -6,7 +6,7 @@ from astraid_funcs import *
 import astraid_data as data
 from Gfx import Gfx
 from projectiles import Projectile, Mine, Explosion
-from items_misc import Event_item_battleship_heal, Item_upgrade_point_crate, Item_supply_crate
+from items_misc import Item_upgrade_point_crate, Item_supply_crate
 
 
 class Enemy(Timer):
@@ -274,12 +274,17 @@ class Asteroid(Enemy):
             random.randint(0, 360),
             random.randint(2, 8),
             spawn,
-            Enemy.health,
+            Enemy.health * 0.50,
             (80, 80),
             0,
             (0, 0),
             Enemy.asteroid_sprites
         )
+        self.score_amount = 1
+        if self.speed >= 4:
+            self.score_amount = 2
+        if self.speed == 8:
+            self.score_amount = 3
         self.gfx_offset = [8 * i for i in range(8)]
         self.gfx_idx = random.choice([0, 4, 64, 68])
         self.orig_gfx_idx = self.gfx_idx
