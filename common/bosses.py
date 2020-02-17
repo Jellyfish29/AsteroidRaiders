@@ -6,7 +6,7 @@ from astraid_funcs import *
 from enemys import Enemy, Shooter
 from projectiles import Wave
 from boss_skills import Boss_skills
-from items_misc import Item_upgrade_point_crate, Item_heal_crate
+from items_misc import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
 from Gfx import Gfx, Background
 import astraid_data as data
 
@@ -253,9 +253,9 @@ class Bosses(Shooter, Boss_skills):
         data.LEVELS.display_score += self.score_amount
 
         data.ITEMS.drop((800, 500), amount=self.drop_amount)
-        data.ITEMS.drop((800, 500), target=Item_upgrade_point_crate((100, 100, 100)), level=3)
-        data.ITEMS.drop((800, 500), target=Item_supply_crate((100, 100, 100)), level=3)
-        data.ITEMS.drop((800, 500), target=Item_heal_crate((0, 255, 0)), level=3)
+        data.ITEMS.drop((800, 500), target=Item_upgrade_point_crate((100, 100, 100), level=2))
+        data.ITEMS.drop((800, 500), target=Item_supply_crate((100, 100, 100), level=2))
+        data.ITEMS.drop((800, 500), target=Item_heal_crate((0, 255, 0), level=3))
 
         data.ENEMY_PROJECTILE_DATA.clear()
         Background.bg_move = True

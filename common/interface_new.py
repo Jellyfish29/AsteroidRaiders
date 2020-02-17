@@ -35,6 +35,7 @@ class Interface_new(Timer):
     indicators = {}
     show_skill_upgrade = True
     show_item_upgrade = True
+    notification_read = False
 
     @classmethod
     def set_up_standart_ui(cls):
@@ -136,7 +137,7 @@ class Interface_new(Timer):
                         elif item.cooldown:
                             cls.inventory[key].insert(1, (Gui_image(
                                 loc=data.INTERFACE.item_slots[key], img_idx=2,
-                                sprites=Gui.item_small_sprites, decay=item.cd_len - item.ticker["cd"])
+                                sprites=Gui.item_small_sprites, decay=item.get_cd_len() - item.ticker["cd"])
                             ))
                             item.set_cd_img = False
             else:
@@ -172,13 +173,14 @@ class Interface_new(Timer):
 
     @classmethod
     def indicator_update(cls):
-        if data.LEVELS.skill_points > 0:
-            cls.indicators["skill_up"].tick()
-        if any([data.ITEMS.inventory_dic[k].upgradeable() for k in data.ITEMS.inventory_dic if data.ITEMS.inventory_dic[k] is not None] +
-               [data.PLAYER.shield.upgradeable(), data.PLAYER.jumpdrive.upgradeable()]):
-            cls.indicators["item_up"].tick()
+        if not cls.notification_read:
             if data.LEVELS.skill_points > 0:
-                cls.indicators["skill_up"].ticker = cls.indicators["item_up"].ticker
+                cls.indicators["skill_up"].tick()
+            if any([data.ITEMS.inventory_dic[k].upgradeable() for k in data.ITEMS.inventory_dic if data.ITEMS.inventory_dic[k] is not None] +
+                   [data.PLAYER.shield.upgradeable(), data.PLAYER.jumpdrive.upgradeable()]):
+                cls.indicators["item_up"].tick()
+                if data.LEVELS.skill_points > 0:
+                    cls.indicators["skill_up"].ticker = cls.indicators["item_up"].ticker
         if data.PLAYER.shield.active:
             cls.indicators["shield"].tick()
         if data.PLAYER.jumpdrive_disabled:

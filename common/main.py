@@ -68,9 +68,9 @@ def main():
     Background.bg_objs += [Background(y=0), Background(y=1000), Background(y=-1000)]
 
     # Item Setup
-    # Items.drop((winwidth / 2, 400), target=Item_supply_crate((100, 100, 200), level=3))
-    # Items.drop((winwidth / 2, 400), target=Item_improved_feeding((100, 100, 200)))
-    # Items.drop((winwidth / 2, 400), target=Item_expert_damage_control((100, 100, 200)))
+    Items.drop((winwidth / 2, 400), target=Item_supply_crate((100, 100, 200), level=3))
+    Items.drop((winwidth / 2, 400), target=Item_supply_crate((100, 100, 200)))
+    Items.drop((winwidth / 2, 400), target=Item_supply_crate((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.after_boss = True
 
@@ -114,6 +114,7 @@ def main():
                     upgrade_menu.bg_state = Background.bg_move
                     Background.bg_move = False
                     upgrade_menu.menu_active = True
+                    data.INTERFACE.notification_read = True
                     right, left, up, down = [False, False, False, False]
                     Turret.fire(False)
                 elif event.key == K_d:

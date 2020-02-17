@@ -25,6 +25,8 @@ class Item_supply_crate(Items):
 
             data.LEVELS.skill_points += int(self.get_lvl_effects(reverse=True)[self.lvl])
 
+            data.INTERFACE.notification_read = False
+
             # Gfx.create_effect("con_collected", 25, data.PLAYER.hitbox.topleft, hover=True)
             for key, item in Items.inventory_dic.items():
                 if item == self:
@@ -50,6 +52,8 @@ class Item_upgrade_point_crate(Items):
         if "upgrade_con" not in Items.active_flag_lst:
 
             Items.upgrade_points += int(self.get_lvl_effects(reverse=True)[self.lvl])
+
+            data.INTERFACE.notification_read = False
 
             # Gfx.create_effect("con_collected", 25, data.PLAYER.hitbox.topleft, hover=True)
             for key, item in Items.inventory_dic.items():
