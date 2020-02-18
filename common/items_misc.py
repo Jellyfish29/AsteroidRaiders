@@ -33,7 +33,7 @@ class Item_supply_crate(Items):
                     Items.inventory_dic[key] = None
 
     def get_lvl_effects(self, reverse=False):
-        return [1, 2, 4, 6]
+        return [1, 2, 3, 5]
 
 
 class Item_upgrade_point_crate(Items):

@@ -62,7 +62,7 @@ class Bosses(Shooter, Boss_skills):
         self.hitable = True
         self.special_take_damage = None
         # General Attributes
-        self.hitbox = pygame.Rect(winwidth / 2, -250, self.size[0], self.size[1])
+        self.hitbox = pygame.Rect(winwidth / 2, -700, self.size[0], self.size[1])
         self.flag = "boss"
         # Phases
         self.phase_triggers = [self.health * 0.9, self.health * 0.5, self.health * 0.2]
@@ -257,7 +257,6 @@ class Bosses(Shooter, Boss_skills):
         data.ITEMS.drop((800, 500), target=Item_heal_crate((0, 255, 0), level=3))
 
         data.ENEMY_PROJECTILE_DATA.clear()
-        Background.bg_move = True
         data.LEVELS.boss_fight = False
         data.LEVELS.after_boss = True
         self.special_death()

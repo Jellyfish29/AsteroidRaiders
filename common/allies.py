@@ -267,9 +267,7 @@ class Battleship_allie(Allied_entity):
                 data.ITEMS.drop(
                     (1000, 400), target=Item_heal_crate((100, 100, 100), level=2))
 
-                if self.health >= self.max_health * 0.5:
-                    data.ITEMS.drop((1000, 400), amount=1)
-                else:
+                if self.health > 0:
                     data.ITEMS.drop(
                         (1000, 400), target=Item_supply_crate((100, 100, 100), level=3))
                 self.kill = True

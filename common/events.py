@@ -163,9 +163,9 @@ class Events():
                     Background.add(loc=(sp[0] - 30, sp[1] - 30), gfx_idx=random.randint(15, 17))
                     random.choice([
                         lambda: data.ITEMS.drop(
-                            sp, target=Item_supply_crate((100, 100, 100), level=1)),
+                            sp, target=Item_supply_crate((100, 100, 100), level=0)),
                         lambda: data.ITEMS.drop(
-                            sp, target=Item_upgrade_point_crate((100, 100, 100), level=1))
+                            sp, target=Item_upgrade_point_crate((100, 100, 100), level=0))
                     ])()
                     cls.spawn_mine_field(start=False)
 
@@ -484,10 +484,10 @@ class Events():
     @classmethod
     def get_special_events_lst(cls):
         return [
-            # (cls.event_comet_storm, 0),
-            # (cls.event_mine_field, 0),
-            # (cls.event_convoy_escort, 6),
-            (cls.event_battleship_defence, 0),
+            (cls.event_comet_storm, 0),
+            (cls.event_mine_field, 0),
+            (cls.event_convoy_escort, 6),
+            (cls.event_battleship_defence, 6),
             # (cls.event_convoy_attack, 12),
             # (cls.event_station_hack, 12),
             # (cls.event_zone_defence, 18),

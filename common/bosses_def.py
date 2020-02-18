@@ -1,6 +1,7 @@
 import pygame
 import random
 from bosses import *
+from ui import *
 import astraid_data as data
 from items_misc import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
 from projectiles import Impactor
@@ -29,12 +30,18 @@ class Boss_mine_boat(Bosses):
         self.guns = [{"pos": [-50, -50], "sprites": [2, 3]}]
 
     def phase_1(self):
+        Gui.add(Gui_tw_text(text=random.choice(data.BOSS_TEXT["taunts"]), text_size=25,
+                            text_color=(213, 90, 17), anchor=self.hitbox, anchor_x=95, anchor_y=80))  # d85a11
+
         self.angles = angles_360(5)
         self.special_move = True
         data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.15, self, (0, -110)))
         self.skills_lst.append(self.skill_chaser)
 
     def phase_2(self):
+        Gui.add(Gui_tw_text(text=random.choice(data.BOSS_TEXT["taunts"]), text_size=25,
+                            text_color=(213, 90, 17), anchor=self.hitbox, anchor_x=95, anchor_y=80))
+
         for loc, effect in [
             ((-50, 50), None),
             ((50, 50), lambda: self.skills_lst.remove(self.skill_missile))
@@ -48,6 +55,9 @@ class Boss_mine_boat(Bosses):
         self.skills_lst.append(self.skill_missile)
 
     def phase_3(self):
+        Gui.add(Gui_tw_text(text=random.choice(data.BOSS_TEXT["taunts"]), text_size=25,
+                            text_color=(213, 90, 17), anchor=self.hitbox, anchor_x=95, anchor_y=80))
+
         self.agles = angles_360(7)
         self.fire_rate -= 25
         self.set_health(-25, (0, 255, 0))
@@ -553,12 +563,14 @@ class Elites(Bosses):
                           (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300),
                           explo=True)
         data.LEVELS.elite_fight = False
-        data.ITEMS.drop((self.hitbox.topleft), target=Item_supply_crate((100, 100, 100), level=0))
+
         if self.drop:
             if random.randint(0, 100) > 90:
                 data.ITEMS.drop((self.hitbox.topleft), amount=1)
             else:
                 random.choice([
+                    lambda:data.ITEMS.drop(
+                        (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100))),
                     lambda: data.ITEMS.drop(
                         (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100))),
                     lambda: data.ITEMS.drop(
@@ -610,27 +622,27 @@ class Elites(Bosses):
         data.ENEMY_DATA.append(random.choice([
             lambda: Elites(
                 health=Elites.health, speed=2, fire_rate=120,
-                elite_skill=Boss_skills.skill_salvo_charlie, gfx_idx=(8, 9),
+                elite_skill=Boss_skills.skill_salvo_charlie, gfx_idx=(12, 13),
                 special_spawn=special_spawn, special_dest=special_dest, drop=drop),
             lambda: Elites(
-                health=Elites.health + Elites.health * 0.2, speed=4, fire_rate=120,
-                elite_skill=Boss_skills.skill_missile, gfx_idx=(2, 3),
+                health=Elites.health + Elites.health * 0.2, speed=6, fire_rate=120,
+                elite_skill=Boss_skills.skill_missile, gfx_idx=(3, 4),
                 special_spawn=special_spawn, special_dest=special_dest, drop=drop),
             lambda: Elites(
                 health=Elites.health - Elites.health * 0.2, speed=8, fire_rate=80,
-                elite_skill=Boss_skills.skill_jumpdrive, gfx_idx=(4, 5),
+                elite_skill=Boss_skills.skill_jumpdrive, gfx_idx=(6, 7),
                 special_spawn=special_spawn, special_dest=special_dest, drop=drop),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.7, speed=3, fire_rate=100,
-                elite_skill=Boss_skills.skill_salvo_delta, gfx_idx=(6, 7),
+                elite_skill=Boss_skills.skill_salvo_delta, gfx_idx=(9, 10),
                 special_spawn=special_spawn, special_dest=special_dest, drop=drop),
             lambda: Elites(
                 health=Elites.health + Elites.health * 0.1, speed=2, fire_rate=100,
                 elite_skill=Boss_skills.skill_main_gun, gfx_idx=(0, 1),
                 special_spawn=special_spawn, special_dest=special_dest, drop=drop),
             lambda: Elites(
-                health=Elites.health + Elites.health * 0.1, speed=6, fire_rate=100,
-                elite_skill=Boss_skills.skill_wave_motion_gun, gfx_idx=(10, 11),
+                health=Elites.health + Elites.health * 0.1, speed=4, fire_rate=100,
+                elite_skill=Boss_skills.skill_wave_motion_gun, gfx_idx=(15, 16),
                 special_spawn=special_spawn, special_dest=special_dest, drop=drop)
         ])())
 

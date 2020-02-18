@@ -8,6 +8,7 @@ from phenomenon import *
 from enemys import *
 from allies import *
 from bosses_def import *
+from ui import *
 from Gfx import Gfx, Background
 from items import Active_Items
 
@@ -68,6 +69,8 @@ class Levels:
             cls.special_event_triggered = 0
             cls.special_event_didnt_trigger = 0
             cls.save_game()
+            Gui.add(Gui_tw_text(text=data.BOSS_TEXT[str(cls.level)], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
+
         else:
             if not cls.events_disabled:
                 if cls.special_event_triggered < cls.special_event_amount:
@@ -263,6 +266,7 @@ class STAGE_SAVE():
         data.PLAYER_DATA.clear()
         data.ITEMS.dropped_lst.clear()
         data.ITEMS.active_flag_lst.clear()
+        data.GUI_DATA.clear()
 
         Levels.after_boss = False
         Levels.special_events = False
