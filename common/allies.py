@@ -263,7 +263,6 @@ class Battleship_allie(Allied_entity):
             self.fire_rate = 10
             if self.hitbox.center[1] > 1200:
                 Background.bg_move = True
-                self.kill = True
 
                 data.ITEMS.drop(
                     (1000, 400), target=Item_heal_crate((100, 100, 100), level=2))
@@ -273,6 +272,7 @@ class Battleship_allie(Allied_entity):
                 else:
                     data.ITEMS.drop(
                         (1000, 400), target=Item_supply_crate((100, 100, 100), level=3))
+                self.kill = True
         else:
             self._draw_damage_effect()
 
