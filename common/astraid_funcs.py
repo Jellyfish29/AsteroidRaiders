@@ -1,5 +1,6 @@
 import pygame
 import os
+import json
 import math
 import random
 import functools
@@ -10,6 +11,16 @@ winheight = 1080
 """ Provides functionaly used by almost all classes:
     handles: angle calculation, image loading, image roattion, pagame.rect on screen detection, time control
 """
+
+
+def get_images(kind):
+    pathes = [os.path.join(os.getcwd()[:-7], f"Gfx\\{kind}\\" + file) for file in os.listdir(os.path.join(os.getcwd()[:-7], f"Gfx\\{kind}"))]
+    return {idx: pygame.image.load(img).convert_alpha() for idx, img in enumerate(sorted(pathes))}
+
+
+def get_text(kind):
+    with open(os.path.join(os.getcwd()[:-7], f"data\\{kind}_text.json")) as f:
+        return json.load(f)
 
 
 def angles_80(speed):
@@ -76,11 +87,6 @@ def directions(speed):
         "left down": (-speed * 0.8, speed * 0.8),
         "idle": (0, 0)
     }
-
-
-def get_images(kind):
-    pathes = [os.path.join(os.getcwd()[:-7], f"Gfx\\{kind}\\" + file) for file in os.listdir(os.path.join(os.getcwd()[:-7], f"Gfx\\{kind}"))]
-    return {idx: pygame.image.load(img).convert_alpha() for idx, img in enumerate(sorted(pathes))}
 
 
 def rect_not_on_sreen(rect, bot=False, strict=False):
@@ -212,7 +218,8 @@ class Timer:
             self.ticker[self.timer_calls_per_tick] += 1
             return True
         else:
-            self.ticker[self.timer_calls_per_tick] += 1
+            if self.ticker[self.timer_calls_per_tick] < limit:
+                self.ticker[self.timer_calls_per_tick] += 1
 
     def timer_animation_ticker(self, limit):
         self.timer_calls_per_tick += 1

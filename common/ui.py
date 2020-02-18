@@ -160,10 +160,13 @@ class Gui_tw_text(Gui):
                     except KeyError:
                         decay = None
                     if self.anchor is None:
-                        Gui.add(Gui_tw_text(loc=(self.loc[0], self.loc[1] + 30), text=self.text, decay=decay))
+                        Gui.add(Gui_tw_text(loc=(self.loc[0], self.loc[1] + 30), text_size=self.text_size,
+                                            text_color=self.text_color, text=self.text, rm_on_end=self.rm_on_end, decay=decay,
+                                            animation_interval=self.animation_interval, type_speed=self.type_speed))
                     else:
-                        Gui.add(Gui_tw_text(text=self.text, anchor=self.anchor,
-                                            anchor_x=self.anchor_x, anchor_y=self.anchor_y + 30, decay=decay))
+                        Gui.add(Gui_tw_text(text=self.text, text_size=self.text_size, text_color=self.text_color, anchor=self.anchor,
+                                            anchor_x=self.anchor_x, anchor_y=self.anchor_y + self.text_size + 5, rm_on_end=self.rm_on_end,
+                                            decay=decay, animation_interval=self.animation_interval, type_speed=self.type_speed))
                     self.draw_text = False
                 else:
                     self.display_text += ltr
@@ -173,8 +176,9 @@ class Gui_tw_text(Gui):
         if self.anchor is not None:
             self.loc = self.anchor.topleft
 
-        self.render_text = Gui.fonts[self.text_size].render(
-            self.get_text(), True, self.text_color)
+        if self.draw_text:
+            self.render_text = Gui.fonts[self.text_size].render(
+                self.get_text(), True, self.text_color)
 
         if self.animation_interval is None:
             win.blit(self.render_text, (self.loc[0] + self.anchor_x, self.loc[1] + self.anchor_y))

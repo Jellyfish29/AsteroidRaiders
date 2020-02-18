@@ -1,6 +1,29 @@
 {
-    "test" : "Das ist der test/multi line text/mit ganz viel oooooooooof/gagagagaga",
 
-    "intro": "Welcome Commander/The REPUBLIC has assigned you a dangerous Mission/The ZHEE have invaded this Sector/Destroy all Enemy COMMAND SHIPS and end this Threat"
+    "intro": "Welcome Commander/The REPUBLIC has assigned you a dangerous Mission/The ZHEE have invaded this Sector/Destroy all Enemy COMMAND SHIPS and end this Threat",
+
+    "comet_alert": "ALERT: COMET STORM INBOUND",
+
+    "mine_alert": "ALERT: APROACHING GRAVITON MINE FIELD",
+
+    "mine_info_1": "Commander/The GRAVITONS have disabled our Jumpdrive/We'll have to fly through the Field",
+
+    "mine_info_2": "ESCAPE THROUGH THE MINE FIELD",
+
+    "mine_info_3": "JUMPDRIVE DISABLED",
+
+    "convoy_e_intro": "Commander!/REPUBLIC Supply Station ahead",
+
+    "convoy_e_info": "Commander!/We have Supply Convoys inbound/The ZHEE will attack/Protect the Convoys",
+
+    "convoy_e_shatter": ["AARGH", "HELP", "We are under ATTACK", "The END", "NOOOO", "They are Everywhere", "Not like This"],
+
+    "convoy_e_end": "Thanks Commander You saved us/Here are some spare Supplies",
+
+    "btl_defence_intro": "Commander!/REPUBLIC Battleship ahead",
+
+    "btl_defence_info": "HELP Commander!/Our Systems are damaged/we need Repairs/Hold off the ZHEE until/the Repairs are complete",
+
+    "btl_defence_end": "REPAIRS COMPLETE/WEAPONS TO MAXIMUM"
 
 }

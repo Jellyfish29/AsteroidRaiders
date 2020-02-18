@@ -1,5 +1,4 @@
-import json
-import os
+from astraid_funcs import get_text, get_images
 
 ENEMY_DATA = []
 ENEMY_PROJECTILE_DATA = []
@@ -24,8 +23,8 @@ ENEMY = None
 ALLIE = None
 INTERFACE = None
 
-with open(os.path.join(os.getcwd()[:-7], f"data\\event_text.json")) as f:
-    EVENT_TEXT = json.load(f)
+EVENT_TEXT = get_text("event")
+BOSS_TEXT = get_text("boss")
 
 
 # @profile

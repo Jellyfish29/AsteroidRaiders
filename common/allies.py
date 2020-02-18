@@ -223,12 +223,6 @@ class Convoy_ship_allie(Allied_entity):
             self.angles = angles_360(0)
             if self.run_limiter.run_block_once():
                 data.EVENTS.convoy_points += 1
-                Gfx.create_effect(
-                    "text", 4,
-                    (self.hitbox.center[0] + random.randint(-10, 10),
-                     self.hitbox.center[1] + random.randint(-10, 10)),
-                    hover=True, follow=True, text="Saved Ships + 1", text_color=(0, 0, 100)
-                )
                 self.gfx_idx = (3, 3)
                 self.hitable = False
             if self.timer_trigger(120):
@@ -239,7 +233,7 @@ class Battleship_allie(Allied_entity):
 
     def __init__(self, spawn_point=0, target=None):
         super().__init__(speed=Background.scroll_speed, health=150, spawn_point=spawn_point,
-                         target=target, size=(200, 200), gfx_idx=(4, 4), gfx_hook=(0, 0))
+                         target=target, size=(200, 200), gfx_idx=(4, 4), gfx_hook=(20, 0))
         self.hitable = True
         self.rot_sprite = False
         self.border_check = False
@@ -275,7 +269,7 @@ class Battleship_allie(Allied_entity):
                     (1000, 400), target=Item_heal_crate((100, 100, 100), level=2))
 
                 if self.health >= self.max_health * 0.5:
-                    data.ITEMS.drop((self.hitbox.topright), amount=1)
+                    data.ITEMS.drop((1000, 400), amount=1)
                 else:
                     data.ITEMS.drop(
                         (1000, 400), target=Item_supply_crate((100, 100, 100), level=3))

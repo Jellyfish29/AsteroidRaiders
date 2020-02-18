@@ -31,7 +31,7 @@ def test_mode():
     Levels.events_disabled = True
     Levels.scaling()
     Levels.display_score += 400
-    Player.health += 40000
+    # Player.health += 40000
     Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
@@ -72,7 +72,6 @@ def main():
     # Interface Setup
     Interface_new.create()
     upgrade_menu = Upgrade_menu()
-    Gui.add(Gui_tw_text(text=data.EVENT_TEXT["intro"], anchor=starting_station.hitbox, anchor_x=90, rm_on_end=True))
 
     # Item Setup
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))

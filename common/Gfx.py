@@ -205,11 +205,17 @@ class Background(Timer):
     bg_obj_spawn_rate = 1200
     bg_sprite_main = pygame.transform.scale(bg_sprites[1], (1920, 1080))
 
-    def __init__(self, y=None):
+    def __init__(self, x=None, y=None, gfx_idx=None):
+        if gfx_idx is None:
+            self.gfx_idx = random.randint(2, 14)
+        else:
+            self.gfx_idx = gfx_idx
+        if x is None:
+            self.x = random.randint(100, 1800)
+        else:
+            self.x = x
         if y is None:
             y = -1000
-        self.gfx_idx = random.randint(2, 14)
-        self.x = random.randint(100, 1800)
         self.y = y
         self.kill = False
 
@@ -242,6 +248,10 @@ class Background(Timer):
             # return True
 
     @classmethod
+    def add(cls, loc=(None, None), gfx_idx=None):
+        cls.bg_objs.append(cls(x=loc[0], y=loc[1], gfx_idx=gfx_idx))
+
+    @classmethod
     @timer
     def update(cls, timer):
         if not any([data.LEVELS.boss_fight, not cls.bg_move]):
@@ -249,6 +259,9 @@ class Background(Timer):
                 cls.bg_objs.append(Background())
 
         for bg_obj in cls.bg_objs:
+            if timer.trigger(30):
+                if bg_obj.gfx_idx > 14 and bg_obj.gfx_idx < 18:
+                    Gfx.create_effect("smoke1", 4, anchor=(bg_obj.x, bg_obj.y))
             bg_obj.gfx_animation()
             if bg_obj.kill:
                 cls.bg_objs.remove(bg_obj)

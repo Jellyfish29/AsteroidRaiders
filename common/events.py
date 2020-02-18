@@ -57,7 +57,7 @@ class Events():
             starting_station = Docile_allied_station(spawn_point=(400, 200))
             data.PLAYER_DATA.append(starting_station)
 
-            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["intro"], anchor=starting_station.hitbox, anchor_x=90, rm_on_end=True))
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["intro"], anchor=starting_station.hitbox, anchor_x=100))
             Background.bg_move = False
             cls.intro_set_up = False
 
@@ -70,11 +70,12 @@ class Events():
             data.PLAYER.hitbox.center = (data.PLAYER.hitbox.center[0], winheight)
 
             data.PLAYER_DATA.clear()
+            data.GUI_DATA.clear()
 
             Background.y += 1080
             Background.bg_objs.append(Background(y=random.randint(100, 800)))
 
-            Gui.delete("intro_1")
+            # Gui.delete("intro_1")
             Background.bg_move = True
 
             return "stop_event"
@@ -88,11 +89,14 @@ class Events():
     @timer
     def event_comet_storm(cls, timer):
         if cls.comet_storm_set_up:
-            data.GUI_DATA.append(Gui_text(loc=(600, 100), text="ALERT: COMET STORM INBOUND",
+            data.GUI_DATA.append(Gui_text(loc=(600, 100), text=data.EVENT_TEXT["comet_alert"],
                                           text_size=50, decay=400, animation_interval=60))
             cls.comet_storm_set_up = False
         cls.set_bg_color()
         if timer.timer_delay(120):
+            if timer.timer_trigger_delay(1100):
+                Background.add(loc=(1000, -100), gfx_idx=random.randint(15, 17))
+
             if not timer.trigger(1400):
                 if timer.trigger(17):
                     data.ENEMY_PROJECTILE_DATA.append(Comet())
@@ -102,7 +106,7 @@ class Events():
                 cls.comet_storm_set_up = True
                 timer.timer_reset()
                 data.ITEMS.drop(
-                    (1000, 400), target=Item_supply_crate((100, 100, 100), level=1))
+                    (1080, 340), target=Item_supply_crate((100, 100, 100), level=1))
 
                 return "stop_event"
 
@@ -113,13 +117,15 @@ class Events():
         if cls.mine_field_set_up:
             data.PLAYER.jumpdrive_disabled = True
             cls.spawn_mine_field()
-            Gui.add(Gui_text(loc=(500, 100), text="ALERT: APROACHING GRAVITON MINE FIELD",
+            Gui.add(Gui_text(loc=(500, 100), text=data.EVENT_TEXT["mine_alert"],
                              text_size=50, decay=360, animation_interval=60))
             cls.mine_field_set_up = False
+        if timer.timer_trigger_delay(100):
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["mine_info_1"], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
         if timer.timer_trigger_delay(400):
-            Gui.add(Gui_text(loc=(800, 40), flag="mine_1", text="ESCAPE THROUGH THE MINE FIELD",
+            Gui.add(Gui_text(loc=(800, 40), flag="mine_1", text=data.EVENT_TEXT["mine_info_2"],
                              text_size=30, animation_interval=60))
-            Gui.add(Gui_text(loc=(970, 980), flag="mine_2", text="JUMPDRIVE DISABLED",
+            Gui.add(Gui_text(loc=(970, 980), flag="mine_2", text=data.EVENT_TEXT["mine_info_3"],
                              text_size=25, animation_interval=60))
             Gui.add(Gui_image(loc=(700, 20), flag="mine_1", img_idx=11, animation_interval=60))
             Gui.add(Gui_image(loc=(1320, 20), flag="mine_1", img_idx=11, animation_interval=60))
@@ -129,31 +135,20 @@ class Events():
             if data.PLAYER.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):
                 data.PLAYER.hitbox.center = (data.PLAYER.hitbox.center[0], winheight)
 
+                # Reset the Scene
                 data.ENEMY_PROJECTILE_DATA.clear()
                 data.ENEMY_DATA.clear()
                 data.PHENOMENON_DATA.clear()
                 data.ITEMS.dropped_lst.clear()
-                Gui.delete("mine_1")
-
+                Gfx.gfx_layer_1_lst.clear()
                 Background.bg_objs.clear()
+                Gui.delete("mine_1")
                 Background.y += 1080
-                Background.bg_objs.append(Background(y=random.randint(100, 800)))
-
-                # Destruction Effects >>>
+                Background.add()
+                # Background.bg_objs.append(Background(y=random.randint(100, 800)))
 
                 cls.mine_field_stage += 1
                 cls.mine_amount += 1
-
-                if cls.mine_field_stage == cls.mine_field_max_stages - 1:
-                    sp = get_random_point()
-                    random.choice([
-                        lambda: data.ITEMS.drop(
-                            sp, target=Item_supply_crate((100, 100, 100), level=2)),
-                        lambda: data.ITEMS.drop(
-                            sp, target=Item_heal_crate((100, 100, 100), level=3)),
-                        lambda: data.ITEMS.drop(
-                            sp, target=Item_upgrade_point_crate((100, 100, 100), level=2))
-                    ])()
 
                 if cls.mine_field_stage >= cls.mine_field_max_stages:
                     Background.bg_move = True
@@ -163,8 +158,15 @@ class Events():
                     data.PLAYER.jumpdrive_disabled = False
 
                     return "stop_event"
-
                 else:
+                    sp = get_random_point()
+                    Background.add(loc=(sp[0] - 30, sp[1] - 30), gfx_idx=random.randint(15, 17))
+                    random.choice([
+                        lambda: data.ITEMS.drop(
+                            sp, target=Item_supply_crate((100, 100, 100), level=1)),
+                        lambda: data.ITEMS.drop(
+                            sp, target=Item_upgrade_point_crate((100, 100, 100), level=1))
+                    ])()
                     cls.spawn_mine_field(start=False)
 
     @classmethod
@@ -204,9 +206,23 @@ class Events():
         if cls.convoy_set_up:
             cls.station_dest = (250, random.randint(400, 700))
             data.PLAYER_DATA.append(Space_station_allie(spawn_point=(200, -200), target=cls.station_dest))
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["convoy_e_intro"], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
             cls.convoy_set_up = False
 
         if not Background.bg_move:
+            # Gui Text
+            if timer.timer_trigger_delay(5):
+                Gui.add(Gui_tw_text(text=data.EVENT_TEXT["convoy_e_info"],
+                                    anchor=data.PLAYER_DATA[0].hitbox, anchor_x=100))
+                Gui.add(Gui_text(flag="convoy_count", text=lambda: f"SHIPS {cls.convoy_points}/16", text_size=15,
+                                 anchor=data.PLAYER_DATA[0].hitbox, anchor_x=0, anchor_y=-65))
+
+            if timer.trigger(260):
+                for a in data.PLAYER_DATA[1:]:
+                    if a.health < a.max_health:
+                        Gui.add(Gui_tw_text(text=random.choice(data.EVENT_TEXT["convoy_e_shatter"]),
+                                            text_size=20, anchor=a.hitbox, anchor_x=15))
+            # Event Script
             if timer.trigger(260):
                 event_id = random.choice([3, 5, 6])
                 data.LEVELS.execute_event(event_id)
@@ -216,16 +232,18 @@ class Events():
                         spawn_point=(2000, random.randint(200, 800)),
                         target=cls.station_dest
                     ))
-
             if timer.trigger(1200):
                 cls.convoy_wave += 1
                 if cls.convoy_wave <= cls.convoy_wave_amount:
                     cls.convoy_ship_amount = (i for i in range(4))
                 if cls.convoy_wave == 3:
-                    Elites.spawn()
+                    Elites.spawn(drop=False)
 
             if cls.convoy_wave >= cls.convoy_wave_amount:
                 if len([s for s in data.PLAYER_DATA if isinstance(s, Convoy_ship_allie)]) == 0:
+                    Gui.add(Gui_tw_text(text=data.EVENT_TEXT["convoy_e_end"],
+                                        anchor=data.PLAYER_DATA[0].hitbox, anchor_x=90))
+                    Gui.delete("convoy_count")
                     cls.convoy_escort_reset()
                     timer.timer_reset()
 
@@ -247,10 +265,17 @@ class Events():
             data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -200), target=cls.bs_dest))
             for _ in range(cls.bs_defence_wave_strength):
                 data.ENEMY_DATA.append(Event_shooter(get_random_point(), standart_spawn=1))
-            timer.ticker.update({"wave_timer": 600})
+            timer.ticker.update({"wave_timer": 400})
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["btl_defence_intro"], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
             cls.battleship_defence_set_up = False
 
         if not Background.bg_move:
+            if timer.timer_trigger_delay(0):
+                Gui.add(Gui_tw_text(text=data.EVENT_TEXT["btl_defence_info"],
+                                    anchor=data.PLAYER_DATA[0].hitbox, anchor_y=-50, anchor_x=210))
+                Gui.add(Gui_text(flag="btl_defence", text=lambda: f"Repair Progress: {int((cls.bs_defence_wave_counter / 5) * 100)}%", text_size=15,
+                                 anchor=data.PLAYER_DATA[0].hitbox, anchor_x=15, anchor_y=-100))
+
             if cls.bs_defence_bs_disabled:
                 if timer.timer_key_trigger(cls.bs_defence_wave_trigger, key="wave_timer"):
                     spawn = random.randint(1, 4)
@@ -266,6 +291,9 @@ class Events():
                     data.LEVELS.execute_event(5)
 
                 if cls.bs_defence_wave_counter == 5:
+                    Gui.delete("btl_defence")
+                    Gui.add(Gui_tw_text(text=data.EVENT_TEXT["btl_defence_end"],
+                                        anchor=data.PLAYER_DATA[0].hitbox, anchor_y=0, anchor_x=210))
                     cls.bs_defence_bs_disabled = False
 
         else:
@@ -457,9 +485,9 @@ class Events():
     def get_special_events_lst(cls):
         return [
             # (cls.event_comet_storm, 0),
-            (cls.event_mine_field, 0),
+            # (cls.event_mine_field, 0),
             # (cls.event_convoy_escort, 6),
-            # (cls.event_battleship_defence, 6),
+            (cls.event_battleship_defence, 0),
             # (cls.event_convoy_attack, 12),
             # (cls.event_station_hack, 12),
             # (cls.event_zone_defence, 18),

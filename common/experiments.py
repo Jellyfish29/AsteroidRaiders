@@ -4,10 +4,8 @@ import time
 import random
 
 
-# x = [1, 12, 3, 5]
+x = [1, 12, 3, 5]
 # y = (i for i in range(10))
 
-x = None - 5
 
-
-print(c[c.find("d") + 1:])
+print(x[1:])
