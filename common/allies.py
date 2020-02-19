@@ -210,13 +210,14 @@ class Space_station_ally(Allied_entity):
 
 class Transport_ship_ally(Allied_entity):
 
-    def __init__(self, spawn_point=0, target=(0, 0), script_name=None):
-        super().__init__(speed=2, health=3, spawn_point=spawn_point, target=target,
+    def __init__(self, spawn_point=0, target=(0, 0), script_name=None, speed=2):
+        super().__init__(speed=speed, health=3, spawn_point=spawn_point, target=target,
                          size=(80, 80), gfx_idx=(1, 2), gfx_hook=(0, 0))
         self.run_limiter = Run_limiter()
         self.script_name = script_name
         self.border_check = False
-        self.scripts.update({"convoy_defence": self.convoy_defence_script})
+        self.scripts.update({"convoy_defence": self.convoy_defence_script,
+                             "planet_evac": self.planet_evac_script})
 
     def convoy_defence_script(self):
         if self.hitbox.collidepoint(self.target):
@@ -229,7 +230,7 @@ class Transport_ship_ally(Allied_entity):
                 self.kill = True
 
     def planet_evac_script(self):
-        pass
+        self.border_check = True
 
 
 class Battleship_allie(Allied_entity):
@@ -402,7 +403,8 @@ class Battlecruiser_ally(Battleship_allie):
                         ]:
                             data.PHENOMENON_DATA.append(Defence_zone(loc))
         else:
-            if len([z for z in data.PHENOMENON_DATA if not z.captured]) == 0:
+            if len([
+                    z for z in data.PHENOMENON_DATA if not z.captured and z.get_name() == "Defence_zone"]) == 0:
                 self.hitable = True
                 self.hide_healthbar = False
                 self.border_check = True

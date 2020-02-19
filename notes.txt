@@ -40,6 +40,7 @@ TODO:
     - #Battleship defence/repair
     - Asteroid Storm Defence
     - Planeten Landungen ???
+    - durch Planeten Ring Fliegen
     -...
 - Mehr Items
     - Heal als upgradebares stnadart Item

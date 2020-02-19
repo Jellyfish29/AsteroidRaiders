@@ -9,6 +9,7 @@ from boss_skills import Boss_skills
 from items_misc import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
 from Gfx import Gfx, Background
 import astraid_data as data
+from ui import *
 
 
 class Bosses(Shooter, Boss_skills):
@@ -223,12 +224,18 @@ class Bosses(Shooter, Boss_skills):
     def phases(self):
         if self.health < self.phase_triggers[0]:
             self.phase_1()
+            Gui.add(Gui_tw_text(text=random.choice(data.BOSS_TEXT["taunts"]), text_size=25,
+                                text_color=(213, 90, 17), anchor=self.hitbox, anchor_x=150, anchor_y=80))
             self.phase_triggers[0] = - 100
         elif self.health < self.phase_triggers[1]:
             self.phase_2()
+            Gui.add(Gui_tw_text(text=random.choice(data.BOSS_TEXT["taunts"]), text_size=25,
+                                text_color=(213, 90, 17), anchor=self.hitbox, anchor_x=150, anchor_y=80))
             self.phase_triggers[1] = - 100
         elif self.health < self.phase_triggers[2]:
             self.phase_3()
+            Gui.add(Gui_tw_text(text=random.choice(data.BOSS_TEXT["taunts"]), text_size=25,
+                                text_color=(213, 90, 17), anchor=self.hitbox, anchor_x=150, anchor_y=80))
             self.phase_triggers[2] = - 100
 
     def boss_skills(self):

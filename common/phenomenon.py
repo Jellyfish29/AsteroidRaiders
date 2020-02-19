@@ -28,6 +28,7 @@ class Phenomenon(Timer):
         self.decay = decay
         self.scripts = {None: self.script}
         self.script_name = None
+        self.captured = False
 
     def move(self):
         if Background.bg_move:
@@ -69,6 +70,9 @@ class Phenomenon(Timer):
 
     def destroy(self):
         return self.kill
+
+    def get_name(self):
+        return self.__class__.__name__
 
     def tick(self):
         if Background.bg_move:
@@ -125,7 +129,9 @@ class Gravity_well(Phenomenon):
 
     def hit(self, obj):
         if self.hitbox.colliderect(obj.hitbox):
-            if not issubclass(obj.__class__, Phenomenon):
+            if not any([issubclass(obj.__class__, Phenomenon),
+                        obj.get_name() == "Boss_laser_battery",
+                        obj.get_name() == "Boss_main_gun_battery"]):
                 if obj not in self.objs:
                     self.objs.update({obj: obj.angles})
                     obj.angles = self.new_a
@@ -170,7 +176,9 @@ class Black_hole(Phenomenon):
 
     def hit(self, obj):
         if self.hitbox.colliderect(obj.hitbox):
-            if not issubclass(obj.__class__, Phenomenon):
+            if not any([issubclass(obj.__class__, Phenomenon),
+                        obj.get_name() == "Boss_laser_battery",
+                        obj.get_name() == "Boss_main_gun_battery"]):
                 if obj not in self.objs:
                     self.objs.update({obj: obj.angles})
                     if isinstance(obj, type):  # Player check
@@ -241,10 +249,13 @@ class Planet(Phenomenon):
                     data.EVENTS.planet_evac_hit_count += 1
 
     def evac_script(self):
-        if data.EVENTS.planet_evac_hit_count >= 50:
+        if data.EVENTS.planet_evac_hit_count >= 30:
             self.kill = True
-            Gfx.create_effect("explosion_3", 2,
+            Gfx.create_effect("explosion_3", 6,
                               (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300),
+                              explo=True)
+            Gfx.create_effect("explosion_3", 6,
+                              (self.hitbox.topleft[0] - 350, self.hitbox.topleft[1] - 350),
                               explo=True)
 
 
@@ -330,6 +341,9 @@ class Defence_zone(Timer):
 
     def destroy(self):
         return self.kill
+
+    def get_name(self):
+        return self.__class__.__name__
 
     def tick(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)

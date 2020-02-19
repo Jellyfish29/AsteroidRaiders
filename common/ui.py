@@ -151,7 +151,7 @@ class Gui_tw_text(Gui):
                     ltr = next(self.text)
                 except StopIteration:
                     if self.rm_on_end:
-                        if self.timer_trigger(40):
+                        if self.timer_trigger(60):
                             self.delete("tw_text")
                     return self.display_text
                 if ltr == "/":

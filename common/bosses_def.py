@@ -30,18 +30,12 @@ class Boss_mine_boat(Bosses):
         self.guns = [{"pos": [-50, -50], "sprites": [2, 3]}]
 
     def phase_1(self):
-        Gui.add(Gui_tw_text(text=random.choice(data.BOSS_TEXT["taunts"]), text_size=25,
-                            text_color=(213, 90, 17), anchor=self.hitbox, anchor_x=95, anchor_y=80))  # d85a11
-
         self.angles = angles_360(5)
         self.special_move = True
         data.ENEMY_DATA.append(Boss_weakspot(self.max_health * 0.15, self, (0, -110)))
         self.skills_lst.append(self.skill_chaser)
 
     def phase_2(self):
-        Gui.add(Gui_tw_text(text=random.choice(data.BOSS_TEXT["taunts"]), text_size=25,
-                            text_color=(213, 90, 17), anchor=self.hitbox, anchor_x=95, anchor_y=80))
-
         for loc, effect in [
             ((-50, 50), None),
             ((50, 50), lambda: self.skills_lst.remove(self.skill_missile))
@@ -55,9 +49,6 @@ class Boss_mine_boat(Bosses):
         self.skills_lst.append(self.skill_missile)
 
     def phase_3(self):
-        Gui.add(Gui_tw_text(text=random.choice(data.BOSS_TEXT["taunts"]), text_size=25,
-                            text_color=(213, 90, 17), anchor=self.hitbox, anchor_x=95, anchor_y=80))
-
         self.agles = angles_360(7)
         self.fire_rate -= 25
         self.set_health(-25, (0, 255, 0))

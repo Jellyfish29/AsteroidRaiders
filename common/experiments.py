@@ -4,8 +4,4 @@ import time
 import random
 
 
-x = [1, 12, 3, 5]
-# y = (i for i in range(10))
-
-
-print(x[1:])
+x = random.randint(0, 0)

@@ -26,6 +26,8 @@
 
     "btl_defence_end": "REPAIRS COMPLETE/WEAPONS TO MAXIMUM",
 
-    "planet_evac_intro": "Commander!/We are entering the Sydan System"
+    "planet_evac_intro": "Commander!/We are entering the Sydan System",
+
+    "planet_evac_info": "Commander!/The ZHEE are trying to destroy/Sydan Prime by hurling Asteroids at/the Planet. We need to evacuate NOW!/Destroy the incoming Asteroids untill the/Evacuations are completed"
 
 }

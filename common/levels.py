@@ -54,11 +54,12 @@ class Levels:
         cls.second_elite_chance -= 1.5
         if cls.second_elite_chance < 40:
             cls.second_elite_chance = 40
-        if cls.level % 12 == 0:
-            cls.special_event_amount += 1
-            if cls.special_event_amount > 5:
-                self.special_event_amount = 5
+        # if cls.level % 12 == 0:
+        #     cls.special_event_amount += 1
+        #     if cls.special_event_amount > 5:
+        #         self.special_event_amount = 5
         if cls.level % 6 == 0:
+            cls.special_events_lst = [e[0] for e in data.EVENTS.get_special_events_lst() if e[1] == cls.level]
             cls.enemy_amount += 1
             cls.elite_max_spawn_time -= 100
             cls.spez_add()
@@ -168,10 +169,10 @@ class Levels:
     @classmethod
     def execute_special_event(cls):
         cls.special_events = True
-        if len(cls.special_events_lst) == 0:
-            cls.special_events_lst = [
-                e[0] for e in data.EVENTS.get_special_events_lst() if cls.level - 12 <= e[1] <= cls.level
-            ]
+        # if len(cls.special_events_lst) == 0:
+        #     cls.special_events_lst = [
+        #         e[0] for e in data.EVENTS.get_special_events_lst() if e[1] >= cls.level and e[1] <= cls.level + 5
+        #     ]
         cls.special_event_queue.append(
             cls.special_events_lst.pop(random.randint(0, len(cls.special_events_lst) - 1)))
 
@@ -224,6 +225,7 @@ class STAGE_SAVE():
         self.pl_health = data.PLAYER.health
         self.pl_max_health = data.PLAYER.max_health
         self.pl_heal_amount = data.PLAYER.heal_amount
+        self.pl_heal_strength = data.PLAYER.heal_strength
         self.pl_raw_health = data.PLAYER.raw_max_health
         self.skill_points = Levels.skill_points
         self.upgrade_points = data.ITEMS.upgrade_points
@@ -256,6 +258,7 @@ class STAGE_SAVE():
         self.special_event_amount = Levels.special_event_amount
 
     def load_save(self):
+        Levels.level = self.lvl
         data.ENEMY_DATA.clear()
         data.ENEMY_PROJECTILE_DATA.clear()
         data.PLAYER_PROJECTILE_DATA.clear()
@@ -264,14 +267,15 @@ class STAGE_SAVE():
         data.ITEMS.dropped_lst.clear()
         data.ITEMS.active_flag_lst.clear()
         data.GUI_DATA.clear()
+        Levels.special_events_lst.clear()
+        Levels.special_event_queue.clear()
+        Levels.special_events_lst = [e[0] for e in data.EVENTS.get_special_events_lst() if e[1] == Levels.level]
 
         Levels.after_boss = False
         Levels.special_events = False
-        Levels.special_event_queue.clear()
         Levels.interval_score = 0
         Levels.special_event_triggered = 0
         Levels.special_event_didnt_trigger = 0
-        Levels.level = self.lvl
         Levels.display_level = self.display_level
         Levels.display_score = self.score
         Levels.level_interval = self.interval_score
@@ -279,6 +283,7 @@ class STAGE_SAVE():
         data.PLAYER.health = self.pl_health
         data.PLAYER.max_health = self.pl_max_health
         data.PLAYER.heal_amount = self.pl_heal_amount
+        data.PLAYER.heal_strength = self.pl_heal_strength
         data.PLAYER.raw_max_health = self.pl_raw_health
         data.PLAYER.hitbox.center = (1000, 900)
         Levels.skill_points = self.skill_points

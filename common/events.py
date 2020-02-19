@@ -55,6 +55,16 @@ class Events():
     planet_evac_wave_speed = [300, 600]
     planet_evac_wave_strength = 8
     planet_evac_hit_count = 0
+    planet_evac_transports_started = 0
+
+    @classmethod
+    def set_bg_color(cls):
+        Background.bg_color_change(color=(20, 20, 0), speed=3)
+
+    @classmethod
+    def event_wave(cls, enemy=None, spawn=None, amount=None, scaling=None):
+        for _ in range(amount + scaling):
+            data.ENEMY_DATA.append(enemy(spawn=spawn))
 
     @classmethod
     def intro_event(cls):
@@ -84,11 +94,6 @@ class Events():
             Background.bg_move = True
 
             return "stop_event"
-
-    @classmethod
-    def event_wave(cls, enemy=None, spawn=None, amount=None, scaling=None):
-        for _ in range(amount + scaling):
-            data.ENEMY_DATA.append(enemy(spawn=spawn))
 
     @classmethod
     @timer
@@ -322,10 +327,6 @@ class Events():
         cls.bs_defence_wave_counter = 0
 
     @classmethod
-    def set_bg_color(cls):
-        Background.bg_color_change(color=(20, 20, 0), speed=3)
-
-    @classmethod
     @timer
     def event_convoy_attack(cls, timer):
         cls.set_bg_color()
@@ -344,7 +345,7 @@ class Events():
                         if cls.c_a_ship % 4 == 0:
                             for i in [150, -150]:
                                 data.ENEMY_DATA.append(Event_shooter(
-                                    (-200, cls.c_a_y + i), special_spawn=(2000, cls.c_a_y + i), border_check=True))
+                                    (-500, cls.c_a_y + i), special_spawn=(2000, cls.c_a_y + i), border_check=True))
             else:
                 if cls.convoy_attack_wave_counter < cls.convoy_attack_wave_amount:
                     cls.convoy_attack_wave_counter += 1
@@ -444,13 +445,14 @@ class Events():
         if cls.z_def_set_up:
             data.PLAYER_DATA.append(Battlecruiser_ally(
                 spawn_point=(900, -250), target=(1000, 600), script_name="zone_def"))
-            timer.ticker.update({"elite_spawn": 370})
+            timer.ticker.update({"elite_spawn": 400})
             cls.z_def_set_up = False
 
         if not Background.bg_move:
-            if timer.timer_key_trigger(400, key="elite_spawn"):
+            if timer.timer_key_trigger(500, key="elite_spawn"):
                 if len(cls.z_def_active_zones) == 0:
-                    cls.z_def_active_zones = [z.loc for z in data.PHENOMENON_DATA if not z.captured]
+                    cls.z_def_active_zones = [
+                        z.loc for z in data.PHENOMENON_DATA if not z.captured and z.get_name() == "Defence_zone"]
                 if len(cls.z_def_active_zones) > 0:
                     Elites.spawn(special_dest=(cls.z_def_active_zones.pop(
                         random.randint(0, len(cls.z_def_active_zones) - 1))))
@@ -501,6 +503,7 @@ class Events():
 
         if cls.planet_evac_set_up:
             data.PHENOMENON_DATA.append(Planet(loc=(1600, -400), script_name="evac"))
+            timer.ticker.update({"ast_wave": -300})
             Background.add(loc=(400, -400), gfx_idx=13)
             Background.add(loc=(440, -420), gfx_idx=13)
             Gui.add(Gui_tw_text(text=data.EVENT_TEXT["planet_evac_intro"],
@@ -508,27 +511,67 @@ class Events():
             cls.planet_evac_set_up = False
 
         if Background.bg_move:
-            if data.PHENOMENON_DATA[0].hitbox.center[1] >= 400:
-                Gui.add(Gui_text(flag="ast_count", text=lambda: f"SHIPS {cls.convoy_points}/16", text_size=15,
-                                 anchor=data.PLAYER_DATA[0].hitbox, anchor_x=0, anchor_y=-65))
+            if data.PHENOMENON_DATA[0].hitbox.center[1] >= 500:
+                Gui.add(Gui_text(flag="evac_count",
+                                 text=lambda: f"Evacuation Progress: {cls.planet_evac_transports_started * 10} %", text_size=15,
+                                 anchor=data.PHENOMENON_DATA[0].hitbox, anchor_x=20, anchor_y=-70))
+                Gui.add(Gui_tw_text(loc=(1300, 70), text=data.EVENT_TEXT["planet_evac_info"]))
 
                 Background.bg_move = False
         else:
-            if timer.trigger(random.randint(cls.planet_evac_wave_speed[0], cls.planet_evac_wave_speed[1])):
+            if timer.timer_key_trigger(random.randint(cls.planet_evac_wave_speed[0], cls.planet_evac_wave_speed[1]), key="ast_wave"):
                 for _ in range(cls.planet_evac_wave_strength):
                     data.ENEMY_DATA.append(Asteroid(spawn=3, target=data.PHENOMENON_DATA[0].hitbox.center))
+
+            if timer.trigger(600):
+                data.PLAYER_DATA.append(Transport_ship_ally(spawn_point=data.PHENOMENON_DATA[0].hitbox.center,
+                                                            target=(1600, 2500), script_name="planet_evac"))
+                cls.planet_evac_transports_started += 1
+
+        if cls.planet_evac_transports_started == 5:
+            cls.planet_evac_wave_speed = [250, 350]
+            cls.planet_evac_wave_strength = 12
+
+        elif cls.planet_evac_transports_started >= 10:
+            if timer.timer_delay(limit=120):
+                timer.timer_reset()
+                cls.planet_evac_reset()
+                data.ITEMS.drop(
+                    ((1600, 500)), target=Item_heal_crate((100, 100, 100), level=2))
+                data.ITEMS.drop(
+                    ((1600, 500)), target=Item_supply_crate((100, 100, 100), level=3))
+                data.ITEMS.drop(
+                    (1600, 500), target=Item_upgrade_point_crate((100, 100, 100), level=3))
+
+                return "stop_event"
+
+        if len(data.PHENOMENON_DATA) == 0:
+            timer.timer_reset()
+            cls.planet_evac_reset()
+
+            return "stop_event"
+
+    @classmethod
+    def planet_evac_reset(cls):
+        Gui.delete("evac_count")
+        Background.bg_move = True
+        cls.planet_evac_set_up = True
+        cls.planet_evac_wave_speed = [300, 600]
+        cls.planet_evac_wave_strength = 8
+        cls.planet_evac_hit_count = 0
+        cls.planet_evac_transports_started = 0
 
     @classmethod
     def get_special_events_lst(cls):
         return [
-            # (cls.event_comet_storm, 0),
-            # (cls.event_mine_field, 0),
-            # (cls.event_convoy_escort, 6),
-            # (cls.event_battleship_defence, 6),
-            # (cls.event_convoy_attack, 12),
-            # (cls.event_station_hack, 12),
-            # (cls.event_zone_defence, 18),
-            (cls.event_planet_evacuation, 0)
+            (cls.event_comet_storm, 1),
+            (cls.event_mine_field, 1),
+            (cls.event_convoy_escort, 6),
+            (cls.event_battleship_defence, 6),
+            (cls.event_convoy_attack, 12),
+            (cls.event_station_hack, 12),
+            (cls.event_zone_defence, 18),
+            (cls.event_planet_evacuation, 18)
         ]
 
 

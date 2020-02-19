@@ -87,7 +87,9 @@ class Enemy(Timer):
     def player_collide(self):
         if self.hitbox.colliderect(data.PLAYER.hitbox):
             # if self.flag == "boss" or self.flag == "elite":
-            if "Bosses" in self.get_bases_names():
+            if any(["Bosses" in self.get_bases_names(),
+                    self.get_name() == "Boss_turret",
+                    self.get_name() == "Boss_weakspot"]):
                 if self.timer_key_trigger(30, key="player_dmg"):
                     data.PLAYER.take_damage(1)
                     self.health -= 1
@@ -334,7 +336,7 @@ class Jumper(Enemy):
             (-40, -40),
             Enemy.asteroid_sprites
         )
-        self.score_amount = 7
+        self.score_amount = 8
         self.ttk_bonus = 30
         self.animation_speed = {
             self.speed + 1 - i: i * 15 for i in range(1, self.speed + 1)
@@ -379,7 +381,7 @@ class Shooter(Enemy):
             Enemy.spez_sprites
         )
 
-        self.score_amount = 8
+        self.score_amount = 10
         self.shot_angles = angles_360(8)
         self.fire_rate = random.randint(80, 140)
         self.ttk_bonus = 40
@@ -423,7 +425,7 @@ class Seeker(Enemy):
             (-10, -10),
             Enemy.spez_sprites
         )
-        self.score_amount = 6
+        self.score_amount = 8
         self.ttk_bonus = 20
         self.target = data.PLAYER.hitbox
 
@@ -459,7 +461,7 @@ class Strafer(Enemy):
             (0, 0),
             Enemy.spez_sprites
         )
-        self.score_amount = 10
+        self.score_amount = 12
         self.shot_angles = angles_360(12)
         self.fire_rate = 20
         self.ttk_bonus = 40
@@ -492,7 +494,7 @@ class Miner(Enemy):
             (-30, -30),
             Enemy.spez_sprites
         )
-        self.score_amount = 8
+        self.score_amount = 10
         self.fire_rate = 100
         self.ttk_bonus = 50
         self.delays = (i for i in range(500, 0, -100))
@@ -528,7 +530,7 @@ class Mine_layer(Enemy):
             (0, 0),
             Enemy.spez_sprites
         )
-        self.score_amount = 8
+        self.score_amount = 11
         self.fire_rate = 180
         self.ttk_bonus = 50
 

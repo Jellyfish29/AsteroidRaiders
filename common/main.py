@@ -73,7 +73,7 @@ def main():
 
     # Item Setup
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
-    Levels.special_events = True
+    Levels.special_events = Turret
     Levels.special_event_queue.append(Events.intro_event)
 
     def menus_update():
@@ -81,8 +81,9 @@ def main():
             upgrade_menu.tick()
     # Interface.main_menu(True)
 
-    # Enemy Setup
+    # Level Setup
     Levels.spez_add()
+    Levels.special_events_lst = [e[0] for e in Events.get_special_events_lst() if e[1] == Levels.level]
 
     while True:
 
