@@ -173,7 +173,7 @@ class Turret:
                         speed=25 * cls.rail_gun_charge + 10,
                         size=(40, 40),
                         start_point=data.PLAYER.hitbox.center,
-                        damage=(data.PLAYER.damage * 6) * cls.rail_gun_charge,
+                        damage=(data.PLAYER.damage * 7) * cls.rail_gun_charge,
                         gfx_idx=18,
                         target=pygame.mouse.get_pos(),
                         piercing=True
@@ -198,7 +198,7 @@ class Turret:
                             speed=30,
                             size=(10, 10),
                             start_point=data.PLAYER.hitbox.center,
-                            damage=1 + data.PLAYER.damage * 0.1,
+                            damage=1 + data.PLAYER.damage * 0.2,
                             flag="point_defence",
                             gfx_idx=3,
                             angle_variation=random.randint(-2, 2),
@@ -259,7 +259,7 @@ class Turret:
                             speed=20,
                             size=cls.projectile_size,
                             start_point=projectile.hitbox.center,
-                            damage=data.PLAYER.damage * 0.08,
+                            damage=data.PLAYER.damage * 0.05,
                             flag="secondary",
                             gfx_idx=3,
                             angle=angle,
@@ -293,7 +293,7 @@ class Turret:
                     speed=cls.projectile_speed,
                     size=cls.projectile_size,
                     start_point=data.PLAYER.hitbox.center,
-                    damage=data.ITEMS.get_item(flag="hammer_shot").effect_strength,
+                    damage=data.PLAYER.damage + data.ITEMS.get_item(flag="hammer_shot").effect_strength,
                     gfx_idx=15,
                     target=pygame.mouse.get_pos(),
                 ))
@@ -315,10 +315,10 @@ class Turret:
         if "rapid_fire" in data.ITEMS.active_flag_lst:
             rapid_fire = data.ITEMS.get_item(flag="rapid_fire")
             if rapid_fire.active:
-                if timer.trigger(5):
+                if timer.trigger(4):
                     Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
                     cls.super_shot_limiter += 1
-                    if cls.super_shot_limiter >= cls.super_shot_ammo + data.LEVELS.level:
+                    if cls.super_shot_limiter >= cls.super_shot_ammo + int(data.LEVELS.level * 0.66):
                         cls.super_shot_limiter = 0
                         rapid_fire.active = False
                         rapid_fire.cooldown = True
@@ -391,7 +391,7 @@ class Turret:
                                 speed=cls.projectile_speed,
                                 size=cls.projectile_size,
                                 start_point=data.PLAYER.hitbox.center,
-                                damage=data.PLAYER.damage + 0.5,
+                                damage=data.PLAYER.damage,
                                 gfx_idx=11,
                                 target=pygame.mouse.get_pos(),
                                 angle_variation=i

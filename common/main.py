@@ -35,10 +35,10 @@ def test_mode():
     Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
-    # Levels.execute_special_event()
+    Levels.execute_special_event()
     Player.health = 20
     Player.max_health = 20
-    Elites.spawn()
+    # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
 
@@ -66,8 +66,6 @@ def main():
     # Background Setup
     Background.update()
     Background.bg_objs += [Background(y=0), Background(y=1000), Background(y=-1000)]
-    starting_station = Docile_allied_station(spawn_point=(400, 200))
-    data.PLAYER_DATA.append(starting_station)
 
     # Interface Setup
     Interface_new.create()

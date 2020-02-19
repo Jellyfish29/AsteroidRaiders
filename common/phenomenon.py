@@ -3,7 +3,7 @@ import random
 
 from astraid_funcs import *
 from init import *
-from Gfx import Background
+from Gfx import Gfx, Background
 from projectiles import Projectile
 from enemys import Shooter
 import astraid_data as data
@@ -26,9 +26,12 @@ class Phenomenon(Timer):
         self.gfx_hook = gfx_hook
         self.flag = flag
         self.decay = decay
+        self.scripts = {None: self.script}
+        self.script_name = None
 
     def move(self):
-        self.hitbox.move_ip(0, self.speed)
+        if Background.bg_move:
+            self.hitbox.move_ip(0, self.speed)
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
 
     def decay_update(self):
@@ -44,6 +47,9 @@ class Phenomenon(Timer):
         pass
 
     def hit(self, enemy):
+        pass
+
+    def script(self):
         pass
 
     def gfx_draw(self):
@@ -67,6 +73,7 @@ class Phenomenon(Timer):
     def tick(self):
         if Background.bg_move:
             self.move()
+        self.scripts[self.script_name]()
         self.decay_update()
         self.gfx_draw()
         self.border_collision()
@@ -210,102 +217,35 @@ class Repair_station(Phenomenon):
                     pygame.draw.rect(win, (0, 255, 0), pygame.Rect(0, 0, winwidth, winheight))
 
 
-class Nebulae_fire_rate_plus(Phenomenon):
-
-    def __init__(self):
-        super().__init__(1, (300, 300), (5, 5), (-180, -180))
-        self.move_trigger = False
-        self.objs = {}
-
-    def move(self):
-        self.hitbox.move_ip(0, self.speed)
-        if not self.move_trigger:
-            if self.hitbox.center[1] > winheight / 2:
-                self.speed = 0
-                if self.timer_trigger(1200):
-                    self.move_trigger = True
-                    self.speed = 1
-
-    def hit(self, obj):
-        if self.hitbox.colliderect(data.PLAYER.hitbox):
-            if not issubclass(obj.__class__, Phenomenon):
-                if obj not in self.objs:
-                    self.objs.update({obj: obj.fire_rate})
-                    obj.set_fire_rate(2)
-
-        if obj in self.objs:
-            if not self.hitbox.colliderect(obj.hitbox):
-                obj.fire_rate = self.objs[obj]
-                del self.objs[obj]
-
-
 class Planet(Phenomenon):
 
-    def __init__(self):
+    def __init__(self, loc=None, script_name=None):
         super().__init__(Background.scroll_speed, (250, 250), (2, 2), (-160, -160))
+        if loc is not None:
+            self.hitbox.center = loc
+        self.script_name = script_name
+        self.scripts.update({"evac": self.evac_script})
 
     def hit(self, obj):
-
-        # if not any([issubclass(obj.__class__, Phenomenon),
-        #             issubclass(obj.__class__, Projectile),
-        #             obj.get_name() == "Player",
-        #             obj.get_name() == "Asteroid",
-        #             obj.get_name() == "Comet",
-        #             obj.get_name() == "Seeker", ]):
-        #     pass
-        # else:
         if self.hitbox.colliderect(obj.hitbox):
-            if obj.get_name() == "Player":
-                if self.timer_trigger(40):
-                    obj.take_damage(1)
-            try:
-                obj.gfx_hit()
-            except AttributeError:
+            if any([obj.get_name() == "Player",
+                    issubclass(obj.__class__, Projectile)]):
                 pass
-            obj.kill = True
-
-
-class Nabulae_aoe_damage(Phenomenon):
-
-    def __init__(self):
-        super().__init__(1, (300, 300), (6, 6), (-180, -180))
-
-    def player_collision(self):
-        if self.hitbox.colliderect(data.PLAYER.hitbox):
-            if self.timer_trigger(60):
-                data.PLAYER.health -= 1
-                pygame.draw.rect(win, (0, 0, 255), pygame.Rect(0, 0, winwidth, winheight))
-
-    def hit(self, obj):
-        if self.hitbox.colliderect(obj.hitbox):
-            try:
-                obj.take_damage(1, staggered=60)
-            except AttributeError:
+            else:
+                try:
+                    obj.gfx_hit()
+                except AttributeError:
+                    pass
                 obj.kill = True
+                if self.script_name == "evac":
+                    data.EVENTS.planet_evac_hit_count += 1
 
-
-class Anti_gravity_well(Phenomenon):
-
-    def __init__(self):
-        super().__init__(1, (500, 500), (7, 7), (-300, -300))
-        self.new_d = directions(40)
-        self.new_a = angles_360(60)
-        self.objs = {}
-
-    def hit(self, obj):
-        if self.hitbox.colliderect(obj.hitbox):
-            if not issubclass(obj.__class__, Phenomenon):
-                if obj not in self.objs:
-                    self.objs.update({obj: obj.angles})
-                    if isinstance(obj, type):
-                        obj.angles = self.new_d
-                    else:
-                        obj.angles = self.new_a
-
-        if obj in self.objs:
-            if not self.hitbox.colliderect(obj.hitbox):
-                obj.angles = self.objs[obj]
-                del self.objs[obj]
+    def evac_script(self):
+        if data.EVENTS.planet_evac_hit_count >= 50:
+            self.kill = True
+            Gfx.create_effect("explosion_3", 2,
+                              (self.hitbox.topleft[0] - 300, self.hitbox.topleft[1] - 300),
+                              explo=True)
 
 
 class Force_field(Timer):

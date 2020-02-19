@@ -50,11 +50,16 @@ class Events():
     z_def_set_up = True
     z_def_bc_destroyed = False
     z_def_active_zones = []
+    # Planet Evacuation
+    planet_evac_set_up = True
+    planet_evac_wave_speed = [300, 600]
+    planet_evac_wave_strength = 8
+    planet_evac_hit_count = 0
 
     @classmethod
     def intro_event(cls):
         if cls.intro_set_up:
-            starting_station = Docile_allied_station(spawn_point=(400, 200))
+            starting_station = Space_station_ally(spawn_point=(400, 200), script_name="intro")
             data.PLAYER_DATA.append(starting_station)
 
             Gui.add(Gui_tw_text(text=data.EVENT_TEXT["intro"], anchor=starting_station.hitbox, anchor_x=100))
@@ -205,7 +210,8 @@ class Events():
 
         if cls.convoy_set_up:
             cls.station_dest = (250, random.randint(400, 700))
-            data.PLAYER_DATA.append(Space_station_allie(spawn_point=(200, -200), target=cls.station_dest))
+            data.PLAYER_DATA.append(Space_station_ally(
+                spawn_point=(200, -200), target=cls.station_dest, script_name="convoy_defence"))
             Gui.add(Gui_tw_text(text=data.EVENT_TEXT["convoy_e_intro"], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
             cls.convoy_set_up = False
 
@@ -228,9 +234,9 @@ class Events():
                 data.LEVELS.execute_event(event_id)
             if timer.trigger(60):
                 if next(cls.convoy_ship_amount, "stop") != "stop":
-                    data.PLAYER_DATA.append(Convoy_ship_allie(
+                    data.PLAYER_DATA.append(Transport_ship_ally(
                         spawn_point=(2000, random.randint(200, 800)),
-                        target=cls.station_dest
+                        target=cls.station_dest, script_name="convoy_defence"
                     ))
             if timer.trigger(1200):
                 cls.convoy_wave += 1
@@ -240,7 +246,7 @@ class Events():
                     Elites.spawn(drop=False)
 
             if cls.convoy_wave >= cls.convoy_wave_amount:
-                if len([s for s in data.PLAYER_DATA if isinstance(s, Convoy_ship_allie)]) == 0:
+                if len([s for s in data.PLAYER_DATA if isinstance(s, Transport_ship_ally)]) == 0:
                     Gui.add(Gui_tw_text(text=data.EVENT_TEXT["convoy_e_end"],
                                         anchor=data.PLAYER_DATA[0].hitbox, anchor_x=90))
                     Gui.delete("convoy_count")
@@ -262,18 +268,21 @@ class Events():
         cls.set_bg_color()
         if cls.battleship_defence_set_up:
             cls.bs_dest = (950, 400)
-            data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -200), target=cls.bs_dest))
+            data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -200),
+                                                     target=cls.bs_dest, script_name="btl_defence"))
             for _ in range(cls.bs_defence_wave_strength):
                 data.ENEMY_DATA.append(Event_shooter(get_random_point(), standart_spawn=1))
             timer.ticker.update({"wave_timer": 400})
-            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["btl_defence_intro"], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["btl_defence_intro"],
+                                text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
             cls.battleship_defence_set_up = False
 
         if not Background.bg_move:
             if timer.timer_trigger_delay(0):
                 Gui.add(Gui_tw_text(text=data.EVENT_TEXT["btl_defence_info"],
                                     anchor=data.PLAYER_DATA[0].hitbox, anchor_y=-50, anchor_x=210))
-                Gui.add(Gui_text(flag="btl_defence", text=lambda: f"Repair Progress: {int((cls.bs_defence_wave_counter / 5) * 100)}%", text_size=15,
+                Gui.add(Gui_text(flag="btl_defence",
+                                 text=lambda: f"Repair Progress: {int((cls.bs_defence_wave_counter / 5) * 100)}%", text_size=15,
                                  anchor=data.PLAYER_DATA[0].hitbox, anchor_x=15, anchor_y=-100))
 
             if cls.bs_defence_bs_disabled:
@@ -370,7 +379,7 @@ class Events():
         if cls.hack_set_up:
             for i in [-200, -300, -600, -450]:
                 spawn = (random.randint(200, 1700), i)
-                data.PLAYER_DATA.append(Comrelay(spawn_point=spawn))
+                data.PLAYER_DATA.append(Comrelay(spawn_point=spawn, script_name="hack"))
                 Elites.spawn(special_spawn=spawn)
             cls.hack_set_up = False
 
@@ -433,15 +442,18 @@ class Events():
     def event_zone_defence(cls, timer):
         cls.set_bg_color()
         if cls.z_def_set_up:
-            data.PLAYER_DATA.append(Battlecruiser_ally(spawn_point=(900, -250), target=(1000, 600)))
-            timer.ticker.update({"elite_spawn": 450})
+            data.PLAYER_DATA.append(Battlecruiser_ally(
+                spawn_point=(900, -250), target=(1000, 600), script_name="zone_def"))
+            timer.ticker.update({"elite_spawn": 370})
             cls.z_def_set_up = False
+
         if not Background.bg_move:
-            if timer.timer_key_trigger(600, key="elite_spawn"):
+            if timer.timer_key_trigger(400, key="elite_spawn"):
                 if len(cls.z_def_active_zones) == 0:
                     cls.z_def_active_zones = [z.loc for z in data.PHENOMENON_DATA if not z.captured]
                 if len(cls.z_def_active_zones) > 0:
-                    Elites.spawn(special_dest=(cls.z_def_active_zones.pop(random.randint(0, len(cls.z_def_active_zones) - 1))))
+                    Elites.spawn(special_dest=(cls.z_def_active_zones.pop(
+                        random.randint(0, len(cls.z_def_active_zones) - 1))))
 
             if timer.trigger(1400):
                 data.LEVELS.execute_event(7)
@@ -454,7 +466,7 @@ class Events():
 
                     return "stop_event"
 
-        if timer.trigger(7200):
+        if timer.trigger(6000):
             cls.zone_defence_reset_elites()
             cls.end_zone_defence()
 
@@ -479,18 +491,44 @@ class Events():
         cls.z_def_set_up = True
         cls.z_def_bc_destroyed = False
         cls.z_def_active_zones = []
+        data.PHENOMENON_DATA.clear()
         Background.bg_move = True
+
+    @classmethod
+    @timer
+    def event_planet_evacuation(cls, timer):
+        cls.set_bg_color()
+
+        if cls.planet_evac_set_up:
+            data.PHENOMENON_DATA.append(Planet(loc=(1600, -400), script_name="evac"))
+            Background.add(loc=(400, -400), gfx_idx=13)
+            Background.add(loc=(440, -420), gfx_idx=13)
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["planet_evac_intro"],
+                                text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
+            cls.planet_evac_set_up = False
+
+        if Background.bg_move:
+            if data.PHENOMENON_DATA[0].hitbox.center[1] >= 400:
+                Gui.add(Gui_text(flag="ast_count", text=lambda: f"SHIPS {cls.convoy_points}/16", text_size=15,
+                                 anchor=data.PLAYER_DATA[0].hitbox, anchor_x=0, anchor_y=-65))
+
+                Background.bg_move = False
+        else:
+            if timer.trigger(random.randint(cls.planet_evac_wave_speed[0], cls.planet_evac_wave_speed[1])):
+                for _ in range(cls.planet_evac_wave_strength):
+                    data.ENEMY_DATA.append(Asteroid(spawn=3, target=data.PHENOMENON_DATA[0].hitbox.center))
 
     @classmethod
     def get_special_events_lst(cls):
         return [
-            (cls.event_comet_storm, 0),
-            (cls.event_mine_field, 0),
-            (cls.event_convoy_escort, 6),
-            (cls.event_battleship_defence, 6),
+            # (cls.event_comet_storm, 0),
+            # (cls.event_mine_field, 0),
+            # (cls.event_convoy_escort, 6),
+            # (cls.event_battleship_defence, 6),
             # (cls.event_convoy_attack, 12),
             # (cls.event_station_hack, 12),
             # (cls.event_zone_defence, 18),
+            (cls.event_planet_evacuation, 0)
         ]
 
 

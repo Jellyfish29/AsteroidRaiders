@@ -24,6 +24,8 @@
 
     "btl_defence_info": "HELP Commander!/Our Systems are damaged/we need Repairs/Hold off the ZHEE until/the Repairs are complete",
 
-    "btl_defence_end": "REPAIRS COMPLETE/WEAPONS TO MAXIMUM"
+    "btl_defence_end": "REPAIRS COMPLETE/WEAPONS TO MAXIMUM",
+
+    "planet_evac_intro": "Commander!/We are entering the Sydan System"
 
 }

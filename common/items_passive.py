@@ -11,7 +11,7 @@ class Item_auto_repair(Items):
         super().__init__("Repair Drones (passiv)", "Drones passively repair the Ship over time", (6, 8))
         self.color = color
         self.flag = "auto_repair"
-        self.base_effect = 3000
+        self.base_effect = 2100
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
 
     def get_upgrade_desc(self):
@@ -189,7 +189,7 @@ class Item_hammer_shot(Items):
         super().__init__("HAMMER Cannon (shot mod)", "Every 5th shot deals increased Damage", (16, 18))
         self.color = color
         self.flag = "hammer_shot"
-        self.base_effect = 15
+        self.base_effect = 12
         self.effect_strength = int(self.get_lvl_effects(reverse=True)[self.lvl])
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "DMG")
 

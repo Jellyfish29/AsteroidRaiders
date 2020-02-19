@@ -38,7 +38,7 @@ TODO:
     - controllpunkte
     - Geschicklichkeits Zeug
     - #Battleship defence/repair
-
+    - Asteroid Storm Defence
     - Planeten Landungen ???
     -...
 - Mehr Items
@@ -50,17 +50,17 @@ TODO:
     -...
 - Gfx
     - #Spez neu
-    - Mehr Planeten mit untershiedlichen Größen
+    - ///Mehr Planeten mit untershiedlichen Größen
     - Player ship neu
         - Je stärker man wird desto mehr Turrets
     - Boss Instance background effekte
     - Event Effekte
 - Interface
-    - koplettes system rework
-        - Klasse Unterklassen
-        - Instruction texte
-        - Menus
-        - Buttons
+    - #koplettes system rework
+        - #Klasse Unterklassen
+        - #Instruction texte
+        - #Menus
+        - #Buttons
         - ...
 - Score Berechnung mit Time Bonus
 - Menu

@@ -105,6 +105,8 @@ class Player:
     @classmethod
     def shield_update(cls):
         cls.shield.effect()
+        if cls.shield_strength == 0:
+            cls.shield.end_active()
 
     @classmethod
     def use_heal(cls):

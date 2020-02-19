@@ -39,7 +39,7 @@ class Items(Timer):
         self.color = (0, 0, 160)
         self.text = " "
         self.lvl = 0
-        self.upgrade_cost_base = (2, 4, 7, "/")
+        self.upgrade_cost_base = (2, 5, 9, "/")
         self.upgrade_cost = self.upgrade_cost_base[self.lvl]
         self.cd_len = None
 

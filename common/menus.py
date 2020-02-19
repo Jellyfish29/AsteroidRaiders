@@ -122,19 +122,19 @@ class Upgrade_menu(Timer):
                 slot.add_ui_elements(idx)
 
     def speed_upgrade_btn_effect(self):
-        if data.LEVELS.skill_points > 0:
-            data.LEVELS.skill_points -= 1
+        if data.LEVELS.skill_points > 1:
+            data.LEVELS.skill_points -= 2
             data.PLAYER.set_player_speed(1)
             if data.PLAYER.speed == data.PLAYER.speed_limit:
-                data.LEVELS.skill_points += 1
+                data.LEVELS.skill_points += 2
 
     def health_upgrade_btn_effect(self):
-        if data.LEVELS.skill_points > 0:
-            data.LEVELS.skill_points -= 1
+        if data.LEVELS.skill_points > 1:
+            data.LEVELS.skill_points -= 2
             data.PLAYER.set_player_health(1)
             data.PLAYER.health += 1
             if data.PLAYER.max_health == data.PLAYER.health_limit:
-                data.LEVELS.skill_points += 1
+                data.LEVELS.skill_points += 2
                 data.PLAYER.health -= 1
 
     def damage_upgrade_btn_effect(self):
@@ -145,14 +145,14 @@ class Upgrade_menu(Timer):
     def crit_chance_upgrade_btn_effect(self):
         if data.LEVELS.skill_points > 0:
             data.LEVELS.skill_points -= 1
-            data.PLAYER.set_player_crit_chance(1)
+            data.PLAYER.set_player_crit_chance(2)
             if data.PLAYER.crit_chance == data.PLAYER.crit_limit:
                 data.LEVELS.skill_points += 1
 
     def fire_rate_upgrade_btn_effect(self):
         if data.LEVELS.skill_points > 0:
             data.LEVELS.skill_points -= 1
-            data.TURRET.set_fire_rate(data.TURRET.base_fire_rate * 0.06)
+            data.TURRET.set_fire_rate(data.TURRET.base_fire_rate * 0.05)
             if data.TURRET.fire_rate == data.TURRET.fire_rate_limit:
                 data.LEVELS.skill_points += 1
 

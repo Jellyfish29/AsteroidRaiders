@@ -38,6 +38,8 @@ class Allied_entity(Timer):
         self.hide_healthbar = False
         self.border_check = True
         self.flag = "allie"
+        self.scripts = {None: self.script}
+        self.script_name = None
         Timer.__init__(self)
 
     def move(self):
@@ -147,7 +149,7 @@ class Allied_entity(Timer):
             self.gfx_health_bar()
         self.move()
         self.skill()
-        self.script()
+        self.scripts[self.script_name]()
         if self.border_check:
             self.border_collide()
         if self.health <= 0:
@@ -155,20 +157,23 @@ class Allied_entity(Timer):
         self.timer_tick()
 
 
-class Space_station_allie(Allied_entity):
+class Space_station_ally(Allied_entity):
 
-    def __init__(self, spawn_point=0, target=None):
+    def __init__(self, spawn_point=0, target=None, script_name=None):
         super().__init__(speed=Background.scroll_speed, health=100, spawn_point=spawn_point,
                          target=target, size=(200, 200), gfx_idx=(0, 0), gfx_hook=(-50, 0))
         self.hitable = False
         self.rot_sprite = False
         self.run_limiter = Run_limiter()
         self.border_check = False
+        self.script_name = script_name
+        self.scripts.update({"convoy_defence": self.convoy_defence_script,
+                             "intro": self.intro_script})
 
     def move(self):
         self.hitbox.move_ip(0, self.speed)
 
-    def script(self):
+    def convoy_defence_script(self):
         if self.hitbox.center[1] >= self.target[1]:
             self.speed = 0
             Background.bg_move = False
@@ -199,26 +204,21 @@ class Space_station_allie(Allied_entity):
 
                 data.LEVELS.convoy_points = 0
 
-
-class Docile_allied_station(Space_station_allie):
-
-    def __init__(self, spawn_point=(0, 0)):
-        super().__init__(spawn_point=spawn_point)
+    def intro_script(self):
         self.speed = 0
 
-    def script(self):
-        pass
 
+class Transport_ship_ally(Allied_entity):
 
-class Convoy_ship_allie(Allied_entity):
-
-    def __init__(self, spawn_point=0, target=(0, 0),):
+    def __init__(self, spawn_point=0, target=(0, 0), script_name=None):
         super().__init__(speed=2, health=3, spawn_point=spawn_point, target=target,
                          size=(80, 80), gfx_idx=(1, 2), gfx_hook=(0, 0))
         self.run_limiter = Run_limiter()
+        self.script_name = script_name
         self.border_check = False
+        self.scripts.update({"convoy_defence": self.convoy_defence_script})
 
-    def script(self):
+    def convoy_defence_script(self):
         if self.hitbox.collidepoint(self.target):
             self.angles = angles_360(0)
             if self.run_limiter.run_block_once():
@@ -228,10 +228,13 @@ class Convoy_ship_allie(Allied_entity):
             if self.timer_trigger(120):
                 self.kill = True
 
+    def planet_evac_script(self):
+        pass
+
 
 class Battleship_allie(Allied_entity):
 
-    def __init__(self, spawn_point=0, target=None):
+    def __init__(self, spawn_point=0, target=None, script_name=None):
         super().__init__(speed=Background.scroll_speed, health=150, spawn_point=spawn_point,
                          target=target, size=(200, 200), gfx_idx=(4, 4), gfx_hook=(20, 0))
         self.hitable = True
@@ -242,12 +245,14 @@ class Battleship_allie(Allied_entity):
         self.run_limiter = Run_limiter()
         self.direction = 90
         self.orig_directions = self.direction
+        self.script_name = script_name
+        self.scripts.update({"btl_defence": self.btl_defence_script})
 
     def move(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         self.hitbox.move_ip(self.angles[self.direction])
 
-    def script(self):
+    def btl_defence_script(self):
         if self.hitbox.center[1] >= self.target[1]:
             self.angles = angles_360(0)
             Background.bg_move = False
@@ -306,22 +311,23 @@ class Battleship_allie(Allied_entity):
 
 class Comrelay(Allied_entity):
 
-    def __init__(self, spawn_point=0, target=None):
+    def __init__(self, spawn_point=0, target=None, script_name=None):
         super().__init__(speed=Background.scroll_speed, health=100, spawn_point=spawn_point,
-                         target=target, size=(70, 200), gfx_idx=(7, 8), gfx_hook=(35, 50))
+                         target=target, size=(70, 70), gfx_idx=(7, 8), gfx_hook=(35, 0))
         self.hitable = False
         self.super_hitable = False
         self.rot_sprite = False
         self.run_limiter = Run_limiter()
         self.border_check = False
-        self.interaction_hitbox = pygame.Rect(self.hitbox.center[0], self.hitbox.center[1], 300, 300)
         self.hack_progress = 0
         self.healthbar_height = 8
         self.healthbar_max_len = 100
+        self.script_name = script_name
+        self.scripts.update({"hack": self.hack_script})
 
     def move(self):
+        pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         self.hitbox.move_ip(0, self.speed)
-        self.interaction_hitbox.center = self.hitbox.center
 
     def gfx_health_bar(self):
         pygame.draw.rect(win, (200, 200, 200),
@@ -338,14 +344,14 @@ class Comrelay(Allied_entity):
                                       self.healthbar_height
                                       )))
 
-    def script(self):
+    def hack_script(self):
         if not Background.bg_move:
             self.speed = 0
         else:
             self.speed = Background.scroll_speed
 
         # if data.PLAYER.interaction_button_pressed:
-        if self.interaction_hitbox.colliderect(data.PLAYER.hitbox):
+        if self.hitbox.colliderect(data.PLAYER.hitbox):
             if self.hack_progress < 100:
                 if self.timer_trigger(5):
                     self.hack_progress += 1
@@ -367,7 +373,7 @@ class Comrelay(Allied_entity):
 
 class Battlecruiser_ally(Battleship_allie):
 
-    def __init__(self, spawn_point=None, target=None):
+    def __init__(self, spawn_point=None, target=None, script_name=None):
         super().__init__(spawn_point=spawn_point, target=target)
         self.gfx_idx = (10, 11)
         self.hitable = False
@@ -375,28 +381,31 @@ class Battlecruiser_ally(Battleship_allie):
         self.health = 15
         self.max_health = self.health
         self.angles = angles_360(3)
+        self.script_name = script_name
+        self.scripts.update({"zone_def": self.zone_defence_script})
 
-    def script(self):
+    def zone_defence_script(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         if Background.bg_move:
             if len(data.LEVELS.special_event_queue) == 0:
                 self.angles = angles_360(4)
             else:
-                if not self.hitable:
-                    if self.hitbox.bottom >= self.target[1]:
-                        self.gfx_idx = (12, 12)
-                        self.angles = angles_360(0)
+                if self.hitbox.bottom >= self.target[1]:
+                    self.gfx_idx = (12, 12)
+                    self.angles = angles_360(0)
+                    if self.timer_trigger_delay(4):
+                        Background.bg_move = False
                         for loc in [
                             (700, 200), (1000, 200), (1300, 200),
                             (700, 500), (1300, 500),
                             (700, 800), (1000, 800), (1300, 800)
                         ]:
                             data.PHENOMENON_DATA.append(Defence_zone(loc))
-                        Background.bg_move = False
         else:
             if len([z for z in data.PHENOMENON_DATA if not z.captured]) == 0:
                 self.hitable = True
                 self.hide_healthbar = False
+                self.border_check = True
                 self.angles = angles_360(1)
 
     def death(self):

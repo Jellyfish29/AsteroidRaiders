@@ -96,7 +96,7 @@ def rect_not_on_sreen(rect, bot=False, strict=False):
         if rect.center[1] > winheight or rect.center[1] < 0:
             return True
 
-    if rect.center[0] > winwidth + 120 or rect.center[0] < - 100:
+    if rect.center[0] > winwidth + 160 or rect.center[0] < - 160:
         return True
     if bot:
         if rect.center[1] > winheight + 250:

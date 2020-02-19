@@ -74,13 +74,11 @@ class Enemy(Timer):
         self.fire_rate = 0
         self.buffer_hp = 0
         self.muzzle_effect_timer = (i for i in range(1))
+        self.ticker.update({"player_dmg": 29})
 
     def move(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         self.hitbox.move_ip(self.angles[self.direction])
-        if self.direction != self.orig_direction:
-            if self.timer_key_trigger(80, key="collision_avoidance"):
-                self.direction = self.orig_direction
 
     def border_collide(self):
         if rect_not_on_sreen(self.hitbox, bot=False, strict=False):
@@ -88,10 +86,14 @@ class Enemy(Timer):
 
     def player_collide(self):
         if self.hitbox.colliderect(data.PLAYER.hitbox):
-            self.gfx_hit()
-            if self.flag == "boss" or self.flag == "elite":
-                data.PLAYER.take_damage(0.05)
+            # if self.flag == "boss" or self.flag == "elite":
+            if "Bosses" in self.get_bases_names():
+                if self.timer_key_trigger(30, key="player_dmg"):
+                    data.PLAYER.take_damage(1)
+                    self.health -= 1
+                    self.gfx_hit()
             else:
+                self.gfx_hit()
                 self.kill = True
                 data.PLAYER.take_damage(1)
 
@@ -216,6 +218,9 @@ class Enemy(Timer):
 
         self.kill = True
 
+    def get_class(self):
+        return self.__class__
+
     def get_name(self):
         return self.__class__.__name__
 
@@ -267,7 +272,7 @@ data.ENEMY = Enemy
 
 class Asteroid(Enemy):
 
-    def __init__(self, spawn=1):
+    def __init__(self, spawn=1, target=None):
         # if spawn is None:
         #     spawn = random.randint(1, 4)
         super().__init__(
@@ -280,11 +285,15 @@ class Asteroid(Enemy):
             (0, 0),
             Enemy.asteroid_sprites
         )
+        if target is not None:
+            self.target = target
+            self.direction = degrees(
+                self.target[0], self.spawn_points[self.spawn_point][0],
+                self.target[1], self.spawn_points[self.spawn_point][1]
+            )
         self.score_amount = 1
-        if self.speed >= 4:
+        if self.speed >= 6:
             self.score_amount = 2
-        if self.speed == 8:
-            self.score_amount = 3
         self.gfx_offset = [8 * i for i in range(8)]
         self.gfx_idx = random.choice([0, 4, 64, 68])
         self.orig_gfx_idx = self.gfx_idx
@@ -375,11 +384,10 @@ class Shooter(Enemy):
         self.fire_rate = random.randint(80, 140)
         self.ttk_bonus = 40
 
-        self.hitbox.move_ip(self.angles[self.direction])
+        # self.hitbox.move_ip(self.angles[self.direction])
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
 
     def skill(self):
-        # print(f"shooter {self.timer_calls_per_tick}")
         if len([a for a in data.PLAYER_DATA if a.hitable]) == 0:
             target = data.PLAYER.hitbox.center
         else:
