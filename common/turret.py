@@ -7,7 +7,7 @@ from astraid_funcs import *
 import astraid_data as data
 from Gfx import Gfx
 from projectiles import Projectile, Missile, Impactor, Explosion, Wave
-from phenomenon import Black_hole, Gravity_well
+from phenomenon import Black_hole, Gravity_well, Implosion
 
 
 class Turret:
@@ -37,6 +37,7 @@ class Turret:
     burts_limiter = 0
     scatter_limter = 0
     rail_gun_charge = 0
+    shock_burst_limiter = 0
     # pd values
     pd_ticker = 0
     # Gfx setup
@@ -64,10 +65,40 @@ class Turret:
         cls.nuke_fire()
         cls.gravity_bomb()
         cls.black_hole_bomb()
+        cls.implosion_bomb()
         cls.burst_fire()
         cls.scatter_fire()
         cls.rail_gun()
-        cls.fragmentation_rounds()
+        cls.shock_missiles()
+
+    @classmethod
+    @timer
+    def normal_fire(cls, timer):
+        if timer.trigger(cls.get_fire_rate()):
+            cls.muzzle_effect_timer = (i for i in range(8))
+            cls.shot_count += 1
+
+            ### Special Ammo ###
+
+            if not any([
+                cls.hammer_shot(),
+                cls.fan_shot(),
+                cls.he_rounds(),
+                cls.boss_snare(),
+                cls.concussion_rounds(),
+                cls.piercing_rounds(),
+                cls.fragmentation_rounds(),
+            ]):
+
+                # Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
+                data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                    speed=cls.projectile_speed,
+                    size=cls.projectile_size,
+                    start_point=data.PLAYER.hitbox.center,
+                    damage=data.PLAYER.damage,
+                    gfx_idx=11,
+                    target=pygame.mouse.get_pos(),
+                ))
 
     @classmethod
     @timer
@@ -157,6 +188,30 @@ class Turret:
                     data.ITEMS.get_item(flag="black_hole_bomb").end_active()
 
     @classmethod
+    def implosion_bomb(cls):
+        if "implosion_bomb" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="implosion_bomb").active:
+                # aim effect
+                if data.ITEMS.get_item(flag="implosion_bomb").engage:
+                    pos = pygame.mouse.get_pos()
+                    data.PLAYER_PROJECTILE_DATA.append(Impactor(
+                        speed=20,
+                        size=(4, 4),
+                        start_point=data.PLAYER.hitbox.center,
+                        damage=0,
+                        gfx_idx=24,
+                        target=pos,
+                        impact_effect=lambda loc=pos: data.PHENOMENON_DATA.append(Implosion(
+                            speed=0,
+                            size=(700, 700),
+                            decay=10,
+                            location=loc,
+                            flag="player",
+                        ))
+                    ))
+                    data.ITEMS.get_item(flag="implosion_bomb").end_active()
+
+    @classmethod
     @timer
     def rail_gun(cls, timer):
         if "rail_gun" in data.ITEMS.active_flag_lst:
@@ -223,49 +278,6 @@ class Turret:
                             flag="missile"
                         ))
                     data.ITEMS.get_item(flag="missile").end_active()
-
-    @classmethod
-    def he_rounds(cls):
-        if "he_rounds" in data.ITEMS.active_flag_lst:
-            if data.ITEMS.get_item(flag="he_rounds").active:
-                Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
-                data.PLAYER_PROJECTILE_DATA.append(Projectile(
-                    speed=cls.projectile_speed,
-                    size=cls.projectile_size,
-                    start_point=data.PLAYER.hitbox.center,
-                    damage=data.PLAYER.damage,
-                    gfx_idx=15,
-                    target=pygame.mouse.get_pos(),
-                    piercing=False,
-                    hit_effect=lambda l: data.PLAYER_PROJECTILE_DATA.append(Explosion(
-                        location=l,
-                        explo_size=70,
-                        damage=data.PLAYER.damage * 0.2,
-                        explosion_effect=lambda loc: Gfx.create_effect(
-                            "explosion_4", 1, (loc[0] - 90, loc[1] - 90), explo=True)
-                    ))
-                ))
-                return True
-
-    @classmethod
-    @timer
-    def fragmentation_rounds(cls, timer):
-        if "frag_rounds" in data.ITEMS.active_flag_lst:
-            if data.ITEMS.get_item(flag="frag_rounds").active:
-                for projectile in cls.hit_locations:
-                    for _ in range(data.ITEMS.get_item(flag="frag_rounds").effect_strength + 1):
-                        angle = angle_switcher(projectile.angle + (random.randint(-35, 35)))
-                        data.PLAYER_PROJECTILE_DATA.append(Projectile(
-                            speed=20,
-                            size=cls.projectile_size,
-                            start_point=projectile.hitbox.center,
-                            damage=data.PLAYER.damage * 0.05,
-                            flag="secondary",
-                            gfx_idx=3,
-                            angle=angle,
-                            piercing=True,
-                            decay=30
-                        ))
 
     @classmethod
     def fan_shot(cls):
@@ -401,6 +413,118 @@ class Turret:
                         data.ITEMS.get_item(flag="scatter_fire").end_active()
 
     @classmethod
+    @timer
+    def shock_missiles(cls, timer):
+        if "shock_missile" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="shock_missile").active:
+                if timer.trigger(6):
+                    cls.shock_burst_limiter += 1
+                    if cls.shock_burst_limiter <= data.ITEMS.get_item(flag="shock_missile").effect_strength:
+                        data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                            speed=30,
+                            size=cls.projectile_size,
+                            start_point=data.PLAYER.hitbox.center,
+                            damage=data.PLAYER.damage + 2,
+                            gfx_idx=24,
+                            target=pygame.mouse.get_pos(),
+                            hit_effect=lambda _, obj: obj.set_cc(0, 180)
+                        ))
+                    else:
+                        cls.shock_burst_limiter = 0
+                        data.ITEMS.get_item(flag="shock_missile").end_active()
+
+    @classmethod
+    def he_rounds(cls):
+        if "he_rounds" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="he_rounds").active:
+                Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
+                data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                    speed=cls.projectile_speed,
+                    size=cls.projectile_size,
+                    start_point=data.PLAYER.hitbox.center,
+                    damage=data.PLAYER.damage,
+                    gfx_idx=15,
+                    target=pygame.mouse.get_pos(),
+                    piercing=False,
+                    hit_effect=lambda l, _: data.PLAYER_PROJECTILE_DATA.append(Explosion(
+                        location=l,
+                        explo_size=70,
+                        damage=data.PLAYER.damage * 0.2,
+                        explosion_effect=lambda loc: Gfx.create_effect(
+                            "explosion_4", 1, (loc[0] - 90, loc[1] - 90), explo=True)
+                    ))
+                ))
+                return True
+
+    @classmethod
+    @timer
+    def fragmentation_rounds(cls, timer):
+        if "frag_rounds" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="frag_rounds").active:
+                # for projectile in cls.hit_locations:
+
+                data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                    speed=cls.projectile_speed,
+                    size=cls.projectile_size,
+                    start_point=data.PLAYER.hitbox.center,
+                    damage=data.PLAYER.damage,
+                    gfx_idx=11,
+                    target=pygame.mouse.get_pos(),
+                    piercing=False,
+                    hit_effect=lambda _, obj: [data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                        speed=20,
+                        size=cls.projectile_size,
+                        start_point=projectile.hitbox.center,
+                        damage=data.PLAYER.damage * 0.05,
+                        flag="secondary",
+                        gfx_idx=3,
+                        angle=angle_switcher(projectile.angle + (random.randint(-35, 35))),
+                        piercing=True,
+                        decay=30
+                    )) for _ in range(data.ITEMS.get_item(flag="frag_rounds").effect_strength + 1)
+                        for projectile in cls.hit_locations]  # OMEGA LAMBDA
+                ))
+
+                return True
+
+    @classmethod
+    @timer
+    def concussion_rounds(cls, timer):
+        if "con_rounds" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="con_rounds").active:
+                Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
+                data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                    speed=cls.projectile_speed,
+                    size=cls.projectile_size,
+                    start_point=data.PLAYER.hitbox.center,
+                    damage=data.PLAYER.damage,
+                    gfx_idx=23,
+                    target=pygame.mouse.get_pos(),
+                    piercing=False,
+                    hit_effect=lambda _, obj: obj.set_cc(obj.speed / 2, 60)
+                ))
+                return True
+
+    @classmethod
+    @timer
+    def piercing_rounds(cls, timer):
+        if "piercing_shot" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="piercing_shot").active:
+                Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
+                data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                    speed=cls.projectile_speed,
+                    size=cls.projectile_size,
+                    start_point=data.PLAYER.hitbox.center,
+                    damage=data.PLAYER.damage * data.ITEMS.get_item(flag="piercing_shot").effect_strength,
+                    flag="secondary",
+                    gfx_idx=14,
+                    target=pygame.mouse.get_pos(),
+                    piercing=True,
+                ))
+
+                return True
+
+    @classmethod
     def boss_snare(cls):
         if cls.snare_charge > 0:
             cls.snare_charge -= 1
@@ -411,43 +535,9 @@ class Turret:
                 damage=0,
                 gfx_idx=19,
                 target=pygame.mouse.get_pos(),
-                hit_effect=lambda _: data.ENEMY_DATA[0].set_snared()
+                hit_effect=lambda a, b: data.ENEMY_DATA[0].set_snared()
             ))
             return True
-
-    @classmethod
-    @timer
-    def normal_fire(cls, timer):
-        if timer.trigger(cls.get_fire_rate()):
-            cls.muzzle_effect_timer = (i for i in range(8))
-            cls.shot_count += 1
-
-            dmg = data.PLAYER.damage
-            piercing = False
-
-            ### Special Ammo ###
-
-            if "piercing_shot" in data.ITEMS.active_flag_lst:
-                if data.ITEMS.get_item(flag="piercing_shot").active:
-                    dmg = data.PLAYER.damage * data.ITEMS.get_item(flag="piercing_shot").effect_strength
-                    piercing = True
-
-            if not any([
-                cls.hammer_shot(),
-                cls.fan_shot(),
-                cls.he_rounds(),
-                cls.boss_snare(),
-            ]):
-                # Gfx.create_effect("shot_muzzle", 2, data.PLAYER.hitbox, follow=True, x=5, y=0)
-                data.PLAYER_PROJECTILE_DATA.append(Projectile(
-                    speed=cls.projectile_speed,
-                    size=cls.projectile_size,
-                    start_point=data.PLAYER.hitbox.center,
-                    damage=dmg,
-                    gfx_idx=11,
-                    target=pygame.mouse.get_pos(),
-                    piercing=piercing,
-                ))
 
     @classmethod
     def gun_gfx_idx_update(cls):

@@ -46,7 +46,7 @@ class Enemy(Timer):
         )
         self.angles = angles_360(speed)
         self.orig_angles = self.angles
-        self.slow_angles = angles_360(2)
+
         self.hitbox = pygame.Rect(
             self.spawn_points[spawn_point][0],
             self.spawn_points[spawn_point][1],
@@ -64,6 +64,9 @@ class Enemy(Timer):
         self.gfx_hook = gfx_hook
         self.sprites = sprites
         self.orig_direction = self.direction
+        self.cced = False
+        self.cc_angles = angles_360(2)
+        self.cc_time = 0
         self.kill = False
         self.border_check = True
         self.ttk_bonus = 0
@@ -79,6 +82,11 @@ class Enemy(Timer):
     def move(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         self.hitbox.move_ip(self.angles[self.direction])
+
+    def cc_move(self):
+        self.hitbox.move_ip(self.cc_angles[self.direction])
+        if self.timer_trigger(self.cc_time):
+            self.cced = False
 
     def border_collide(self):
         if rect_not_on_sreen(self.hitbox, bot=False, strict=False):
@@ -151,6 +159,11 @@ class Enemy(Timer):
 
     def set_fire_rate(self, fr):
         self.fire_rate += fr
+
+    def set_cc(self, s, t):
+        self.cced = True
+        self.cc_time = t
+        self.cc_angles = angles_360(s)
 
     def skill(self):
         pass
@@ -232,7 +245,10 @@ class Enemy(Timer):
     def tick(self):
         self.gfx_animation()
         self.gfx_health_bar()
-        self.move()
+        if not self.cced:
+            self.move()
+        else:
+            self.cc_move()
         if self.border_check:
             self.border_collide()
         self.player_collide()

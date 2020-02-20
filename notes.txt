@@ -43,11 +43,15 @@ TODO:
     - durch Planeten Ring Fliegen
     -...
 - Mehr Items
-    - Heal als upgradebares stnadart Item
     - Shop ???
     - Snare/CC Items
-    - Beweave Shield
+        - #Concussion Round
+        - Shock missiles
+    - #Bi-weave Shield
     - Prog effecte
+    - Verstärkung Call ins
+    - stanionäres Shield
+    - Turret
     -...
 - Gfx
     - #Spez neu

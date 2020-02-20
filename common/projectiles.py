@@ -88,7 +88,7 @@ class Projectile(Timer):
                         data.TURRET.hit_locations.append(self)
                     self.hit_event = True
                 if self.hit_effect is not None:
-                    self.hit_effect(self.hitbox.center)
+                    self.hit_effect(self.hitbox.center, obj)
                 if self.damage > 0:
                     return True
 
@@ -315,7 +315,7 @@ class Missile(Projectile):
         self.aquisition_delay = aquisition_delay
         self.movement_checker = 0
         self.enemy_missile = enemy_missile
-        self.hit_effect = lambda loc: Gfx.create_effect(
+        self.hit_effect = lambda loc, _: Gfx.create_effect(
             "explosion_4", 1, (loc[0] - 90, loc[1] - 90), explo=True)
 
     def move(self):

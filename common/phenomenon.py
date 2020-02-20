@@ -4,7 +4,7 @@ import random
 from astraid_funcs import *
 from init import *
 from Gfx import Gfx, Background
-from projectiles import Projectile
+from projectiles import Projectile, Explosion
 from enemys import Shooter
 import astraid_data as data
 
@@ -203,6 +203,76 @@ class Black_hole(Phenomenon):
             if not self.hitbox.colliderect(obj.hitbox):
                 obj.angles = self.objs[obj]
                 del self.objs[obj]
+
+    def destroy(self):
+        if self.kill:
+            for obj, speed in list(self.objs.items()):
+                obj.angles = speed
+                del self.objs[obj]
+            return True
+
+
+class Implosion(Phenomenon):
+    def __init__(
+            self,
+            speed=0,
+            size=(400, 400),
+            gfx_idx=(18, 18),
+            gfx_hook=(-150, -150),
+            decay=15,
+            location=None,
+            flag="phenom",
+            damage=1
+    ):
+        super().__init__(speed, (700, 700), gfx_idx, gfx_hook, flag=flag, decay=decay)
+        # self.new_d = directions(2)
+        self.new_a = angles_360(20)
+        self.zero_a = angles_360(0)
+        self.objs = {}
+        if location is not None:
+            self.hitbox.center = location
+
+        Gfx.create_effect(
+            "implosion", 2, (self.hitbox.center[0] - 400, self.hitbox.center[1] - 400), explo=True)
+
+    def hit(self, obj):
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        if self.hitbox.colliderect(obj.hitbox):
+            if not any([issubclass(obj.__class__, Phenomenon),
+                        obj.get_name() == "Boss_laser_battery",
+                        obj.get_name() == "Boss_main_gun_battery"]):
+                if obj not in self.objs:
+                    self.objs.update({obj: obj.angles})
+                    if isinstance(obj, type):  # Player check
+                        pass
+                    else:
+                        obj.angles = self.new_a
+                        obj.direction = degrees(
+                            self.hitbox.center[0],
+                            obj.hitbox.center[0],
+                            self.hitbox.center[1],
+                            obj.hitbox.center[1]
+                        )
+                if any([abs(obj.hitbox.center[0] - self.hitbox.center[0]) < 5,
+                        abs(obj.hitbox.center[1] - self.hitbox.center[1]) < 5]):
+
+                    obj.angles = self.zero_a
+
+        if obj in self.objs:
+            if not self.hitbox.colliderect(obj.hitbox):
+                obj.angles = self.objs[obj]
+                del self.objs[obj]
+
+    def decay_update(self):
+        if self.decay is not None:
+            if self.timer_trigger(self.decay):
+                data.PLAYER_PROJECTILE_DATA.append(Explosion(
+                    location=self.hitbox.center,
+                    explo_size=200,
+                    damage=data.PLAYER.damage * 0.8,
+                    explosion_effect=None
+                ))
+                self.kill = True
 
     def destroy(self):
         if self.kill:

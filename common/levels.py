@@ -225,7 +225,7 @@ class STAGE_SAVE():
         self.pl_health = data.PLAYER.health
         self.pl_max_health = data.PLAYER.max_health
         self.pl_heal_amount = data.PLAYER.heal_amount
-        self.pl_heal_strength = data.PLAYER.heal_strength
+        self.pl_heal_strength = data.PLAYER.heal_strenght
         self.pl_raw_health = data.PLAYER.raw_max_health
         self.skill_points = Levels.skill_points
         self.upgrade_points = data.ITEMS.upgrade_points
@@ -283,7 +283,7 @@ class STAGE_SAVE():
         data.PLAYER.health = self.pl_health
         data.PLAYER.max_health = self.pl_max_health
         data.PLAYER.heal_amount = self.pl_heal_amount
-        data.PLAYER.heal_strength = self.pl_heal_strength
+        data.PLAYER.heal_strenght = self.pl_heal_strength
         data.PLAYER.raw_max_health = self.pl_raw_health
         data.PLAYER.hitbox.center = (1000, 900)
         Levels.skill_points = self.skill_points

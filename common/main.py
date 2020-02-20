@@ -29,15 +29,15 @@ def test_mode():
     Levels.display_level += 1
     Levels.level += 1
     Levels.events_disabled = True
-    # Levels.scaling()
     Levels.display_score += 400
     # Player.health += 40000
     Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
-    Levels.execute_special_event()
-    Player.health = 20
-    Player.max_health = 20
+    Player.health = 40
+    Player.max_health = 40
+    Levels.scaling()
+    # Levels.execute_special_event()
     # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
@@ -72,6 +72,7 @@ def main():
     upgrade_menu = Upgrade_menu()
 
     # Item Setup
+    Items.drop((winwidth / 2, 400), target=Item_implosion_bomb((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.special_events = Turret
     Levels.special_event_queue.append(Events.intro_event)

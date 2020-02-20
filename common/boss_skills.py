@@ -573,7 +573,7 @@ class Boss_skills(Timer):
                     flag="neutral",
                     gfx_idx=20,
                     target=random.choice([data.PLAYER.hitbox.center, self.dummy_targets[random.randint(0, 2)]]),
-                    hit_effect=lambda l: data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                    hit_effect=lambda l, _: data.ENEMY_PROJECTILE_DATA.append(Projectile(
                         speed=100,
                         size=(30, 30),
                         start_point=self.hitbox.center,

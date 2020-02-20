@@ -112,8 +112,12 @@ class Interface_new(Timer):
                                                 anchor_x=80 + cls.shield_x_pos, anchor_y=15))
                 cls.shield_x_pos += 15
             while len(cls.shield_bar) > data.PLAYER.shield_strength:
-                cls.shield_bar.pop()
-                cls.shield_x_pos -= 15
+                try:
+                    cls.shield_bar.pop()
+                    cls.shield_x_pos -= 15
+                except IndexError:
+                    cls.shield_bar.clear()
+                    cls.shield_x_pos = 0
         else:
             cls.shield_bar.clear()
             cls.shield_x_pos = 0
@@ -182,6 +186,7 @@ class Interface_new(Timer):
                 if data.LEVELS.skill_points > 0:
                     cls.indicators["skill_up"].ticker = cls.indicators["item_up"].ticker
         if data.PLAYER.shield.active:
+            print("oof")
             cls.indicators["shield"].tick()
         if data.PLAYER.jumpdrive_disabled:
             cls.indicators["jumpdrive"].tick()

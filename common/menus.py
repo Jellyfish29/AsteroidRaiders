@@ -152,7 +152,7 @@ class Upgrade_menu(Timer):
     def fire_rate_upgrade_btn_effect(self):
         if data.LEVELS.skill_points > 0:
             data.LEVELS.skill_points -= 1
-            data.TURRET.set_fire_rate(data.TURRET.base_fire_rate * 0.05)
+            data.TURRET.set_fire_rate(data.TURRET.base_fire_rate * 0.055)
             if data.TURRET.fire_rate == data.TURRET.fire_rate_limit:
                 data.LEVELS.skill_points += 1
 

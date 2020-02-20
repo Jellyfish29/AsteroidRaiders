@@ -32,7 +32,7 @@ class Item_damage_core(Items):
         super().__init__("Damage Core (passiv)", "Massivily increases Weapon Damage", (7, 9))
         self.color = color
         self.flag = "damage_core"
-        self.base_effect = 1.4
+        self.base_effect = 1.6
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "DMG")
 
     def get_upgrade_desc(self):
@@ -64,11 +64,13 @@ class Item_ablativ_armor(Items):
     def effect(self):
         if self.flag not in Items.active_flag_lst:
             Items.active_flag_lst.append(self.flag)
+            data.PLAYER.health_limit += 5
             data.PLAYER.set_player_health(int(self.get_lvl_effects(reverse=True)[self.lvl]))
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
             Items.active_flag_lst.remove(self.flag)
+            data.PLAYER.health_limit -= 5
             data.PLAYER.set_player_health(-int(self.get_lvl_effects(reverse=True)[self.lvl]))
 
 
@@ -87,11 +89,13 @@ class Item_engine_core(Items):
     def effect(self):
         if self.flag not in Items.active_flag_lst:
             Items.active_flag_lst.append(self.flag)
+            data.PLAYER.speed_limit += 2
             data.PLAYER.set_player_speed(int(self.get_lvl_effects(reverse=True)[self.lvl]))
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
             Items.active_flag_lst.remove(self.flag)
+            data.PLAYER.speed_limit -= 2
             data.PLAYER.set_player_speed(-int(self.get_lvl_effects(reverse=True)[self.lvl]))
 
 
@@ -110,11 +114,13 @@ class Item_ammo_racks(Items):
     def effect(self):
         if self.flag not in Items.active_flag_lst:
             Items.active_flag_lst.append(self.flag)
+            data.ACTIVE_ITEMS.cd_limit += 0.2
             data.ACTIVE_ITEMS.set_cd_reduction(self.get_lvl_effects(reverse=True)[self.lvl])
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
             Items.active_flag_lst.remove(self.flag)
+            data.ACTIVE_ITEMS.cd_limit -= 0.2
             data.ACTIVE_ITEMS.set_cd_reduction(-self.get_lvl_effects(reverse=True)[self.lvl])
 
 
@@ -265,11 +271,13 @@ class Item_targeting_scanner(Items):
     def effect(self):
         if self.flag not in Items.active_flag_lst:
             Items.active_flag_lst.append(self.flag)
+            data.PLAYER.crit_limit -= 10
             data.PLAYER.set_player_crit_chance(int(self.get_lvl_effects(reverse=True)[self.lvl]))
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
             Items.active_flag_lst.remove(self.flag)
+            data.PLAYER.crit_limit += 10
             data.PLAYER.set_player_crit_chance(-int(self.get_lvl_effects(reverse=True)[self.lvl]))
 
 
@@ -295,6 +303,36 @@ class Item_expert_damage_control(Items):
             data.PLAYER.heal_strenght -= int(self.get_lvl_effects(reverse=True)[self.lvl])
 
 
+class Item_bi_weave_shields(Items):
+
+    def __init__(self, color):
+        super().__init__("Bi-Weave Shields (passiv)", "Reduces Shield Strength for faster Shield Recharge Rate", (1, 1))
+        self.color = color
+        self.flag = "hyper_shields"
+        self.base_effect = 0.4
+        self.player_shield_orig_base = 5400
+        # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "Shield HP")
+
+    def get_upgrade_desc(self):
+        return f"CD Reduction: {int((1 - self.get_lvl_effects()[self.lvl]) * 100)}s"
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+            Items.active_flag_lst.append(self.flag)
+            data.PLAYER.max_shield_strength = int(data.PLAYER.max_shield_strength / 2)
+            if data.PLAYER.shield_strength > data.PLAYER.max_shield_strength:
+                data.PLAYER.shield_strength = data.PLAYER.max_shield_strength
+            data.PLAYER.shield.base_effect *= self.get_lvl_effects()[self.lvl]
+            data.PLAYER.shield.set_effect_strength()
+
+    def end_effect(self):
+        if self.flag in Items.active_flag_lst:
+            Items.active_flag_lst.remove(self.flag)
+            data.PLAYER.max_shield_strength = int(data.PLAYER.max_shield_strength * 2)
+            data.PLAYER.shield.base_effect = self.player_shield_orig_base
+            data.PLAYER.shield.set_effect_strength()
+
+
 Items.set_drop_table([
     (Item_auto_repair, (255, 0, 0)),
     (Item_targeting_scanner, (0, 0, 0)),
@@ -309,4 +347,5 @@ Items.set_drop_table([
     (Item_hyper_velocity_rounds, (1, 169, 201)),
     (Item_expert_damage_control, (0, 0, 0)),
     # (Item_overdrive, (89, 1, 37)),
+    (Item_bi_weave_shields, (0, 0, 0))
 ])

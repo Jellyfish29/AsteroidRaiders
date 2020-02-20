@@ -36,6 +36,9 @@ class Bosses(Shooter, Boss_skills):
         self.angles = angles_360(self.speed)
         self.orig_angles = self.angles
         self.snared = False
+        self.cced = False
+        self.cc_angles = angles_360(2)
+        self.cc_time = 0
         # Gfx
         self.orig_gfx_idx = self.gfx_idx
         self.sprites = data.ENEMY.boss_sprites
@@ -272,6 +275,11 @@ class Bosses(Shooter, Boss_skills):
     def set_snared(self):
         self.snared = True
 
+    def set_cc(self, s, t):
+        self.cced = True
+        self.cc_time = t
+        self.cc_angles = angles_360(s)
+
     def snare_effect(self):
         if self.snared:
             self.angles = angles_360(0)
@@ -295,7 +303,10 @@ class Bosses(Shooter, Boss_skills):
             else:
                 self.boss_special_skills()
         if not self.special_move:
-            self.move()
+            if not self.cced:
+                self.move()
+            else:
+                self.cc_move()
         if not self.special_gfx:
             self.gfx_animation()
         else:

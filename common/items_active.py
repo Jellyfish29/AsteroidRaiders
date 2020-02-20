@@ -253,6 +253,60 @@ class Item_rail_gun(Active_Items):
         return f"{int(data.TURRET.rail_gun_charge * 100)}/100"
 
 
+class Item_concussion_rounds(Active_Items):
+
+    def __init__(self, color, start=False):
+        super().__init__(color, "Concussion Rounds (active)", "On Activation fires Powerful Rounds that Slow down Strucked Objects", (1, 1))
+        self.color = color
+        self.flag = "con_rounds"
+        self.cd_len = 1800
+        self.base_effect = 1600  # active time
+        self.active_time = self.get_lvl_effects(reverse=True)[self.lvl]
+        # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "s")
+
+    def get_upgrade_desc(self):
+        return f"Active Time: {int(self.active_time / 60 + 1)}s <> Cooldown: {int(self.get_cd_len() / 60) + 1}s"
+
+    def set_effect_strength(self):
+        self.active_time = self.get_lvl_effects(reverse=True)[self.lvl]
+
+
+class Item_shock_missile(Active_Items):
+
+    def __init__(self, color):
+        super().__init__(color, "Shock Missiles (active)", "Fires a Burst of Schock Missile, that damage and Stun the Target", (1, 1))
+        self.color = color
+        self.flag = "shock_missile"
+        self.base_effect = 5
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+        self.cd_len = 800
+
+    def get_upgrade_desc(self):
+        return f"Missile Amounts: {int(self.get_lvl_effects(reverse=True)[self.lvl])} <> Cooldown: {int(self.get_cd_len() / 60) + 1}s"
+
+    def set_effect_strength(self):
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+
+
+class Item_implosion_bomb(Active_Items):
+
+    def __init__(self, color, start=False):
+        super().__init__(color, "Implosion Missile (active)", "Fires a Missile that implodes at the Target location", (1, 1))
+        self.color = color
+        self.flag = "implosion_bomb"
+        self.base_effect = 1600  # cooldwon time
+        self.cd_len = self.get_lvl_effects()[self.lvl]
+        self.active_time = None
+        self.engage = False
+        # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
+
+    def get_upgrade_desc(self):
+        return f"Cooldown: {int(self.get_cd_len() / 60) + 1}s"
+
+    def set_effect_strength(self):
+        self.cd_len = self.get_lvl_effects()[self.lvl]
+
+
 ### Standart Items ###
 
 
@@ -356,7 +410,10 @@ active_item_drop_table = [
     (Item_scatter_fire, (0, 0, 0)),
     (Item_burst_fire, (0, 0, 0)),
     (Item_rail_gun, (0, 0, 0)),
-    (Item_fragmentation_rounds, (0, 0, 0))
+    (Item_fragmentation_rounds, (0, 0, 0)),
+    (Item_concussion_rounds, (0, 0, 0)),
+    (Item_shock_missile, (0, 0, 0)),
+    (Item_implosion_bomb, (0, 0, 0))
 ]
 
 Items.set_drop_table(active_item_drop_table)
