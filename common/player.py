@@ -12,7 +12,7 @@ from items_active import Item_shield, Item_jump_drive, Item_afterburner
 
 class Player:
 
-    hitbox = pygame.Rect(winwidth / 2, winheight / 2, 70, 50)
+    hitbox = pygame.Rect(winwidth / 2, winheight / 2, 80, 80)
     flag = "player"
     interaction_button_pressed = False
 
@@ -46,16 +46,29 @@ class Player:
     # Gfx
     gfx_idx = {
         "up": 0,
-        "down": 2,
-        "right": 4,
-        "left": 6,
-        "right up": 8,
-        "right down": 10,
-        "left up": 12,
-        "left down": 14,
-        "idle": 16
+        "down": 0,
+        "right": 1,
+        "left": 2,
+        "right up": 3,
+        "right down": 3,
+        "left up": 4,
+        "left down": 4,
+        "idle": 0
     }
-    ship_sprites = get_images("player_ship")
+    effect_name = {
+        "up": "p_up",
+        "down": "p_down",
+        "right": "p_right",
+        "left": "p_left",
+        "right up": "p_right",
+        "right down": "p_right",
+        "left up": "p_left",
+        "left down": "p_left",
+        "idle": "p_idle"
+    }
+    ship_sprites = get_images("new_player")
+    item_locs = [((-25, -30), 5), ((20, -30), 6), ((-25, 0), 7), ((20, 0), 8)]
+    item_amount = 0
     gfx_ticker = 0
     # Time
     restart_timer = False
@@ -122,7 +135,7 @@ class Player:
     def jumpdrive_update(cls):
         cls.jumpdrive.effect()
         if cls.jumpdrive.active:
-            cls.draw_jump_dest()
+            # cls.draw_jump_dest()
             if cls.jumpdrive.engage:
                 Gfx.create_effect(
                     "jump", 2, (cls.hitbox.topleft[0] - 40, cls.hitbox.topleft[1] - 40))
@@ -146,32 +159,21 @@ class Player:
             cls.ship_sprites[20], (pygame.mouse.get_pos()[0] - 41, pygame.mouse.get_pos()[1] - 50))
 
     @classmethod
-    def gfx_animation(cls, idx):
-        if cls.gfx_ticker < 3:
-            win.blit(
-                cls.ship_sprites[cls.gfx_idx[idx]], (cls.hitbox.topleft[0] - 6, cls.hitbox.topleft[1] - 25))
-            cls.gfx_ticker += 1
-        else:
-            win.blit(
-                cls.ship_sprites[cls.gfx_idx[idx] + 1], (cls.hitbox.topleft[0] - 6, cls.hitbox.topleft[1] - 25))
-            cls.gfx_ticker += 1
-        if cls.gfx_ticker == 6:
-            cls.gfx_ticker = 0
+    @timer
+    def gfx_animation(cls, timer):
+        # pygame.draw.rect(win, (255, 255, 255), cls.hitbox)
+        win.blit(
+            cls.ship_sprites[cls.gfx_idx[cls.direction]], (cls.hitbox.topleft[0] - 57, cls.hitbox.topleft[1] - 50))
+        if timer.trigger(12):
+            Gfx.create_effect(
+                cls.effect_name[cls.direction], 6, anchor=cls.hitbox, rot=0,
+                x=-95, y=-90, layer=3
+            )
 
     @classmethod
     def gfx_hit_effect(cls):
         pygame.draw.rect(win, (255, 0, 0), pygame.Rect(0, 0, winwidth, winheight))
         pygame.draw.rect(win, (255, 0, 0), pygame.Rect(0, 0, winwidth, winheight))
-
-    @classmethod
-    @timer
-    def gfx_warning_lights(cls, timer):
-        if cls.health < 2:
-            ticker = timer.timer_animation_ticker(30)
-            if ticker < 20:
-                win.blit(cls.ship_sprites[21], (cls.hitbox.topleft[0] - 6, cls.hitbox.topleft[1] - 25))
-            else:
-                win.blit(cls.ship_sprites[22], (cls.hitbox.topleft[0] - 6, cls.hitbox.topleft[1] - 25))
 
     @classmethod
     def set_player_speed(cls, sp):
@@ -202,6 +204,15 @@ class Player:
     @classmethod
     def interaction_button(cls, p):
         cls.interaction_button_pressed = p
+
+    @classmethod
+    def gfx_item_extensions(cls):
+
+        cls.item_amount = 4 - [data.ITEMS.inventory_dic[k] for k in data.ITEMS.inventory_dic if k >= 4].count(None)
+
+        for loc, idx in cls.item_locs[:cls.item_amount]:
+            win.blit(
+                cls.ship_sprites[idx], (cls.hitbox.center[0] + loc[0], cls.hitbox.center[1] + loc[1]))
 
     @classmethod
     @timer
@@ -251,9 +262,9 @@ class Player:
         # pygame.draw.rect(win, (255, 0, 0), cls.hitbox)
         cls.jumpdrive_update()
         cls.afterburner_update()
-        cls.gfx_animation(cls.direction)
+        cls.gfx_animation()
+        # cls.gfx_item_extensions()
         cls.shield_update()
-        cls.gfx_warning_lights()
 
 
 data.PLAYER = Player

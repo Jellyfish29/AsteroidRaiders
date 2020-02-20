@@ -4,10 +4,8 @@ import time
 import random
 
 
-x = [True, True, None]
+x = {1: 1, 2: 2, 3: 3}
 
-y = x.count(True)
 
-y = (i for i in range(2) if i > 0)
-
-print(next(y))
+for i in x[:2]:
+    print(i)

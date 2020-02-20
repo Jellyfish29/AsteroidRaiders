@@ -44,7 +44,12 @@ class Turret:
     projectile_sprites = get_images("projectile")
     explosion_sprites = get_images("explosions")
     muzzle_effect_timer = (i for i in range(1))
-    gun_gfx_idx = 0
+    gun_gfx_idx = 8
+    gfx_turret_tube = 12
+    gfx_turret_tubes = (i for i in range(12, 15))
+    gfx_secondary_guns_loc = [(- 64, -50), (0, -50), (-35, 0), (-35, -70)]
+    sec_gun_gfx_idx = 10
+    item_amount = 0
     # Special Munitions
     snare_charge = 0
 
@@ -197,7 +202,7 @@ class Turret:
                     data.PLAYER_PROJECTILE_DATA.append(Impactor(
                         speed=20,
                         size=(4, 4),
-                        start_point=data.PLAYER.hitbox.center,
+                        start_point=data.PLAYER.hitbox.topleft,
                         damage=0,
                         gfx_idx=24,
                         target=pos,
@@ -540,13 +545,6 @@ class Turret:
             return True
 
     @classmethod
-    def gun_gfx_idx_update(cls):
-        if next(cls.muzzle_effect_timer, "stop") == "stop":
-            cls.gun_gfx_idx = 0
-        else:
-            cls.gun_gfx_idx = 1
-
-    @classmethod
     def get_fire_rate(cls):
         return 1 / cls.fire_rate * 60
 
@@ -564,6 +562,25 @@ class Turret:
                 win.blit(cls.projectile_sprites[7], (data.PLAYER.hitbox.topleft[0] - 190, data.PLAYER.hitbox.topleft[1] - 220))
 
     @classmethod
+    @run_limiter
+    def gun_gfx_idx_update(cls, limiter):
+        if next(cls.muzzle_effect_timer, "stop") == "stop":
+            cls.gun_gfx_idx = 8
+            cls.sec_gun_gfx_idx = 10
+            if limiter.run_block_once():
+                try:
+                    cls.gfx_turret_tube = next(cls.gfx_turret_tubes)
+                except StopIteration:
+                    cls.gfx_turret_tubes = (i for i in range(12, 15))
+                    cls.gfx_turret_tube = next(cls.gfx_turret_tubes)
+        else:
+            limiter.run_limiter_reset()
+            cls.gun_gfx_idx = cls.gfx_turret_tube
+            cls.sec_gun_gfx_idx = 11
+
+        # cls.item_amount = 4 - [data.ITEMS.inventory_dic[k] for k in data.ITEMS.inventory_dic if k < 4].count(None)
+
+    @classmethod
     def gfx_gun_draw(cls):
         win.blit(rot_center(
             Gfx.gun_sprites[cls.gun_gfx_idx], degrees(
@@ -572,7 +589,17 @@ class Turret:
                  pygame.mouse.get_pos()[0],
                  data.PLAYER.hitbox.center[0])
         ),
-            (data.PLAYER.hitbox.center[0] - 50, data.PLAYER.hitbox.center[1] - 50))
+            (data.PLAYER.hitbox.center[0] - 35, data.PLAYER.hitbox.center[1] - 35))
+
+        # for loc in cls.gfx_secondary_guns_loc[:cls.item_amount]:
+        #     win.blit(rot_center(
+        #         Gfx.gun_sprites[cls.sec_gun_gfx_idx], degrees(
+        #             pygame.mouse.get_pos()[1],
+        #             data.PLAYER.hitbox.center[1],
+        #             pygame.mouse.get_pos()[0],
+        #             data.PLAYER.hitbox.center[0])
+        #     ),
+        #         (data.PLAYER.hitbox.center[0] + loc[0], data.PLAYER.hitbox.center[1] + loc[1]))
 
     @classmethod
     def update(cls):

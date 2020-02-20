@@ -56,7 +56,7 @@ def main():
         else:
             Player.move(str_3)
 
-    components = [Player, Turret, Enemy, Phenomenon, Levels, Items]
+    components = [Turret, Enemy, Phenomenon, Levels, Items]
     # @profile
 
     def components_update():
@@ -72,7 +72,7 @@ def main():
     upgrade_menu = Upgrade_menu()
 
     # Item Setup
-    Items.drop((winwidth / 2, 400), target=Item_implosion_bomb((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_implosion_bomb((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.special_events = Turret
     Levels.special_event_queue.append(Events.intro_event)
@@ -92,6 +92,8 @@ def main():
         Background.update()
 
         Gfx.layer_3_update()
+
+        Player.update()
 
         data.GAME_UPDATE()
 
