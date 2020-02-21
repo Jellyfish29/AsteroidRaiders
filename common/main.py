@@ -63,6 +63,10 @@ def main():
         for component in components:
             component.update()
 
+    def menus_update():
+        if upgrade_menu.menu_active:
+            upgrade_menu.tick()
+
     # Background Setup
     Background.update()
     Background.bg_objs += [Background(y=0), Background(y=1000), Background(y=-1000)]
@@ -75,16 +79,11 @@ def main():
     # Items.drop((winwidth / 2, 400), target=Item_implosion_bomb((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.special_events = Turret
-    Levels.special_event_queue.append(Events.intro_event)
-
-    def menus_update():
-        if upgrade_menu.menu_active:
-            upgrade_menu.tick()
-    # Interface.main_menu(True)
 
     # Level Setup
     Levels.spez_add()
     Levels.special_events_lst = [e[0] for e in Events.get_special_events_lst() if e[1] == Levels.level]
+    Levels.special_event_queue.append(Events.intro_event)
 
     while True:
 
