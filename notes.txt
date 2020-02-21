@@ -52,6 +52,7 @@ TODO:
     - Verstärkung Call ins
     - stanionäres Shield
     - Turret
+    - Jumpdrive explosion
     -...
 - Gfx
     - #Spez neu

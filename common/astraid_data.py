@@ -23,6 +23,7 @@ ENEMY = None
 ALLIE = None
 INTERFACE = None
 
+UP_MENU = None
 EVENT_TEXT = get_text("event")
 BOSS_TEXT = get_text("boss")
 

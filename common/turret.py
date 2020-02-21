@@ -479,8 +479,8 @@ class Turret:
                     hit_effect=lambda _, obj: [data.PLAYER_PROJECTILE_DATA.append(Projectile(
                         speed=20,
                         size=cls.projectile_size,
-                        start_point=projectile.hitbox.center,
-                        damage=data.PLAYER.damage * 0.05,
+                        start_point=obj.hitbox.center,
+                        damage=data.PLAYER.damage * 0.06,
                         flag="secondary",
                         gfx_idx=3,
                         angle=angle_switcher(projectile.angle + (random.randint(-35, 35))),

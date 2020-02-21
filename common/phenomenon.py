@@ -134,7 +134,10 @@ class Gravity_well(Phenomenon):
                         obj.get_name() == "Boss_main_gun_battery"]):
                 if obj not in self.objs:
                     self.objs.update({obj: obj.angles})
-                    obj.angles = self.new_a
+                    # if "Enemy" in obj.get_bases_names():
+                    obj.angles = angles_360(int(obj.speed * 0.25))
+                    # elif "Projectile" in obj.get_bases_names():
+                    #     obj.angles = angles_360(obj.speed / 2)
                 if isinstance(obj, type):
                     obj.angles = self.new_d
         if obj in self.objs:
@@ -383,7 +386,7 @@ class Defence_zone(Timer):
     def hit(self, obj):
         if obj.get_name() == "Elites":
             if obj.hitbox.colliderect(self.hitbox):
-                if self.timer_key_trigger(5, key="capture"):
+                if self.timer_key_trigger(8, key="capture"):
                     self.capture_counter += 1
                 if self.captured:
                     if self.zone_reset:
@@ -393,7 +396,7 @@ class Defence_zone(Timer):
                                 obj.angles = angles_360(obj.speed)
                                 if len(data.EVENTS.z_def_active_zones) == 0:
                                     data.EVENTS.z_def_active_zones = [
-                                        z.loc for z in data.PHENOMENON_DATA if not z.captured
+                                        z.loc for z in data.PHENOMENON_DATA if not z.captured and z.__class__ == self.__class__
                                     ]
                                 try:
                                     obj.checkpoints = {

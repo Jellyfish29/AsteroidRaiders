@@ -56,7 +56,7 @@ def main():
         else:
             Player.move(str_3)
 
-    components = [Turret, Enemy, Phenomenon, Levels, Items]
+    components = [Player, Turret, Enemy, Phenomenon, Levels, Items]
     # @profile
 
     def components_update():
@@ -64,8 +64,8 @@ def main():
             component.update()
 
     def menus_update():
-        if upgrade_menu.menu_active:
-            upgrade_menu.tick()
+        if data.UP_MENU.menu_active:
+            data.UP_MENU.tick()
 
     # Background Setup
     Background.update()
@@ -73,7 +73,7 @@ def main():
 
     # Interface Setup
     Interface_new.create()
-    upgrade_menu = Upgrade_menu()
+    data.UP_MENU = Upgrade_menu()
 
     # Item Setup
     # Items.drop((winwidth / 2, 400), target=Item_implosion_bomb((100, 100, 200)))
@@ -91,8 +91,6 @@ def main():
         Background.update()
 
         Gfx.layer_3_update()
-
-        Player.update()
 
         data.GAME_UPDATE()
 
@@ -112,9 +110,9 @@ def main():
 
             if event.type == KEYDOWN:
                 if event.key == K_TAB:
-                    upgrade_menu.bg_state = Background.bg_move
+                    data.UP_MENU.bg_state = Background.bg_move
                     Background.bg_move = False
-                    upgrade_menu.menu_active = True
+                    data.UP_MENU.menu_active = True
                     data.INTERFACE.notification_read = True
                     right, left, up, down = [False, False, False, False]
                     Turret.fire(False)

@@ -354,7 +354,7 @@ class Comrelay(Allied_entity):
         # if data.PLAYER.interaction_button_pressed:
         if self.hitbox.colliderect(data.PLAYER.hitbox):
             if self.hack_progress < 100:
-                if self.timer_trigger(5):
+                if self.timer_trigger(3):
                     self.hack_progress += 1
 
         if self.hack_progress >= 100:
@@ -384,6 +384,7 @@ class Battlecruiser_ally(Battleship_allie):
         self.angles = angles_360(3)
         self.script_name = script_name
         self.scripts.update({"zone_def": self.zone_defence_script})
+        self.run_limiter = Run_limiter()
 
     def zone_defence_script(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
@@ -394,7 +395,7 @@ class Battlecruiser_ally(Battleship_allie):
                 if self.hitbox.bottom >= self.target[1]:
                     self.gfx_idx = (12, 12)
                     self.angles = angles_360(0)
-                    if self.timer_trigger_delay(4):
+                    if self.run_limiter.run_block_once():
                         Background.bg_move = False
                         for loc in [
                             (700, 200), (1000, 200), (1300, 200),

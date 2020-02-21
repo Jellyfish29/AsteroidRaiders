@@ -40,7 +40,7 @@ class Events():
     convoy_attack_set_up = True
     convoy_attack_ship_amount = 6
     convoy_attack_c_length = (i for i in range(convoy_attack_ship_amount))
-    convoy_attack_wave_amount = 5
+    convoy_attack_wave_amount = 4
     convoy_attack_wave_counter = 0
     convoy_attack_c_destroyed = 0
     # Station hack
@@ -369,7 +369,7 @@ class Events():
         cls.convoy_attack_set_up = True
         cls.convoy_attack_ship_amount = 6
         cls.convoy_attack_c_length = (i for i in range(cls.convoy_attack_ship_amount))
-        cls.convoy_attack_wave_amount = 5
+        cls.convoy_attack_wave_amount = 4
         cls.convoy_attack_wave_counter = 0
         cls.convoy_attack_c_destroyed = 0
 
@@ -394,13 +394,13 @@ class Events():
         else:
             elite_amount = len([e for e in data.ENEMY_DATA if isinstance(e, Elites)])
             if elite_amount == 2:
-                if timer.timer_key_trigger(400, key="wave_trigger"):
+                if timer.timer_key_trigger(460, key="wave_trigger"):
                     data.LEVELS.execute_event(random.choice([5, 3]))
             elif elite_amount == 1:
-                if timer.timer_key_trigger(260, key="wave_trigger"):
+                if timer.timer_key_trigger(340, key="wave_trigger"):
                     data.LEVELS.execute_event(random.choice([5, 3]))
             elif elite_amount == 0:
-                if timer.timer_key_trigger(160, key="wave_trigger"):
+                if timer.timer_key_trigger(240, key="wave_trigger"):
                     data.LEVELS.execute_event(random.choice([5, 3]))
 
             if cls.hack_stations_hacked == 4:
@@ -484,8 +484,8 @@ class Events():
                 elite.move_pattern = [random.randint(0, 9) for _ in range(40)]
 
     @classmethod
-    def end_zone_defence(cls):
-        if not cls.z_def_bc_destroyed:
+    def end_zone_defence(cls, all_reset=False):
+        if not cls.z_def_bc_destroyed and not all_reset:
             data.ITEMS.drop(
                 (1000, 500), target=Item_upgrade_point_crate((100, 100, 100), level=3))
             data.ITEMS.drop(
@@ -560,6 +560,16 @@ class Events():
         cls.planet_evac_wave_strength = 8
         cls.planet_evac_hit_count = 0
         cls.planet_evac_transports_started = 0
+
+    @classmethod
+    def all_reset(cls):
+        cls.mine_field_reset()
+        cls.convoy_escort_reset()
+        cls.bs_defence_reset()
+        cls.convoy_attack_reset()
+        cls.hack_reset()
+        cls.end_zone_defence(all_reset=True)
+        cls.planet_evac_reset()
 
     @classmethod
     def get_special_events_lst(cls):

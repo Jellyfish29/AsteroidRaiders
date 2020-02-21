@@ -88,7 +88,8 @@ class Projectile(Timer):
                         data.TURRET.hit_locations.append(self)
                     self.hit_event = True
                 if self.hit_effect is not None:
-                    self.hit_effect(self.hitbox.center, obj)
+                    if not issubclass(obj, Projectile):
+                        self.hit_effect(self.hitbox.center, obj)
                 if self.damage > 0:
                     return True
 

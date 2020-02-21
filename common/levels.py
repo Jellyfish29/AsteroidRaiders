@@ -269,6 +269,7 @@ class STAGE_SAVE():
         data.GUI_DATA.clear()
         Levels.special_events_lst.clear()
         Levels.special_event_queue.clear()
+        data.EVENTS.all_reset()
         Levels.special_events_lst = [e[0] for e in data.EVENTS.get_special_events_lst() if e[1] == Levels.level]
 
         Levels.after_boss = False
@@ -311,6 +312,11 @@ class STAGE_SAVE():
         data.TURRET.overdrive_count = self.overdrive_count
         Levels.elite_max_spawn_time = self.elite_sp_time
         Levels.special_event_amount = self.special_event_amount
+        for _, item in data.ITEMS.inventory_dic.items():
+            if item is not None:
+                item.end_effect()
+                item.effect()
+        data.UP_MENU.reset_item_bar()
 
         if self.boss_fight:
             Levels.boss_spawn()
