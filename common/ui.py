@@ -90,7 +90,7 @@ class Gui_text(Gui):
         self.text_color = text_color
         self.animation_interval = animation_interval
         if not callable(self.text):
-            self.render_text = Gui.fonts[self.text_size].render(self.text, True, self.text_color)
+            self.render_text = FONTS[self.text_size].render(self.text, True, self.text_color)
 
     def get_text(self):
         return self.text()
@@ -100,7 +100,7 @@ class Gui_text(Gui):
             self.loc = self.anchor.topleft
 
         if callable(self.text):
-            self.render_text = Gui.fonts[self.text_size].render(
+            self.render_text = FONTS[self.text_size].render(
                 self.get_text(), True, self.text_color)
 
         if self.animation_interval is None:
@@ -177,7 +177,7 @@ class Gui_tw_text(Gui):
             self.loc = self.anchor.topleft
 
         if self.draw_text:
-            self.render_text = Gui.fonts[self.text_size].render(
+            self.render_text = FONTS[self.text_size].render(
                 self.get_text(), True, self.text_color)
 
         if self.animation_interval is None:
@@ -256,7 +256,7 @@ class Gui_button(Gui):
         self.sprite_clicked = Gui.button_sprites[self.btn_idx[1]]
         self.hitbox = self.sprite_default.get_rect()
         self.hitbox.topleft = loc
-        self.render_text = Gui.fonts[btn_text_size].render(btn_text, True, btn_text_color)
+        self.render_text = FONTS[btn_text_size].render(btn_text, True, btn_text_color)
         self.clicked = False
 
     def draw(self):

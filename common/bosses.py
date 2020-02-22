@@ -294,6 +294,7 @@ class Bosses(Shooter, Boss_skills):
         self.phases()
         self.snare_effect()
         self.player_collide()
+        self.dmg_text_buffer()
         if not self.hide_health_bar:
             self.gfx_health_bar()
         if not self.snared:

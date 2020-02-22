@@ -18,8 +18,8 @@ class Gfx(Timer):
     def __init__(
         self, typ, interval,
         anchor, hover, follow,
-        x, y, text,
-        text_color, explo, pl_shield, rot
+        x, y, text, text_color,
+        text_size, explo, pl_shield, rot
     ):
         Timer.__init__(self)
         if explo:
@@ -37,6 +37,7 @@ class Gfx(Timer):
         self.follow = follow
         self.text = text
         self.text_color = text_color
+        self.text_size = text_size
         self.rot = rot
         self.effect_types = {
             "shield": (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
@@ -50,6 +51,7 @@ class Gfx(Timer):
             "explosion_2": (9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23),
             "explosion_3": (24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37),
             "explosion_4": (38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50),
+            "explosion_5": (6, 7, 8, 7, 8, 7, 8, 7, 8),
             "nuke": (39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51),
             "lightning": (28, 29, 30, 31, 32, 33, 34, 35),
             "radar": (36, 37, 38, 39, 40, 41, 42),
@@ -71,11 +73,12 @@ class Gfx(Timer):
             self.hover_rect.move_ip(0, -2)
             if self.typ == "dmg_text":
                 try:
-                    text = Gfx.font.render(
+                    text = FONTS[self.text_size].render(
                         self.get_dmg_str(), True, self.text_color, self.hover_rect
                     )
                 except SystemError:
                     return True
+                self.hover_rect.move_ip(random.choice([1, -1]), 0)
                 win.blit(text, self.hover_rect)
 
                 if self.timer_trigger(30):
@@ -158,6 +161,7 @@ class Gfx(Timer):
             follow=False,
             x=0, y=0,
             text=None,
+            text_size=15,
             text_color=(0, 0, 0),
             explo=False,
             pl_shield=False,
@@ -166,15 +170,15 @@ class Gfx(Timer):
     ):
         if layer == 3:
             Gfx.gfx_layer_3_lst.append(
-                Gfx(typ, interval, anchor, hover, follow, x, y, text, text_color, explo, pl_shield, rot)
+                Gfx(typ, interval, anchor, hover, follow, x, y, text, text_color, text_size, explo, pl_shield, rot)
             )
         elif layer == 2:
             Gfx.gfx_layer_2_lst.append(
-                Gfx(typ, interval, anchor, hover, follow, x, y, text, text_color, explo, pl_shield, rot)
+                Gfx(typ, interval, anchor, hover, follow, x, y, text, text_color, text_size, explo, pl_shield, rot)
             )
         else:
             Gfx.gfx_layer_1_lst.append(
-                Gfx(typ, interval, anchor, hover, follow, x, y, text, text_color, explo, pl_shield, rot)
+                Gfx(typ, interval, anchor, hover, follow, x, y, text, text_color, text_size, explo, pl_shield, rot)
             )
 
     @classmethod

@@ -210,12 +210,14 @@ class Timer:
         else:
             return True
 
-    def timer_trigger_delay(self, limit=0):
-        self.timer_calls_per_tick += 1
-        if self.timer_calls_per_tick not in self.ticker:
-            self.ticker.update({self.timer_calls_per_tick: 0})
-        if self.ticker[self.timer_calls_per_tick] == limit:
-            self.ticker[self.timer_calls_per_tick] += 1
+    def timer_trigger_delay(self, limit=0, key=None):
+        if key is None:
+            self.timer_calls_per_tick += 1
+            key = self.timer_calls_per_tick
+        if key not in self.ticker:
+            self.ticker.update({key: 0})
+        if self.ticker[key] == limit:
+            self.ticker[key] += 1
             return True
         else:
             if self.ticker[self.timer_calls_per_tick] < limit:

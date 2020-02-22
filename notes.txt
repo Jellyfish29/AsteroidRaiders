@@ -41,18 +41,21 @@ TODO:
     - Asteroid Storm Defence
     - Planeten Landungen ???
     - durch Planeten Ring Fliegen
+    - stealth Sabotage
+    - Battlegroup escort
     -...
 - Mehr Items
     - Shop ???
     - Snare/CC Items
         - #Concussion Round
-        - Shock missiles
+        - #Shock missiles
     - #Bi-weave Shield
-    - Prog effecte
+    - #Prog effecte
     - Verstärkung Call ins
     - stanionäres Shield
     - Turret
-    - Jumpdrive explosion
+    - #Jumpdrive explosion
+    - #swarm misisles
     -...
 - Gfx
     - #Spez neu

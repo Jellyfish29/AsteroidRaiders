@@ -333,6 +333,30 @@ class Item_bi_weave_shields(Items):
             data.PLAYER.shield.set_effect_strength()
 
 
+class Item_debris_scanner(Items):
+
+    def __init__(self, color):
+        super().__init__("Debris Scanner (passiv)", "Passivily Scans the Debris of destroyed Enemys for useful Items", (1, 1))
+        self.color = color
+        self.flag = "debris_scanner"
+        self.base_effect = 8
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+
+    def get_upgrade_desc(self):
+        return f"Discovery Chance: {int(self.get_lvl_effects(reverse=True)[self.lvl])} %"
+
+    def set_effect_strength(self):
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+            Items.active_flag_lst.append(self.flag)
+
+    def end_effect(self):
+        if self.flag in Items.active_flag_lst:
+            Items.active_flag_lst.remove(self.flag)
+
+
 Items.set_drop_table([
     (Item_auto_repair, (255, 0, 0)),
     (Item_targeting_scanner, (0, 0, 0)),
@@ -347,5 +371,6 @@ Items.set_drop_table([
     (Item_hyper_velocity_rounds, (1, 169, 201)),
     (Item_expert_damage_control, (0, 0, 0)),
     # (Item_overdrive, (89, 1, 37)),
-    (Item_bi_weave_shields, (0, 0, 0))
+    (Item_bi_weave_shields, (0, 0, 0)),
+    (Item_debris_scanner, (0, 0, 0))
 ])

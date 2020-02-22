@@ -65,12 +65,13 @@ class Projectile(Timer):
     def get_angle(self):
         angle = angle_switcher(self.angle + self.angle_variation)
         if self.homing:
-            self.angle = degrees(
+            angle = degrees(
                 self.target[0],
                 self.hitbox.center[0],
                 self.target[1],
                 self.hitbox.center[1]
             )
+            return angle
         return angle
 
     def hit(self, obj):
@@ -88,7 +89,7 @@ class Projectile(Timer):
                         data.TURRET.hit_locations.append(self)
                     self.hit_event = True
                 if self.hit_effect is not None:
-                    if not issubclass(obj, Projectile):
+                    if not issubclass(obj.__class__, Projectile):
                         self.hit_effect(self.hitbox.center, obj)
                 if self.damage > 0:
                     return True
@@ -215,7 +216,7 @@ class Impactor(Projectile):
             self.target[0],
             self.hitbox.center[0]
         )),
-            (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5)
+            (self.hitbox.topleft[0] - 50, self.hitbox.topleft[1] - 50)
         )
 
     def get_distance(self):
@@ -351,7 +352,7 @@ class Missile(Projectile):
                 self.hitbox.center[0]
             )
         ),
-            (self.hitbox.topleft[0] - 5, self.hitbox.topleft[1] - 5))
+            (self.hitbox.topleft[0] - 50, self.hitbox.topleft[1] - 50))
 
     def tick(self):
         self.move()

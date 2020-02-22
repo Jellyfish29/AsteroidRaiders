@@ -38,7 +38,7 @@ class Item_missile(Active_Items):
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
 
     def get_upgrade_desc(self):
-        return f"Damage: {(int(data.PLAYER.damage * self.effect_strength) * 10)} <> Cooldown: {int(self.cd_len / 60) + 1}s"
+        return f"Damage: {round(data.PLAYER.damage * int(self.effect_strength) * 10)} <> Cooldown: {int(self.cd_len / 60) + 1}s"
 
     def set_effect_strength(self):
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
@@ -307,6 +307,47 @@ class Item_implosion_bomb(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
 
+class Item_jumpdrive_distortion(Items):
+
+    def __init__(self, color):
+        super().__init__("Jumpdrive Distortion (passiv)", "Temporal distortions damage Objects around the Jumpdrive destination", (1, 1))
+        self.color = color
+        self.flag = "jump_distortion"
+        self.base_effect = 1.6
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+
+    def get_upgrade_desc(self):
+        return f"Distortion Damage: {int(data.PLAYER.damage * self.get_lvl_effects(reverse=True)[self.lvl] * 10)}"
+
+    def set_effect_strength(self):
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+            Items.active_flag_lst.append(self.flag)
+
+    def end_effect(self):
+        if self.flag in Items.active_flag_lst:
+            Items.active_flag_lst.remove(self.flag)
+
+
+class Item_Smart_missile(Active_Items):
+
+    def __init__(self, color):
+        super().__init__(color, "Smart Missiles (active)", "Fires A number of Smart Missile, that seekout Targets on their own", (1, 1))
+        self.color = color
+        self.flag = "smart_missile"
+        self.base_effect = 12
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+        self.cd_len = 600
+
+    def get_upgrade_desc(self):
+        return f"Missile Amounts: {int(self.get_lvl_effects(reverse=True)[self.lvl])} <> Cooldown: {int(self.get_cd_len() / 60) + 1}s"
+
+    def set_effect_strength(self):
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+
+
 ### Standart Items ###
 
 
@@ -413,7 +454,9 @@ active_item_drop_table = [
     (Item_fragmentation_rounds, (0, 0, 0)),
     (Item_concussion_rounds, (0, 0, 0)),
     (Item_shock_missile, (0, 0, 0)),
-    (Item_implosion_bomb, (0, 0, 0))
+    (Item_implosion_bomb, (0, 0, 0)),
+    (Item_jumpdrive_distortion, (0, 0, 0)),
+    (Item_Smart_missile, (0, 0, 0))
 ]
 
 Items.set_drop_table(active_item_drop_table)
@@ -429,5 +472,7 @@ def start_item_generator():
         Item_rail_gun,
         Item_fragmentation_rounds,
         Item_piercing_shot,
-        Item_missile
+        Item_missile,
+        Item_jumpdrive_distortion,
+        Item_Smart_missile
     ][random.randint(0, 6)]

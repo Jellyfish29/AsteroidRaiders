@@ -305,14 +305,12 @@ class Planet(Phenomenon):
         if loc is not None:
             self.hitbox.center = loc
         self.script_name = script_name
-        self.scripts.update({"evac": self.evac_script})
+        self.scripts.update({"evac": self.evac_script,
+                             "invasion": self.invasion_script})
 
     def hit(self, obj):
         if self.hitbox.colliderect(obj.hitbox):
-            if any([obj.get_name() == "Player",
-                    issubclass(obj.__class__, Projectile)]):
-                pass
-            else:
+            if obj.get_name() == "Asteroid":
                 try:
                     obj.gfx_hit()
                 except AttributeError:
@@ -330,6 +328,9 @@ class Planet(Phenomenon):
             Gfx.create_effect("explosion_3", 6,
                               (self.hitbox.topleft[0] - 350, self.hitbox.topleft[1] - 350),
                               explo=True)
+
+    def invasion_script(self):
+        pass
 
 
 class Force_field(Timer):

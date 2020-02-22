@@ -93,6 +93,79 @@ class Item_heal_crate(Items):
                 if item == self:
                     Items.inventory_dic[key] = None
 
+### Prog Items ###
+
+
+class Item_cd_reduction_prog(Items):
+
+    def __init__(self, color):
+        super().__init__("Heatsinks", "Reduces Weapons Cooldown", (34, 1))
+        self.color = color
+        self.flag = "cd_prog"
+        self.base_effect = 4
+        self.lvl = None
+
+    def get_upgrade_desc(self):
+        return f"CD Reduction: 5s"
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+
+            for key, item in Items.inventory_dic.items():
+                if key < 4:
+                    if item is not None:
+                        if item.cooldown:
+                            item.ticker["cd"] += 300
+                if item == self:
+                    Items.inventory_dic[key] = None
+
+            data.UP_MENU.reset_item_bar()
+
+
+class Item_damage_prog(Items):
+
+    def __init__(self, color):
+        super().__init__("Instable Matter", "Supercharges 1 Standart Projectile, dealing extra Damage", (35, 1))
+        self.color = color
+        self.flag = "dmg_prog"
+        self.base_effect = 4
+        self.lvl = None
+
+    def get_upgrade_desc(self):
+        return f"Damage: {data.PLAYER.damage + data.PLAYER.damage * 2}"
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+
+            data.TURRET.special_damage += data.PLAYER.damage * 2
+
+            for key, item in Items.inventory_dic.items():
+                if item == self:
+                    Items.inventory_dic[key] = None
+
+
+class Item_shield_prog(Items):
+
+    def __init__(self, color):
+        super().__init__("Energy Crystal", "Supercharges the Shield, increasing Strength", (36, 1))
+        self.color = color
+        self.flag = "shield_prog"
+        self.base_effect = 4
+        self.lvl = None
+
+    def get_upgrade_desc(self):
+        return f"Bonus Shield Strength: 1"
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+
+            data.PLAYER.shield_strength += 1
+
+            for key, item in Items.inventory_dic.items():
+                if item == self:
+                    Items.inventory_dic[key] = None
+
+
 ### Event Items ###
 
 
@@ -127,5 +200,7 @@ Items.consumables = [
     Event_item_boss_snare,
     Item_supply_crate,
     Item_upgrade_point_crate,
-    Item_heal_crate
+    Item_heal_crate,
+    Item_cd_reduction_prog,
+    Item_shield_prog
 ]

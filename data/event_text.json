@@ -26,8 +26,20 @@
 
     "btl_defence_end": "REPAIRS COMPLETE/WEAPONS TO MAXIMUM",
 
+    "con_atk_intro": "Commander!/Radar and Ladar are/detecting a HUGE Zhee Precense/in this System...",
+
+    "con_atk_info_1": "ZHEE Supply Convoy/BATTLESTATIONS",
+
+    "con_atk_end": "Must have been the/last of them...",
+
+    "hack_intro": "Commander!/The Zhee are hacking this/Sectors Comsarray Cluster/We need to take back the Stations",
+
+    "hack_info_1": "Commander!/We need to hold Position/above the Arrays to regain Controll",
+
+    "hack_info_2": "Take Controll",
+
     "planet_evac_intro": "Commander!/We are entering the Sydan System",
 
-    "planet_evac_info": "Commander!/The ZHEE are trying to destroy/Sydan Prime by hurling Asteroids at/the Planet. We need to evacuate NOW!/Destroy the incoming Asteroids untill the/Evacuations are completed"
+    "planet_evac_info": "Commander!/The ZHEE are trying to destroy/Sydan Prime by hurling Asteroids at/the Planet. We need to evacuate NOW!/Destroy the incoming Asteroids until the/Evacuations are completed"
 
 }

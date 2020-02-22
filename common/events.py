@@ -56,6 +56,14 @@ class Events():
     planet_evac_wave_strength = 8
     planet_evac_hit_count = 0
     planet_evac_transports_started = 0
+    # Planet Invasion
+    planet_inv_set_up = True
+    planet_inv_enemy_amount = 5
+    planet_inv_ally_targets = iter([(500, 400), (1400, 500), (1000, 600)])
+    planet_inv_tr_spawn = iter([(1000, 1180), (1000, 1300)])  # 1180 #1300
+    planet_inv_battle = True
+    planet_invasion_2nd_elite = False
+    planet_inv_ally_amount = 2
 
     @classmethod
     def set_bg_color(cls):
@@ -131,7 +139,7 @@ class Events():
                              text_size=50, decay=360, animation_interval=60))
             cls.mine_field_set_up = False
         if timer.timer_trigger_delay(100):
-            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["mine_info_1"], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["mine_info_1"], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
         if timer.timer_trigger_delay(400):
             Gui.add(Gui_text(loc=(800, 40), flag="mine_1", text=data.EVENT_TEXT["mine_info_2"],
                              text_size=30, animation_interval=60))
@@ -217,7 +225,7 @@ class Events():
             cls.station_dest = (250, random.randint(400, 700))
             data.PLAYER_DATA.append(Space_station_ally(
                 spawn_point=(200, -200), target=cls.station_dest, script_name="convoy_defence"))
-            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["convoy_e_intro"], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["convoy_e_intro"], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
             cls.convoy_set_up = False
 
         if not Background.bg_move:
@@ -279,7 +287,7 @@ class Events():
                 data.ENEMY_DATA.append(Event_shooter(get_random_point(), standart_spawn=1))
             timer.ticker.update({"wave_timer": 400})
             Gui.add(Gui_tw_text(text=data.EVENT_TEXT["btl_defence_intro"],
-                                text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
+                                text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
             cls.battleship_defence_set_up = False
 
         if not Background.bg_move:
@@ -332,10 +340,17 @@ class Events():
         cls.set_bg_color()
         if cls.convoy_attack_set_up:
             Background.bg_move = False
-            timer.ticker["c_spawn"] = 380
+            timer.ticker["c_spawn"] = 100
             cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
             cls.c_a_y = random.randint(300, 800)
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["con_atk_intro"],
+                                text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
             cls.convoy_attack_set_up = False
+
+        if timer.timer_trigger_delay(430):
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["con_atk_info_1"],
+                                text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
+
         if timer.timer_key_delay(limit=400, key="c_spawn"):
             if cls.c_a_ship != "stop":
                 if timer.trigger(60):
@@ -359,6 +374,8 @@ class Events():
                         Elites.spawn(drop=False)
                 else:
                     if timer.trigger(600):
+                        Gui.add(Gui_tw_text(text=data.EVENT_TEXT["con_atk_end"],
+                                            text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
                         cls.convoy_attack_reset()
                         Background.bg_move = True
 
@@ -382,25 +399,33 @@ class Events():
                 spawn = (random.randint(200, 1700), i)
                 data.PLAYER_DATA.append(Comrelay(spawn_point=spawn, script_name="hack"))
                 Elites.spawn(special_spawn=spawn)
+                Gui.add(Gui_tw_text(text=data.EVENT_TEXT["hack_intro"],
+                                    text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
             cls.hack_set_up = False
 
         if Background.bg_move:
             if any([a.dest_reached() for a in data.PLAYER_DATA if isinstance(a, Comrelay)]):
                 Background.bg_move = False
+                Gui.add(Gui_tw_text(text=data.EVENT_TEXT["hack_info_1"],
+                                    text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
                 for elite in [e for e in data.ENEMY_DATA if isinstance(e, Elites)]:
                     elite.skills_lst.pop(1)
                     elite.special_move = False
 
+                for loc, i in [(s.hitbox.center, id(s)) for s in data.PLAYER_DATA]:
+                    data.GUI_DATA.append(Gui_text(loc=(loc[0] - 35, loc[1] - 135), text=data.EVENT_TEXT["hack_info_2"],
+                                                  text_size=15, animation_interval=60, flag=str(i)))
+
         else:
             elite_amount = len([e for e in data.ENEMY_DATA if isinstance(e, Elites)])
             if elite_amount == 2:
-                if timer.timer_key_trigger(460, key="wave_trigger"):
+                if timer.timer_key_trigger(600, key="wave_trigger"):
                     data.LEVELS.execute_event(random.choice([5, 3]))
             elif elite_amount == 1:
-                if timer.timer_key_trigger(340, key="wave_trigger"):
+                if timer.timer_key_trigger(500, key="wave_trigger"):
                     data.LEVELS.execute_event(random.choice([5, 3]))
             elif elite_amount == 0:
-                if timer.timer_key_trigger(240, key="wave_trigger"):
+                if timer.timer_key_trigger(360, key="wave_trigger"):
                     data.LEVELS.execute_event(random.choice([5, 3]))
 
             if cls.hack_stations_hacked == 4:
@@ -507,7 +532,7 @@ class Events():
             Background.add(loc=(400, -400), gfx_idx=13)
             Background.add(loc=(440, -420), gfx_idx=13)
             Gui.add(Gui_tw_text(text=data.EVENT_TEXT["planet_evac_intro"],
-                                text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
+                                text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
             cls.planet_evac_set_up = False
 
         if Background.bg_move:
@@ -560,6 +585,86 @@ class Events():
         cls.planet_evac_wave_strength = 8
         cls.planet_evac_hit_count = 0
         cls.planet_evac_transports_started = 0
+        cls.planet_invasion_2nd_elite = False
+
+    @classmethod
+    @timer
+    def event_planet_invasion(cls, timer):
+        cls.set_bg_color()
+        if cls.planet_inv_set_up:
+            data.PHENOMENON_DATA.append(Planet(loc=(1000, -400), script_name="invasion"))
+            timer.ticker.update({"defence_spawn": 380})
+            cls.planet_inv_set_up = False
+
+        if data.PHENOMENON_DATA[0].hitbox.center[1] >= 200:
+            Background.bg_move = False
+
+        if not Background.bg_move:
+            if timer.timer_delay(120):
+                while len(data.PLAYER_DATA) < cls.planet_inv_ally_amount:
+                    try:
+                        target = next(cls.planet_inv_ally_targets)
+                    except StopIteration:
+                        cls.planet_inv_ally_targets = iter([(500, 400), (1400, 500), (1000, 600)])
+                        target = next(cls.planet_inv_ally_targets)
+                    data.PLAYER_DATA.append(Destroyer_ally(spawn_point=(random.randint(300, 1700), 1300,),
+                                                           target=target,
+                                                           script_name="planet_invasion"))
+                if cls.planet_inv_battle:
+
+                    if timer.timer_delay(800):
+                        while len(data.ENEMY_DATA) < cls.planet_inv_enemy_amount:
+                            data.ENEMY_DATA.append(Event_shooter(
+                                (random.randint(500, 1500), random.randint(50, 300)), standart_spawn=1))
+
+                        if timer.trigger(500):
+                            cls.planet_inv_enemy_amount += 1
+                            if cls.planet_inv_enemy_amount >= 10:
+                                cls.planet_inv_enemy_amount = 10
+
+                        if timer.trigger(4000):
+                            cls.planet_invasion_2nd_elite = True
+                            cls.planet_inv_ally_amount = 3
+
+                        if len([e for e in data.ENEMY_DATA if isinstance(e, Elites)]) == 0:
+                            Elites.spawn(special_dest=data.PHENOMENON_DATA[0].hitbox.center)
+                            if cls.planet_invasion_2nd_elite:
+                                Elites.spawn(drop=False)
+
+                        if timer.trigger(random.randint(300, 600)):
+                            for _ in range(2):
+                                data.ENEMY_DATA.append(Strafer(spawn=1))
+
+                        if timer.trigger(random.randint(250, 400)):
+                            for loc in [(800, 1180), (1000, 1130), (1200, 1180)]:
+                                data.PLAYER_DATA.append(Fighter_ally(spawn_point=loc, target=(loc[0], -400)))
+
+                if timer.timer_key_delay(6000, key="battle_end"):  # 5400
+                    cls.planet_inv_battle = False
+                    if len(data.ENEMY_DATA) == 0:
+                        while len([a for a in data.PLAYER_DATA if isinstance(a, Transport_ship_ally)]) < 2:
+                            loc = next(cls.planet_inv_tr_spawn)
+                            data.PLAYER_DATA.append(
+                                Transport_ship_ally(
+                                    spawn_point=loc, target=(loc[0], loc[1] - 900), script_name="planet_invasion"))
+
+                        if len([a for a in data.PLAYER_DATA if all([isinstance(a, Transport_ship_ally), a.speed == 0])]) == 2:
+                            Background.bg_move = True
+
+                            if timer.timer_key_delay(500, key="end"):
+                                cls.planet_invasion_reset()
+
+                                return "stop_event"
+
+    @classmethod
+    def planet_invasion_reset(cls):
+        cls.planet_inv_set_up = True
+        cls.planet_inv_enemy_amount = 5
+        cls.planet_inv_ally_targets = iter([(500, 400), (1400, 500), (1000, 600)])
+        cls.planet_inv_battle = True
+        cls.planet_inv_tr_spawn = iter([(1000, 1180), (1000, 1300)])
+        cls.planet_inv_ally_amount = 2
+        cls.planet_invasion_2nd_elite = False
 
     @classmethod
     def all_reset(cls):
@@ -570,18 +675,20 @@ class Events():
         cls.hack_reset()
         cls.end_zone_defence(all_reset=True)
         cls.planet_evac_reset()
+        cls.planet_invasion_reset()
 
     @classmethod
     def get_special_events_lst(cls):
         return [
-            (cls.event_comet_storm, 1),
-            (cls.event_mine_field, 1),
-            (cls.event_convoy_escort, 6),
-            (cls.event_battleship_defence, 6),
+            # (cls.event_comet_storm, 1),
+            # (cls.event_mine_field, 1),
+            # (cls.event_convoy_escort, 6),
+            # (cls.event_battleship_defence, 6),
             (cls.event_convoy_attack, 12),
-            (cls.event_station_hack, 12),
-            (cls.event_zone_defence, 18),
-            (cls.event_planet_evacuation, 18)
+            (cls.event_station_hack, 1),
+            # (cls.event_zone_defence, 18),
+            # (cls.event_planet_evacuation, 18),
+            # (cls.event_planet_invasion, 24)
         ]
 
 

@@ -58,7 +58,7 @@ class Boss_mine_boat(Bosses):
 class Boss_frigatte(Bosses):
 
     def __init__(self):
-        self.health = 1000
+        self.health = 1200
         self.speed = 3
         self.fire_rate = 60
         self.move_pattern = [0, 1, 2, 3]
@@ -125,7 +125,7 @@ class Boss_corvette(Bosses):
 
     def __init__(self):
 
-        self.health = 1300
+        self.health = 1600
         self.speed = 4
         self.fire_rate = 30
         self.move_pattern = [random.randint(0, 9) for _ in range(40)]

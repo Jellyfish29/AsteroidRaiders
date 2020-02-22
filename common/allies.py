@@ -5,9 +5,10 @@ from init import *
 from astraid_funcs import *
 import astraid_data as data
 from Gfx import Gfx, Background
-from projectiles import Projectile
+from projectiles import Projectile, Missile
 from phenomenon import Defence_zone
 from items_misc import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
+from ui import Gui
 
 
 class Allied_entity(Timer):
@@ -217,7 +218,8 @@ class Transport_ship_ally(Allied_entity):
         self.script_name = script_name
         self.border_check = False
         self.scripts.update({"convoy_defence": self.convoy_defence_script,
-                             "planet_evac": self.planet_evac_script})
+                             "planet_evac": self.planet_evac_script,
+                             "planet_invasion": self.planet_invasion_script})
 
     def convoy_defence_script(self):
         if self.hitbox.collidepoint(self.target):
@@ -231,6 +233,26 @@ class Transport_ship_ally(Allied_entity):
 
     def planet_evac_script(self):
         self.border_check = True
+
+    def planet_invasion_script(self):
+        self.border_check = False
+        if self.hitbox.collidepoint(self.target):
+            self.angles = angles_360(0)
+            if self.run_limiter.run_block_once():
+                self.gfx_idx = (3, 3)
+                self.hitable = False
+                self.speed = 0
+
+                data.ITEMS.drop(
+                    self.hitbox.center, target=Item_heal_crate((100, 100, 100), level=2))
+                data.ITEMS.drop(
+                    self.hitbox.center, target=Item_supply_crate((100, 100, 100), level=2))
+                data.ITEMS.drop(
+                    self.hitbox.center, target=Item_upgrade_point_crate((100, 100, 100), level=2))
+
+        if Background.bg_move:
+            self.hitbox.move_ip(0, Background.scroll_speed)
+            self.border_check = True
 
 
 class Battleship_allie(Allied_entity):
@@ -327,7 +349,7 @@ class Comrelay(Allied_entity):
         self.scripts.update({"hack": self.hack_script})
 
     def move(self):
-        pygame.draw.rect(win, (255, 0, 0), self.hitbox)
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         self.hitbox.move_ip(0, self.speed)
 
     def gfx_health_bar(self):
@@ -354,7 +376,7 @@ class Comrelay(Allied_entity):
         # if data.PLAYER.interaction_button_pressed:
         if self.hitbox.colliderect(data.PLAYER.hitbox):
             if self.hack_progress < 100:
-                if self.timer_trigger(3):
+                if self.timer_trigger(2):
                     self.hack_progress += 1
 
         if self.hack_progress >= 100:
@@ -363,6 +385,7 @@ class Comrelay(Allied_entity):
                 self.gfx_idx = (7, 9)
                 self.border_check = True
                 self.hide_healthbar = True
+                Gui.delete(str(id(self)))
         if len(data.LEVELS.special_event_queue) == 0:
             self.border_check = True
             self.hide_healthbar = True
@@ -415,6 +438,67 @@ class Battlecruiser_ally(Battleship_allie):
         data.EVENTS.z_def_bc_destroyed = True
         self.gfx_hit()
         self.kill = True
+
+
+class Destroyer_ally(Allied_entity):
+
+    def __init__(self, spawn_point=None, target=None, script_name=None):
+        Allied_entity.__init__(self, speed=2, health=50, spawn_point=spawn_point,
+                               target=target, size=(100, 100), gfx_idx=(13, 14), gfx_hook=(-25, -25))
+        self.script_name = script_name
+        self.scripts.update({"planet_invasion": self.planet_invasion_script})
+        self.max_health = self.health
+        self.border_check = False
+        self.fire_rate = 60
+
+    def planet_invasion_script(self):
+        if self.hitbox.collidepoint(self.target):
+            self.gfx_idx = (15, 15)
+            self.angles = angles_360(0)
+
+        if Background.bg_move:
+            self.hitbox.move_ip(0, Background.scroll_speed)
+            self.border_check = True
+
+    def skill(self):
+        if len(data.ENEMY_DATA) > 0:
+            target = data.ENEMY_DATA[random.randint(0, len(data.ENEMY_DATA) - 1)].hitbox.center
+            if self.timer_trigger(self.fire_rate):
+                # self.muzzle_effect_timer = (i for i in range(8))
+                data.PLAYER_PROJECTILE_DATA.append(Projectile(
+                    speed=20,
+                    size=(6, 6),
+                    start_point=self.hitbox.center,
+                    damage=1,
+                    flag="ally",
+                    gfx_idx=15,
+                    target=target
+                ))
+
+
+class Fighter_ally(Allied_entity):
+
+    def __init__(self, spawn_point=None, target=None, script_name=None):
+        Allied_entity.__init__(self, speed=8, health=3, spawn_point=spawn_point,
+                               target=target, size=(60, 60), gfx_idx=(16, 17), gfx_hook=(0, 0))
+        self.fire_rate = 20
+        # self.border_check = False
+
+    def skill(self):
+        if len(data.ENEMY_DATA) > 0:
+            target = data.ENEMY_DATA[random.randint(0, len(data.ENEMY_DATA) - 1)].hitbox
+            if self.timer_trigger_delay(self.fire_rate):
+                # self.muzzle_effect_timer = (i for i in range(8))
+                for _ in range(3):
+                    data.PLAYER_PROJECTILE_DATA.append(Missile(
+                        speed=25,
+                        size=(5, 5),
+                        start_point=self.hitbox.center,
+                        target=target,
+                        damage=data.PLAYER.damage,
+                        flag="missile",
+                        gfx_idx=25
+                    ))
 
 
 data.ALLIE = Allied_entity

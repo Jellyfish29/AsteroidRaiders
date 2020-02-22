@@ -182,7 +182,8 @@ class Items(Timer):
                 # Desc
                 win.blit(Gui.fonts[15].render(self.discription, True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 30))
                 # level
-                win.blit(Gui.fonts[15].render(f"Item Level: {self.lvl + 1}/4  Cost: {self.upgrade_cost_base[self.lvl]}", True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 55))
+                if self.lvl is not None:
+                    win.blit(Gui.fonts[15].render(f"Item Level: {self.lvl + 1}/4  Cost: {self.upgrade_cost_base[self.lvl]}", True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 55))
                 # lvl_effect
                 win.blit(Gui.fonts[15].render(self.get_upgrade_desc(), True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 75))
         else:
@@ -190,7 +191,7 @@ class Items(Timer):
 
     def gfx_draw(self):
         if self.lvl is not None:
-            if any([self.flag == "supply_con", self.flag == "upgrade_con", self.flag == "heal_con"]):
+            if any([isinstance(self, item) for item in Items.consumables]):
                 win.blit(Items.lvl_sprites[self.lvl + 5], (self.hitbox.topleft[0] - 20, self.hitbox.topleft[1] - 20))
             else:
                 win.blit(Items.lvl_sprites[self.lvl + 1], (self.hitbox.topleft[0] - 10, self.hitbox.topleft[1] - 10))

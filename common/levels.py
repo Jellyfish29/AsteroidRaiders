@@ -61,7 +61,7 @@ class Levels:
         if cls.level % 6 == 0:
             cls.special_events_lst = [e[0] for e in data.EVENTS.get_special_events_lst() if e[1] == cls.level]
             cls.enemy_amount += 1
-            cls.elite_max_spawn_time -= 100
+            # cls.elite_max_spawn_time -= 80
             cls.spez_add()
             cls.boss_spawn()
             cls.boss_fight = True
@@ -225,19 +225,14 @@ class STAGE_SAVE():
         self.pl_health = data.PLAYER.health
         self.pl_max_health = data.PLAYER.max_health
         self.pl_heal_amount = data.PLAYER.heal_amount
-        self.pl_heal_strength = data.PLAYER.heal_strenght
         self.pl_raw_health = data.PLAYER.raw_max_health
         self.skill_points = Levels.skill_points
         self.upgrade_points = data.ITEMS.upgrade_points
         self.pl_angles = data.PLAYER.angles
-        self.pl_speed = data.PLAYER.speed
         self.pl_raw_speed = data.PLAYER.raw_speed
         self.pl_dmg = data.PLAYER.damage
-        self.pl_crit = data.PLAYER.crit_chance
         self.pl_raw_crit = data.PLAYER.raw_crit_chance
-        self.pl_fire_rate = data.TURRET.fire_rate
         self.pl_raw_fire_rate = data.TURRET.raw_fire_rate
-        self.pl_cd = Active_Items.cd_reduction
         self.pl_jump = data.PLAYER.jumpdrive
         self.pl_shield = data.PLAYER.shield
         self.lvl = Levels.level
@@ -256,6 +251,7 @@ class STAGE_SAVE():
         self.overdrive_count = data.TURRET.overdrive_count
         self.elite_sp_time = Levels.elite_max_spawn_time
         self.special_event_amount = Levels.special_event_amount
+        self.raw_cd = Active_Items.raw_cd_reduction
 
     def load_save(self):
         Levels.level = self.lvl
@@ -282,22 +278,19 @@ class STAGE_SAVE():
         Levels.level_interval = self.interval_score
         data.ITEMS.inventory_dic = self.items
         data.PLAYER.health = self.pl_health
-        data.PLAYER.max_health = self.pl_max_health
+        # data.PLAYER.max_health = self.pl_max_health
         data.PLAYER.heal_amount = self.pl_heal_amount
-        data.PLAYER.heal_strenght = self.pl_heal_strength
         data.PLAYER.raw_max_health = self.pl_raw_health
         data.PLAYER.hitbox.center = (1000, 900)
         Levels.skill_points = self.skill_points
         data.ITEMS.upgrade_points = self.upgrade_points
         data.PLAYER.angles = self.pl_angles
-        data.PLAYER.speed = self.pl_speed
         data.PLAYER.raw_speed = self.pl_raw_speed
         data.PLAYER.damage = self.pl_dmg
-        data.PLAYER.crit_chance = self.pl_crit
         data.PLAYER.raw_crit_chance = self.pl_raw_crit
-        data.TURRET.fire_rate = self.pl_fire_rate
         data.TURRET.raw_fire_rate = self.pl_raw_fire_rate
-        Active_Items.cd_reduction = self.pl_cd
+        # Active_Items.cd_reduction = self.pl_cd
+        # Active_Items.raw_cd_reduction = self.raw_cd
         data.PLAYER.jumpdrive = self.pl_jump
         data.PLAYER.shield = self.pl_shield
         Levels.boss_fight = self.boss_fight
@@ -312,6 +305,13 @@ class STAGE_SAVE():
         data.TURRET.overdrive_count = self.overdrive_count
         Levels.elite_max_spawn_time = self.elite_sp_time
         Levels.special_event_amount = self.special_event_amount
+
+        data.PLAYER.set_player_speed(0)
+        data.PLAYER.set_player_health(0)
+        data.PLAYER.set_player_crit_chance(0)
+        data.TURRET.set_fire_rate(0)
+        data.ACTIVE_ITEMS.set_cd_reduction(0)
+
         for _, item in data.ITEMS.inventory_dic.items():
             if item is not None:
                 item.end_effect()

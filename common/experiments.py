@@ -7,5 +7,7 @@ import random
 x = {1: 1, 2: 2, 3: 3}
 
 
-for i in x[:2]:
-    print(i)
+y = (100, 200)
+
+
+print(str(y))

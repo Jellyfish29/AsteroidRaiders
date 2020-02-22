@@ -8,6 +8,7 @@ import astraid_data as data
 from Gfx import Gfx
 from projectiles import Projectile, Missile, Impactor, Explosion, Wave
 from phenomenon import Black_hole, Gravity_well, Implosion
+from items_misc import Item_cd_reduction_prog, Item_damage_prog, Item_shield_prog
 
 
 class Turret:
@@ -24,6 +25,7 @@ class Turret:
     shot_count = 0
     gfx_idx = 0
     hit_locations = []
+    special_damage = 0
     # Overdrive
     overdrive_count = 0
     # ammunition = normal_fire_rate[1]
@@ -38,6 +40,8 @@ class Turret:
     scatter_limter = 0
     rail_gun_charge = 0
     shock_burst_limiter = 0
+    smart_burst_limiter = 0
+    smart_missile_target = 0
     # pd values
     pd_ticker = 0
     # Gfx setup
@@ -75,6 +79,11 @@ class Turret:
         cls.scatter_fire()
         cls.rail_gun()
         cls.shock_missiles()
+        cls.smart_missiles()
+
+    @classmethod
+    def passiv_item_actions(cls):
+        cls.debris_scanner()
 
     @classmethod
     @timer
@@ -100,10 +109,11 @@ class Turret:
                     speed=cls.projectile_speed,
                     size=cls.projectile_size,
                     start_point=data.PLAYER.hitbox.center,
-                    damage=data.PLAYER.damage,
+                    damage=data.PLAYER.damage + cls.special_damage,
                     gfx_idx=11,
                     target=pygame.mouse.get_pos(),
                 ))
+            cls.special_damage = 0
 
     @classmethod
     @timer
@@ -136,9 +146,10 @@ class Turret:
                         impact_effect=lambda loc=pos: data.PLAYER_PROJECTILE_DATA.append(Explosion(
                             location=loc,
                             explo_size=400,
-                            damage=1.5 + data.PLAYER.damage * 0.5 + int(cls.fire_rate),
+                            damage=3.5 + data.PLAYER.damage + int(cls.fire_rate),
                             explosion_effect=lambda loc: Gfx.create_effect(
-                                "explosion_1", 3, (loc[0] - 400, loc[1] - 400), explo=True)
+                                "explosion_1", 3, (loc[0] - 400, loc[1] - 400), explo=True),
+                            explo_speed=(60, 60)
                         ))
                     ))
                     data.ITEMS.get_item(flag="nuke").end_active()
@@ -293,7 +304,7 @@ class Turret:
                         speed=cls.projectile_speed,
                         size=cls.projectile_size,
                         start_point=data.PLAYER.hitbox.center,
-                        damage=data.PLAYER.damage,
+                        damage=0.1 + data.PLAYER.damage,
                         gfx_idx=11,
                         angle_variation=i,
                         target=pygame.mouse.get_pos(),
@@ -386,7 +397,7 @@ class Turret:
                             speed=cls.projectile_speed,
                             size=cls.projectile_size,
                             start_point=data.PLAYER.hitbox.center,
-                            damage=data.PLAYER.damage + 0.5,
+                            damage=0.5 + data.PLAYER.damage,
                             gfx_idx=11,
                             angle_variation=random.randint(-5, 5),
                             target=pygame.mouse.get_pos()
@@ -408,7 +419,7 @@ class Turret:
                                 speed=cls.projectile_speed,
                                 size=cls.projectile_size,
                                 start_point=data.PLAYER.hitbox.center,
-                                damage=data.PLAYER.damage,
+                                damage=0.1 + data.PLAYER.damage,
                                 gfx_idx=11,
                                 target=pygame.mouse.get_pos(),
                                 angle_variation=i
@@ -429,7 +440,7 @@ class Turret:
                             speed=30,
                             size=cls.projectile_size,
                             start_point=data.PLAYER.hitbox.center,
-                            damage=data.PLAYER.damage + 2,
+                            damage=2 + data.PLAYER.damage,
                             gfx_idx=24,
                             target=pygame.mouse.get_pos(),
                             hit_effect=lambda _, obj: obj.set_cc(0, 180)
@@ -437,6 +448,34 @@ class Turret:
                     else:
                         cls.shock_burst_limiter = 0
                         data.ITEMS.get_item(flag="shock_missile").end_active()
+
+    @classmethod
+    @timer
+    def smart_missiles(cls, timer):
+        if "smart_missile" in data.ITEMS.active_flag_lst:
+            if data.ITEMS.get_item(flag="smart_missile").active:
+                if timer.trigger(3):
+                    try:
+                        target = data.ENEMY_DATA[cls.smart_missile_target].hitbox
+                        cls.smart_missile_target += 1
+                    except IndexError:
+                        cls.smart_missile_target = 0
+                        target = data.ENEMY_DATA[cls.smart_missile_target].hitbox
+
+                    cls.smart_burst_limiter += 1
+                    if cls.smart_burst_limiter <= data.ITEMS.get_item(flag="smart_missile").effect_strength:
+                        data.PLAYER_PROJECTILE_DATA.append(Missile(
+                            speed=25,
+                            size=(5, 5),
+                            start_point=data.PLAYER.hitbox.center,
+                            target=target,
+                            damage=0.3 + data.PLAYER.damage,
+                            flag="missile",
+                            gfx_idx=25
+                        ))
+                    else:
+                        cls.smart_burst_limiter = 0
+                        data.ITEMS.get_item(flag="smart_missile").end_active()
 
     @classmethod
     def he_rounds(cls):
@@ -447,7 +486,7 @@ class Turret:
                     speed=cls.projectile_speed,
                     size=cls.projectile_size,
                     start_point=data.PLAYER.hitbox.center,
-                    damage=data.PLAYER.damage,
+                    damage=0.1 + data.PLAYER.damage,
                     gfx_idx=15,
                     target=pygame.mouse.get_pos(),
                     piercing=False,
@@ -472,7 +511,7 @@ class Turret:
                     speed=cls.projectile_speed,
                     size=cls.projectile_size,
                     start_point=data.PLAYER.hitbox.center,
-                    damage=data.PLAYER.damage,
+                    damage=0.1 + data.PLAYER.damage,
                     gfx_idx=11,
                     target=pygame.mouse.get_pos(),
                     piercing=False,
@@ -506,7 +545,7 @@ class Turret:
                     gfx_idx=23,
                     target=pygame.mouse.get_pos(),
                     piercing=False,
-                    hit_effect=lambda _, obj: obj.set_cc(obj.speed / 2, 60)
+                    hit_effect=lambda _, obj: obj.set_cc(int(obj.speed * 0.66), 60)
                 ))
                 return True
 
@@ -528,6 +567,14 @@ class Turret:
                 ))
 
                 return True
+
+    @classmethod
+    def debris_scanner(cls):
+        if "debris_scanner" in data.ITEMS.active_flag_lst:
+            for loc in cls.hit_locations:
+                if random.randint(1, 100) > 100 - data.ITEMS.get_item(flag="debris_scanner").effect_strength:
+                    item = random.choice([Item_cd_reduction_prog, Item_damage_prog, Item_shield_prog])
+                    data.ITEMS.drop(loc.hitbox.center, target=item((100, 100, 200)))
 
     @classmethod
     def boss_snare(cls):
@@ -608,6 +655,7 @@ class Turret:
         cls.gun_gfx_idx_update()
         cls.on_mouse_click_actions()
         cls.on_item_button_click_actions()
+        cls.passiv_item_actions()
         cls.hit_locations.clear()
 
 

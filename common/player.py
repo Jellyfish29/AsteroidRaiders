@@ -6,7 +6,7 @@ from astraid_funcs import *
 from Gfx import Gfx, Background
 from ui import *
 import astraid_data as data
-from projectiles import Projectile, Missile
+from projectiles import Projectile, Missile, Explosion
 from items_active import Item_shield, Item_jump_drive, Item_afterburner
 
 
@@ -144,6 +144,15 @@ class Player:
                     "jumpa", 2, (cls.hitbox.topleft[0] - 60, cls.hitbox.topleft[1] - 60))
                 cls.jumpdrive.end_active()
                 cls.jumpdrive.engage = False
+                if "jump_distortion" in data.ITEMS.active_flag_lst:
+                    data.PLAYER_PROJECTILE_DATA.append(Explosion(
+                        location=cls.hitbox.center,
+                        explo_size=250,
+                        damage=data.PLAYER.damage * data.ITEMS.get_item(flag="jump_distortion").effect_strength,
+                        explosion_effect=lambda loc: Gfx.create_effect(
+                            "explosion_5", 3, (data.PLAYER.hitbox.center[0] - 400, data.PLAYER.hitbox.center[1] - 400), explo=True),
+                        explo_speed=(40, 40)
+                    ))
 
     @classmethod
     def afterburner_update(cls):

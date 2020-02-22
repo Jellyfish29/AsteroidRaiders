@@ -186,7 +186,6 @@ class Interface_new(Timer):
                 if data.LEVELS.skill_points > 0:
                     cls.indicators["skill_up"].ticker = cls.indicators["item_up"].ticker
         if data.PLAYER.shield.active:
-            print("oof")
             cls.indicators["shield"].tick()
         if data.PLAYER.jumpdrive_disabled:
             cls.indicators["jumpdrive"].tick()

@@ -125,37 +125,61 @@ class Enemy(Timer):
     def set_health(self, hp, color):
         self.health -= hp
         self.healthbar_len -= (self.healthbar_max_len / (self.max_health / hp))
-        if hp >= 0.5:
-            Gfx.create_effect(
-                "dmg_text", 4,
-                (self.hitbox.center[0] + random.randint(-10, 10),
-                 self.hitbox.center[1] + random.randint(-10, 10)),
-                hover=True, follow=True, text=hp, text_color=color
-            )
-        elif hp < 0:
-            Gfx.create_effect(
-                "dmg_text", 4,
-                (self.hitbox.center[0] + random.randint(-10, 10),
-                 self.hitbox.center[1] + random.randint(-10, 10)),
-                hover=True, follow=True, text=hp, text_color=color
-            )
-        else:
-            self.dmg_text_buffer(hp)
-        if self.health > self.max_health:
-            self.health = self.max_health
-            if self.buffer_hp > 0:
-                self.dmg_text_buffer(0, force=True)
 
-    def dmg_text_buffer(self, hp, force=False):
-        self.buffer_hp += hp
-        if self.buffer_hp >= 1.5 or force:
+        if hp < 0:
             Gfx.create_effect(
                 "dmg_text", 4,
                 (self.hitbox.center[0] + random.randint(-10, 10),
                  self.hitbox.center[1] + random.randint(-10, 10)),
-                hover=True, follow=True, text=self.buffer_hp, text_color=(255, 10, 10)
+                hover=True, follow=True, text=hp, text_size=30, text_color=color
             )
-            self.buffer_hp = 0
+            if self.health > self.max_health:
+                self.health = self.max_health
+
+        elif hp == data.PLAYER.damage or hp == data.PLAYER.damage * 2:
+            text_size = self.get_dmg_text_size(hp)
+            Gfx.create_effect(
+                "dmg_text", 4,
+                (self.hitbox.center[0] + random.randint(-10, 10),
+                 self.hitbox.center[1] + random.randint(-10, 10)),
+                hover=True, follow=True, text=hp, text_size=text_size, text_color=color
+            )
+
+        elif hp < data.PLAYER.damage:
+            self.buffer_hp += hp
+
+        elif hp > data.PLAYER.damage:
+            self.buffer_hp += hp
+
+    def get_dmg_text_size(self, hp):
+        p_dmg = data.PLAYER.damage
+        text_size = 20
+        if hp >= p_dmg:
+            if p_dmg <= hp < p_dmg * 1.5:
+                text_size = 25
+            elif p_dmg * 1.5 <= hp < p_dmg * 2:
+                text_size = 30
+            elif p_dmg * 2 <= hp < p_dmg * 2.5:
+                text_size = 35
+            elif p_dmg * 2.5 <= hp < p_dmg * 3:
+                text_size = 40
+            elif p_dmg * 3 <= hp < p_dmg * 8:
+                text_size = 50
+            elif hp >= p_dmg * 8:
+                text_size = 60
+        return text_size
+
+    def dmg_text_buffer(self):
+        if self.timer_trigger(15):
+            if self.buffer_hp > 0:
+                text_size = self.get_dmg_text_size(self.buffer_hp)
+                Gfx.create_effect(
+                    "dmg_text", 4,
+                    (self.hitbox.center[0] + random.randint(-10, 10),
+                     self.hitbox.center[1] + random.randint(-10, 10)),
+                    hover=True, follow=True, text=self.buffer_hp, text_size=text_size, text_color=(255, 10, 10)
+                )
+                self.buffer_hp = 0
 
     def set_fire_rate(self, fr):
         self.fire_rate += fr
@@ -230,6 +254,14 @@ class Enemy(Timer):
         self.gfx_hit()
         data.LEVELS.interval_score += self.score_amount
         data.LEVELS.display_score += self.score_amount
+        if self.buffer_hp > 0:
+            text_size = self.get_dmg_text_size(self.buffer_hp)
+            Gfx.create_effect(
+                "dmg_text", 4,
+                (self.hitbox.center[0] + random.randint(-10, 10),
+                 self.hitbox.center[1] + random.randint(-10, 10)),
+                hover=True, follow=True, text=self.buffer_hp, text_size=text_size, text_color=(255, 10, 10)
+            )
 
         self.kill = True
 
@@ -245,6 +277,7 @@ class Enemy(Timer):
     def tick(self):
         self.gfx_animation()
         self.gfx_health_bar()
+        self.dmg_text_buffer()
         if not self.cced:
             self.move()
         else:
