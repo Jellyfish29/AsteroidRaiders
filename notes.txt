@@ -35,10 +35,10 @@ TODO:
     -...
 - Mehr Events
     - #Convoys
-    - controllpunkte
+    - #controllpunkte
     - Geschicklichkeits Zeug
     - #Battleship defence/repair
-    - Asteroid Storm Defence
+    - #Asteroid Storm Defence
     - Planeten Landungen ???
     - durch Planeten Ring Fliegen
     - stealth Sabotage

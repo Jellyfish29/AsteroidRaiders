@@ -70,7 +70,7 @@ class Enemy(Timer):
         self.kill = False
         self.border_check = True
         self.ttk_bonus = 0
-        self.projectile_speed = 20
+        self.projectile_speed = 17
         self.hitable = True
         self.special_take_damage = None
         self.flag = "normal"
@@ -173,11 +173,15 @@ class Enemy(Timer):
         if self.timer_trigger(15):
             if self.buffer_hp > 0:
                 text_size = self.get_dmg_text_size(self.buffer_hp)
+                if self.buffer_hp > data.PLAYER.damage:
+                    color = (222, 91, 22)  # de5b16
+                else:
+                    color = (255, 10, 10)
                 Gfx.create_effect(
                     "dmg_text", 4,
                     (self.hitbox.center[0] + random.randint(-10, 10),
                      self.hitbox.center[1] + random.randint(-10, 10)),
-                    hover=True, follow=True, text=self.buffer_hp, text_size=text_size, text_color=(255, 10, 10)
+                    hover=True, follow=True, text=self.buffer_hp, text_size=text_size, text_color=color
                 )
                 self.buffer_hp = 0
 
@@ -256,11 +260,15 @@ class Enemy(Timer):
         data.LEVELS.display_score += self.score_amount
         if self.buffer_hp > 0:
             text_size = self.get_dmg_text_size(self.buffer_hp)
+            if self.buffer_hp > data.PLAYER.damage:
+                color = (222, 91, 22)  # de5b16
+            else:
+                color = (255, 10, 10)
             Gfx.create_effect(
                 "dmg_text", 4,
                 (self.hitbox.center[0] + random.randint(-10, 10),
                  self.hitbox.center[1] + random.randint(-10, 10)),
-                hover=True, follow=True, text=self.buffer_hp, text_size=text_size, text_color=(255, 10, 10)
+                hover=True, follow=True, text=self.buffer_hp, text_size=text_size, text_color=color
             )
 
         self.kill = True

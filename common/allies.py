@@ -443,13 +443,13 @@ class Battlecruiser_ally(Battleship_allie):
 class Destroyer_ally(Allied_entity):
 
     def __init__(self, spawn_point=None, target=None, script_name=None):
-        Allied_entity.__init__(self, speed=2, health=50, spawn_point=spawn_point,
+        Allied_entity.__init__(self, speed=2, health=60, spawn_point=spawn_point,
                                target=target, size=(100, 100), gfx_idx=(13, 14), gfx_hook=(-25, -25))
         self.script_name = script_name
         self.scripts.update({"planet_invasion": self.planet_invasion_script})
         self.max_health = self.health
         self.border_check = False
-        self.fire_rate = 60
+        self.fire_rate = 50
 
     def planet_invasion_script(self):
         if self.hitbox.collidepoint(self.target):
@@ -469,7 +469,7 @@ class Destroyer_ally(Allied_entity):
                     speed=20,
                     size=(6, 6),
                     start_point=self.hitbox.center,
-                    damage=1,
+                    damage=data.PLAYER.damage,
                     flag="ally",
                     gfx_idx=15,
                     target=target
@@ -495,9 +495,9 @@ class Fighter_ally(Allied_entity):
                         size=(5, 5),
                         start_point=self.hitbox.center,
                         target=target,
-                        damage=data.PLAYER.damage,
+                        damage=data.PLAYER.damage * 1.5,
                         flag="missile",
-                        gfx_idx=25
+                        gfx_idx=24
                     ))
 
 

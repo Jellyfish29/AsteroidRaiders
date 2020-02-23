@@ -596,12 +596,12 @@ class Events():
             timer.ticker.update({"defence_spawn": 380})
             cls.planet_inv_set_up = False
 
-        if data.PHENOMENON_DATA[0].hitbox.center[1] >= 200:
+        if [p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center[1] >= 200:
             Background.bg_move = False
 
         if not Background.bg_move:
             if timer.timer_delay(120):
-                while len(data.PLAYER_DATA) < cls.planet_inv_ally_amount:
+                while len([a for a in data.PLAYER_DATA if isinstance(a, Destroyer_ally)]) < cls.planet_inv_ally_amount:
                     try:
                         target = next(cls.planet_inv_ally_targets)
                     except StopIteration:
@@ -627,7 +627,7 @@ class Events():
                             cls.planet_inv_ally_amount = 3
 
                         if len([e for e in data.ENEMY_DATA if isinstance(e, Elites)]) == 0:
-                            Elites.spawn(special_dest=data.PHENOMENON_DATA[0].hitbox.center)
+                            Elites.spawn(special_dest=[p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center)
                             if cls.planet_invasion_2nd_elite:
                                 Elites.spawn(drop=False)
 

@@ -259,7 +259,7 @@ class Item_concussion_rounds(Active_Items):
         super().__init__(color, "Concussion Rounds (active)", "On Activation fires Powerful Rounds that Slow down Strucked Objects", (1, 1))
         self.color = color
         self.flag = "con_rounds"
-        self.cd_len = 1800
+        self.cd_len = 900
         self.base_effect = 1600  # active time
         self.active_time = self.get_lvl_effects(reverse=True)[self.lvl]
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "s")
@@ -313,7 +313,7 @@ class Item_jumpdrive_distortion(Items):
         super().__init__("Jumpdrive Distortion (passiv)", "Temporal distortions damage Objects around the Jumpdrive destination", (1, 1))
         self.color = color
         self.flag = "jump_distortion"
-        self.base_effect = 1.6
+        self.base_effect = 3
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
 
     def get_upgrade_desc(self):
@@ -465,7 +465,7 @@ data.ACTIVE_ITEMS = Active_Items
 
 
 def start_item_generator():
-    return [
+    lst = [
         Item_he_rounds,
         Item_scatter_fire,
         Item_burst_fire,
@@ -475,4 +475,5 @@ def start_item_generator():
         Item_missile,
         Item_jumpdrive_distortion,
         Item_Smart_missile
-    ][random.randint(0, 6)]
+    ]
+    return lst[random.randint(0, len(lst) - 1)]

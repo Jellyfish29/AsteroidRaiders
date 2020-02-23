@@ -371,6 +371,6 @@ Items.set_drop_table([
     (Item_hyper_velocity_rounds, (1, 169, 201)),
     (Item_expert_damage_control, (0, 0, 0)),
     # (Item_overdrive, (89, 1, 37)),
-    (Item_bi_weave_shields, (0, 0, 0)),
+    # (Item_bi_weave_shields, (0, 0, 0)),
     (Item_debris_scanner, (0, 0, 0))
 ])
