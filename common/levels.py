@@ -178,6 +178,9 @@ class Levels:
 
     @classmethod
     def save_game(cls):
+        # for _, item in data.ITEMS.inventory_dic.items():
+        #     if item is not None:
+        #         item.end_effect()
         with open(os.path.join(os.getcwd()[:-7], f"save_games\\saves"), "wb") as file:
             pickle.dump(STAGE_SAVE(), file)
 
@@ -254,6 +257,9 @@ class STAGE_SAVE():
         self.raw_cd = Active_Items.raw_cd_reduction
 
     def load_save(self):
+        for _, item in data.ITEMS.inventory_dic.items():
+            if item is not None:
+                item.end_effect()
         Levels.level = self.lvl
         data.ENEMY_DATA.clear()
         data.ENEMY_PROJECTILE_DATA.clear()
@@ -291,6 +297,7 @@ class STAGE_SAVE():
         data.TURRET.raw_fire_rate = self.pl_raw_fire_rate
         # Active_Items.cd_reduction = self.pl_cd
         # Active_Items.raw_cd_reduction = self.raw_cd
+        # data.PLAYER.heal_strenght = 4
         data.PLAYER.jumpdrive = self.pl_jump
         data.PLAYER.shield = self.pl_shield
         Levels.boss_fight = self.boss_fight
@@ -312,10 +319,6 @@ class STAGE_SAVE():
         data.TURRET.set_fire_rate(0)
         data.ACTIVE_ITEMS.set_cd_reduction(0)
 
-        for _, item in data.ITEMS.inventory_dic.items():
-            if item is not None:
-                item.end_effect()
-                item.effect()
         data.UP_MENU.reset_item_bar()
 
         if self.boss_fight:

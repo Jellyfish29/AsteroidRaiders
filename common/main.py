@@ -261,8 +261,8 @@ def main():
                 exit()
 
         Clock.tick(fps)
-        pygame.display.update()
-        # pygame.display.flip()
+        # pygame.display.update()
+        pygame.display.flip()
 
 
 if __name__ == "__main__":

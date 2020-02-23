@@ -619,8 +619,8 @@ class Events():
 
                         if timer.trigger(500):
                             cls.planet_inv_enemy_amount += 1
-                            if cls.planet_inv_enemy_amount >= 10:
-                                cls.planet_inv_enemy_amount = 10
+                            if cls.planet_inv_enemy_amount >= 8:
+                                cls.planet_inv_enemy_amount = 8
 
                         if timer.trigger(4000):
                             cls.planet_invasion_2nd_elite = True

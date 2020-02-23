@@ -268,6 +268,11 @@ class Background(Timer):
             if timer.trigger(cls.bg_obj_spawn_rate):
                 cls.bg_objs.append(Background())
 
+        if any([data.LEVELS.after_boss,
+                not data.LEVELS.special_events and not data.LEVELS.boss_fight
+                ]):
+            cls.bg_color_change(color=(0, 0, 30))
+
         for bg_obj in cls.bg_objs:
             if timer.trigger(30):
                 if bg_obj.gfx_idx > 14 and bg_obj.gfx_idx < 18:
@@ -275,11 +280,6 @@ class Background(Timer):
             bg_obj.gfx_animation()
             if bg_obj.kill:
                 cls.bg_objs.remove(bg_obj)
-
-        if any([data.LEVELS.after_boss,
-                not data.LEVELS.special_events and not data.LEVELS.boss_fight
-                ]):
-            cls.bg_color_change(color=(0, 0, 30))
 
         if cls.bg_move:
             cls.y += cls.scroll_speed

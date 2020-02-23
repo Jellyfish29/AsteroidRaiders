@@ -644,7 +644,7 @@ class Event_shooter(Shooter):
         self.gfx_hook = (-50, -50)
         self.health = Enemy.health + 6
         self.max_health = self.health
-        self.fire_rate = 80
+        self.fire_rate = random.randint(40, 120)
 
     def move(self):
         self.direction = degrees(
