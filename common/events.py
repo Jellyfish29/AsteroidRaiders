@@ -615,7 +615,7 @@ class Events():
                     if timer.timer_delay(800):
                         while len(data.ENEMY_DATA) < cls.planet_inv_enemy_amount:
                             data.ENEMY_DATA.append(Event_shooter(
-                                (random.randint(500, 1500), random.randint(50, 300)), standart_spawn=1))
+                                (random.randint(500, 1500), random.randint(50, 300)), standart_spawn=1, gfx_rot=False))
 
                         if timer.trigger(500):
                             cls.planet_inv_enemy_amount += 1
@@ -667,6 +667,10 @@ class Events():
         cls.planet_invasion_2nd_elite = False
 
     @classmethod
+    def event_placeholder(cls):
+        return "stop_event"
+
+    @classmethod
     def all_reset(cls):
         cls.mine_field_reset()
         cls.convoy_escort_reset()
@@ -688,7 +692,14 @@ class Events():
             (cls.event_station_hack, 12),
             (cls.event_zone_defence, 18),
             (cls.event_planet_evacuation, 18),
-            (cls.event_planet_invasion, 24)
+            (cls.event_planet_invasion, 24),
+            (cls.event_placeholder, 24),  # Stealth Base infiltration
+            (cls.event_placeholder, 30),  # Planeten Ring
+            (cls.event_placeholder, 30),  # Battlegroup Escort
+            (cls.event_placeholder, 36),  # Planeten Invasion / Ground Support
+            (cls.event_placeholder, 36),  # Spacebattle Tug of war?
+            (cls.event_placeholder, 42),
+            (cls.event_placeholder, 42)
         ]
 
 

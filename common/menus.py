@@ -13,8 +13,11 @@ class Upgrade_menu(Timer):
         self.clickable = False
         self.bg_state = True
         self.menu = []
+        self.item_cost_indicators = []
         self.inventory_grid = [pygame.Rect(420, y, 50, 50) for y in range(145, 678, 76)]
         self.standart_items = [data.PLAYER.shield, data.PLAYER.jumpdrive]
+        self.dropped_item_pos = []
+        self.orig_dropped_len = 0
 
         # Background
         self.menu.append(Gui_image(loc=(0, 0), img_idx=10))
@@ -30,22 +33,25 @@ class Upgrade_menu(Timer):
         self.menu.append(Gui_text(loc=(1420, 494), text=lambda: f"{int(data.ACTIVE_ITEMS.cd_reduction * 100)}", text_size=20))
         # Skill Buttons
         self.menu.append(Gui_button(loc=(1458, 185), btn_idx=(1, 2),
-                                    btn_effect=lambda: self.speed_upgrade_btn_effect()))
+                                    btn_effect=lambda: self.speed_upgrade_btn_effect(), btn_text="2", text_x=3))
         self.menu.append(Gui_button(loc=(1456, 245), btn_idx=(1, 2),
-                                    btn_effect=lambda: self.health_upgrade_btn_effect()))
+                                    btn_effect=lambda: self.health_upgrade_btn_effect(), btn_text="2", text_x=3))
         self.menu.append(Gui_button(loc=(1456, 305), btn_idx=(1, 2),
-                                    btn_effect=lambda: self.damage_upgrade_btn_effect()))
+                                    btn_effect=lambda: self.damage_upgrade_btn_effect(), btn_text="1", text_x=3))
         self.menu.append(Gui_button(loc=(1456, 368), btn_idx=(1, 2),
-                                    btn_effect=lambda: self.crit_chance_upgrade_btn_effect()))
+                                    btn_effect=lambda: self.crit_chance_upgrade_btn_effect(), btn_text="1", text_x=3))
         self.menu.append(Gui_button(loc=(1456, 428), btn_idx=(1, 2),
-                                    btn_effect=lambda: self.fire_rate_upgrade_btn_effect()))
+                                    btn_effect=lambda: self.fire_rate_upgrade_btn_effect(), btn_text="1", text_x=3))
         self.menu.append(Gui_button(loc=(1456, 490), btn_idx=(1, 2),
-                                    btn_effect=lambda: self.cd_reduction_upgrade_btn_effect()))
+                                    btn_effect=lambda: self.cd_reduction_upgrade_btn_effect(), btn_text="1", text_x=3))
 
         for standart_item, loc in zip(self.standart_items, ((420, 753), (420, 829))):
             standart_item.hitbox.topleft = loc
 
     def tick(self):
+
+        self.place_proximity_items()
+
         while self.menu_active:
             Background.bg_color_change(color=[0, 30, 0], instant=True)
             if self.timer_delay(10):
@@ -54,12 +60,11 @@ class Upgrade_menu(Timer):
             win.fill(Background.bg_color)
             Background.update()
 
-            # for r in self.inventory_grid:
-            #     pygame.draw.rect(win, (225, 255, 255), r)
-
             self.ui_update()
 
             self.item_interaction()
+
+            self.proximity_items_interaction()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -69,6 +74,7 @@ class Upgrade_menu(Timer):
                     if event.key == K_TAB:
                         Background.bg_color_change(color=Background.standart_color, instant=True)
                         self.reset_item_bar()
+                        self.reset_dropped_items()
                         Background.bg_move = self.bg_state
                         self.menu_active = False
 
@@ -93,6 +99,7 @@ class Upgrade_menu(Timer):
     def item_interaction(self):
         for key, item in data.ITEMS.inventory_dic.items():
             if item is not None:
+                item.cost_indicator_update()
                 item.gfx_draw()
                 item.tool_tip()
                 item.drag_drop(pygame.mouse.get_pos(), self.inventory_grid, key=key)
@@ -104,6 +111,7 @@ class Upgrade_menu(Timer):
                             self.clickable = False
 
         for item in self.standart_items:
+            item.cost_indicator_update()
             item.gfx_draw()
             item.tool_tip()
 
@@ -120,6 +128,26 @@ class Upgrade_menu(Timer):
             if slot is not None:
                 slot.set_cd_img = True
                 slot.add_ui_elements(idx)
+
+    def place_proximity_items(self):
+        self.orig_dropped_len = len(data.ITEMS.dropped_lst)
+        for i, item in enumerate(data.ITEMS.dropped_lst):
+            self.dropped_item_pos.append(item.hitbox.center)
+            item.hitbox.center = (740, 400 + i * 80)
+
+    def proximity_items_interaction(self):
+        for i, item in enumerate(data.ITEMS.dropped_lst):
+            item.gfx_draw()
+            item.tool_tip()
+            item.drag_drop(pygame.mouse.get_pos(), self.inventory_grid, key="proximity")
+
+        if len(data.ITEMS.dropped_lst) != self.orig_dropped_len:
+            self.place_proximity_items()
+
+    def reset_dropped_items(self):
+        for idx, item in enumerate(data.ITEMS.dropped_lst):
+            item.hitbox.center = self.dropped_item_pos[idx]
+        self.dropped_item_pos.clear()
 
     def speed_upgrade_btn_effect(self):
         if data.LEVELS.skill_points > 1:

@@ -238,8 +238,8 @@ class Gui_button(Gui):
         flag="standart_gui",
         btn_idx=(0, 0),
         btn_text="",
-        btn_text_size=25,
-        btn_text_color=(255, 255, 255),
+        btn_text_size=15,
+        btn_text_color=(189, 233, 193),
         btn_effect=None,
         text_x=30,
         text_y=8

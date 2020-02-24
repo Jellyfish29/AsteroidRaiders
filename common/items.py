@@ -25,6 +25,7 @@ class Items(Timer):
     upgrade_points = 0
     drop_table_absolute = []
     consumables = []
+    item_dragged = False
 
     def __init__(self, item_name, discription, gfx_idx, start=False):
         Timer.__init__(self)
@@ -39,7 +40,7 @@ class Items(Timer):
         self.color = (0, 0, 160)
         self.text = " "
         self.lvl = 0
-        self.upgrade_cost_base = (2, 5, 9, "/")
+        self.upgrade_cost_base = (2, 5, 9, "F")
         self.upgrade_cost = self.upgrade_cost_base[self.lvl]
         self.cd_len = None
 
@@ -92,21 +93,28 @@ class Items(Timer):
         self.hitbox.center = (data.PLAYER.hitbox.center[0], data.PLAYER.hitbox.center[1] + 100)
         self.end_effect()
         Items.dropped_lst.append(self)
-        Items.inventory_dic[key] = None
+        if key is not "proximity":
+            Items.inventory_dic[key] = None
 
     def drag_drop(self, mouse_pos, inventory, key=None):
         # Viel Glück beim verstehen
+
         if pygame.mouse.get_pressed()[0] == 1:
             self.clicked = True
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
         if self.clicked:
-            if self.hitbox.collidepoint(mouse_pos):
-                self.drag = True
+            if not Items.item_dragged:
+                if self.hitbox.collidepoint(mouse_pos):
+                    self.drag = True
+                    Items.item_dragged = True
         if self.drag:
             self.hitbox.center = mouse_pos
         if not self.clicked and self.drag:
-            Items.inventory_dic[key] = None
+            if key is not "proximity":
+                Items.inventory_dic[key] = None
+            else:
+                Items.dropped_lst.remove(self)
             for idx, slot in enumerate(inventory):
                 if self.hitbox.colliderect(slot):
                     if idx < 4 and issubclass(self.__class__, Active_Items):
@@ -116,10 +124,17 @@ class Items(Timer):
                         Items.inventory_dic[idx] = self
                         self.hitbox.topleft = (slot.topleft[0] + 0, slot.topleft[1] + 0)
                         break
+
                     elif idx >= 4 and issubclass(self.__class__, Active_Items):
-                        Items.inventory_dic[key] = self
-                        Items.inventory_dic[key].hitbox.topleft = (Items.inv_grid_cords[key][0] + 0, Items.inv_grid_cords[key][1] + 0)
-                        break
+                        if key is not "proximity":
+                            Items.inventory_dic[key] = self
+                            Items.inventory_dic[key].hitbox.topleft = (Items.inv_grid_cords[key][0] + 0, Items.inv_grid_cords[key][1] + 0)
+                            break
+                        else:
+                            if self not in Items.dropped_lst:
+                                Items.dropped_lst.append(self)
+                                data.UP_MENU.place_proximity_items()
+                                break
 
                     elif idx >= 4 and not issubclass(self.__class__, Active_Items):
                         if Items.inventory_dic[idx] is not None:
@@ -130,12 +145,22 @@ class Items(Timer):
                         break
 
                     elif idx < 4 and not issubclass(self.__class__, Active_Items):
-                        Items.inventory_dic[key] = self
-                        Items.inventory_dic[key].hitbox.topleft = (Items.inv_grid_cords[key][0] + 0, Items.inv_grid_cords[key][1] + 0)
-                        break
+                        if key is not "proximity":
+                            Items.inventory_dic[key] = self
+                            Items.inventory_dic[key].hitbox.topleft = (Items.inv_grid_cords[key][0] + 0, Items.inv_grid_cords[key][1] + 0)
+                            break
+                        else:
+                            if self not in Items.dropped_lst:
+                                Items.dropped_lst.append(self)
+                                data.UP_MENU.place_proximity_items()
+                                break
 
             else:
                 self.remove_from_inventory(key)
+                if key == "proximity":
+                    data.UP_MENU.place_proximity_items()
+
+            Items.item_dragged = False
             self.drag = False
 
     def despawn_avoidance(self):
@@ -177,17 +202,21 @@ class Items(Timer):
 
         if self.hitbox.collidepoint(pygame.mouse.get_pos()):
             if self.timer_key_delay(limit=Items.tt_delay, key=self.flag + "tt"):
+                win.blit(Gui.image_sprites[12], (pygame.mouse.get_pos()[0] - 30, pygame.mouse.get_pos()[1] - 90))
                 # Name
-                win.blit(Gui.fonts[20].render(self.item_name, True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1]))
+                win.blit(Gui.fonts[20].render(self.item_name, True, (189, 233, 193)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1]))
                 # Desc
-                win.blit(Gui.fonts[15].render(self.discription, True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 30))
+                win.blit(Gui.fonts[15].render(self.discription, True, (189, 233, 193)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 30))
                 # level
                 if self.lvl is not None:
-                    win.blit(Gui.fonts[15].render(f"Item Level: {self.lvl + 1}/4  Cost: {self.upgrade_cost_base[self.lvl]}", True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 55))
+                    win.blit(Gui.fonts[15].render(f"Item Level: {self.lvl + 1}/4  Cost: {self.upgrade_cost_base[self.lvl]}", True, (189, 233, 193)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 55))
                 # lvl_effect
-                win.blit(Gui.fonts[15].render(self.get_upgrade_desc(), True, (255, 255, 255)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 75))
+                win.blit(Gui.fonts[15].render(self.get_upgrade_desc(), True, (189, 233, 193)), (pygame.mouse.get_pos()[0] + 30, pygame.mouse.get_pos()[1] + 75))
         else:
             self.timer_key_delay(key=self.flag + "tt", reset=True)
+
+    def cost_indicator_update(self):
+        win.blit(Gui.fonts[15].render(str(self.upgrade_cost), True, (189, 233, 193)), (self.hitbox.bottomright[0] - 3, self.hitbox.bottomright[1] - 4))
 
     def gfx_draw(self):
         if self.lvl is not None:

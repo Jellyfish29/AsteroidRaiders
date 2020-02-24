@@ -637,7 +637,7 @@ spez_spawn_table = [Jumper, Seeker]
 class Event_shooter(Shooter):
 
     def __init__(self, dest, standart_spawn=None,
-                 special_spawn=None, border_check=False):
+                 special_spawn=None, border_check=False, gfx_rot=True):
         if standart_spawn is None:
             standart_spawn = random.randint(1, 4)
         super().__init__(spawn=standart_spawn)
@@ -649,6 +649,7 @@ class Event_shooter(Shooter):
         self.health = Enemy.health + 6
         self.max_health = self.health
         self.fire_rate = random.randint(40, 120)
+        self.gfx_rot = gfx_rot
 
     def move(self):
         self.direction = degrees(
@@ -666,30 +667,41 @@ class Event_shooter(Shooter):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
         animation_ticker = self.timer_animation_ticker(8)
 
-        if len(data.PLAYER_DATA) > 0:
-            target = data.PLAYER_DATA[0].hitbox.center
-        else:
-            target = self.dest
+        if self.gfx_rot:
 
-        gfx_angle = degrees(
-            target[1],
-            self.hitbox.center[1],
-            target[0],
-            self.hitbox.center[0]
-        )
+            if len(data.PLAYER_DATA) > 0:
+                target = data.PLAYER_DATA[0].hitbox.center
+            else:
+                target = self.dest
 
-        if animation_ticker < 4:
-            win.blit(rot_center(
-                self.sprites[self.gfx_idx[0]], gfx_angle),
-                (self.hitbox.topleft[0] + self.gfx_hook[0],
-                 self.hitbox.topleft[1] + self.gfx_hook[1])
+            gfx_angle = degrees(
+                target[1],
+                self.hitbox.center[1],
+                target[0],
+                self.hitbox.center[0]
             )
+
+            if animation_ticker < 4:
+                win.blit(rot_center(
+                    self.sprites[self.gfx_idx[0]], gfx_angle),
+                    (self.hitbox.topleft[0] + self.gfx_hook[0],
+                     self.hitbox.topleft[1] + self.gfx_hook[1])
+                )
+            else:
+                win.blit(rot_center(
+                    self.sprites[self.gfx_idx[1]], gfx_angle),
+                    (self.hitbox.topleft[0] + self.gfx_hook[0],
+                     self.hitbox.topleft[1] + self.gfx_hook[1])
+                )
+
         else:
-            win.blit(rot_center(
-                self.sprites[self.gfx_idx[1]], gfx_angle),
-                (self.hitbox.topleft[0] + self.gfx_hook[0],
-                 self.hitbox.topleft[1] + self.gfx_hook[1])
-            )
+
+            if animation_ticker < 4:
+                win.blit(self.sprites[self.gfx_idx[0]],
+                         (self.hitbox.topleft[0] + self.gfx_hook[0], self.hitbox.topleft[1] + self.gfx_hook[1]))
+            else:
+                win.blit(self.sprites[self.gfx_idx[1]],
+                         (self.hitbox.topleft[0] + self.gfx_hook[0], self.hitbox.topleft[1] + self.gfx_hook[1]))
 
     def reset(self):
         self.dest = (-1000, -500)

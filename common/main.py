@@ -31,7 +31,7 @@ def test_mode():
     Levels.events_disabled = True
     Levels.display_score += 400
     # Player.health += 40000
-    Player.damage += 10
+    # Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
     Player.health = 40
@@ -86,8 +86,6 @@ def main():
     Levels.special_event_queue.append(Events.intro_event)
 
     while True:
-
-        print(len(data.ENEMY_DATA))
 
         win.fill(Background.bg_color)
         Background.update()

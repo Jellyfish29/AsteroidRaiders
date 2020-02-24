@@ -32,6 +32,7 @@ TODO:
 - 8 Item Slots
 - Mehr Spez Enemys:
     - Dart missile ship
+    - Boarding ship (Nahkampft)
     -...
 - Mehr Events
     - #Convoys
@@ -71,6 +72,8 @@ TODO:
         - #Menus
         - #Buttons
         - ...
+    - kosten anzeige
+    - Tutorial hinweise?
 - Score Berechnung mit Time Bonus
 - Menu
     - Schwierigkeitsgrad
