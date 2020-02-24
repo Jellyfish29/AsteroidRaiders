@@ -440,10 +440,10 @@ class Turret:
                             speed=30,
                             size=cls.projectile_size,
                             start_point=data.PLAYER.hitbox.center,
-                            damage=2 + data.PLAYER.damage,
+                            damage=2 + data.PLAYER.damage * 2,
                             gfx_idx=24,
                             target=pygame.mouse.get_pos(),
-                            hit_effect=lambda _, obj: obj.set_cc(0, 180)
+                            hit_effect=lambda _, obj: obj.set_cc(0, 180, stun=True)
                         ))
                     else:
                         cls.shock_burst_limiter = 0
@@ -455,27 +455,30 @@ class Turret:
         if "smart_missile" in data.ITEMS.active_flag_lst:
             if data.ITEMS.get_item(flag="smart_missile").active:
                 if timer.trigger(3):
-                    try:
-                        target = data.ENEMY_DATA[cls.smart_missile_target].hitbox
-                        cls.smart_missile_target += 1
-                    except IndexError:
-                        cls.smart_missile_target = 0
-                        target = data.ENEMY_DATA[cls.smart_missile_target].hitbox
+                    if len(data.ENEMY_DATA) > 0:
+                        try:
+                            target = data.ENEMY_DATA[cls.smart_missile_target].hitbox
+                            cls.smart_missile_target += 1
+                        except IndexError:
+                            cls.smart_missile_target = 0
+                            target = data.ENEMY_DATA[cls.smart_missile_target].hitbox
 
-                    cls.smart_burst_limiter += 1
-                    if cls.smart_burst_limiter <= data.ITEMS.get_item(flag="smart_missile").effect_strength:
-                        data.PLAYER_PROJECTILE_DATA.append(Missile(
-                            speed=25,
-                            size=(5, 5),
-                            start_point=data.PLAYER.hitbox.center,
-                            target=target,
-                            damage=0.3 + data.PLAYER.damage,
-                            flag="missile",
-                            gfx_idx=25
-                        ))
+                        cls.smart_burst_limiter += 1
+                        if cls.smart_burst_limiter <= data.ITEMS.get_item(flag="smart_missile").effect_strength:
+                            data.PLAYER_PROJECTILE_DATA.append(Missile(
+                                speed=25,
+                                size=(5, 5),
+                                start_point=data.PLAYER.hitbox.center,
+                                target=target,
+                                damage=0.1 + data.PLAYER.damage * 2,
+                                flag="missile",
+                                gfx_idx=25
+                            ))
+                        else:
+                            cls.smart_burst_limiter = 0
+                            data.ITEMS.get_item(flag="smart_missile").end_active()
                     else:
-                        cls.smart_burst_limiter = 0
-                        data.ITEMS.get_item(flag="smart_missile").end_active()
+                        data.ITEMS.get_item(flag="smart_missile").active = False
 
     @classmethod
     def he_rounds(cls):
@@ -486,14 +489,14 @@ class Turret:
                     speed=cls.projectile_speed,
                     size=cls.projectile_size,
                     start_point=data.PLAYER.hitbox.center,
-                    damage=0.1 + data.PLAYER.damage,
+                    damage=data.PLAYER.damage,
                     gfx_idx=15,
                     target=pygame.mouse.get_pos(),
                     piercing=False,
                     hit_effect=lambda l, _: data.PLAYER_PROJECTILE_DATA.append(Explosion(
                         location=l,
                         explo_size=70,
-                        damage=data.PLAYER.damage * 0.2,
+                        damage=data.PLAYER.damage * 0.35,
                         explosion_effect=lambda loc: Gfx.create_effect(
                             "explosion_4", 1, (loc[0] - 90, loc[1] - 90), explo=True)
                     ))

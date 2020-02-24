@@ -65,6 +65,7 @@ class Enemy(Timer):
         self.sprites = sprites
         self.orig_direction = self.direction
         self.cced = False
+        self.stunned = False
         self.cc_angles = angles_360(2)
         self.cc_time = 0
         self.kill = False
@@ -87,6 +88,7 @@ class Enemy(Timer):
         self.hitbox.move_ip(self.cc_angles[self.direction])
         if self.timer_trigger(self.cc_time):
             self.cced = False
+            self.stunned = False
 
     def border_collide(self):
         if rect_not_on_sreen(self.hitbox, bot=False, strict=False):
@@ -188,8 +190,9 @@ class Enemy(Timer):
     def set_fire_rate(self, fr):
         self.fire_rate += fr
 
-    def set_cc(self, s, t):
+    def set_cc(self, s, t, stun=False):
         self.cced = True
+        self.stunned = stun
         self.cc_time = t
         self.cc_angles = angles_360(s)
 
@@ -293,7 +296,8 @@ class Enemy(Timer):
         if self.border_check:
             self.border_collide()
         self.player_collide()
-        self.skill()
+        if not self.stunned:
+            self.skill()
         data.TURRET.missile_aquisition(self)
         data.TURRET.point_defence(self.hitbox)
         if any([self.get_name() == "Boss_turret"]):
@@ -520,7 +524,7 @@ class Strafer(Enemy):
         )
         self.score_amount = 12
         self.shot_angles = angles_360(12)
-        self.fire_rate = 20
+        self.fire_rate = 35
         self.ttk_bonus = 40
 
     def skill(self):

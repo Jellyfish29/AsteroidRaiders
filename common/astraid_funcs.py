@@ -4,7 +4,7 @@ import json
 import math
 import random
 import functools
-from profilehooks import profile
+#from profilehooks import profile
 
 winwidth = 1920
 winheight = 1080

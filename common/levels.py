@@ -19,10 +19,10 @@ class Levels:
     display_level = 1
     level = 1
     level_interval = 35
-    enemy_amount = 5  # at Start
+    enemy_amount = 3  # at Start
     skill_points = 0
     # elite/Elites
-    elite_max_spawn_time = 4000
+    elite_max_spawn_time = 4500
     second_elite_chance = 100
     elite_spawn_time = 0
     # Flags
@@ -46,7 +46,7 @@ class Levels:
 
     @classmethod
     def scaling(cls):
-        data.ENEMY.health += 0.5
+        data.ENEMY.health += 0.3
         Elites.health += Elites.health * 0.12
         cls.event_trigger_time = (cls.event_trigger_time[0] - 60, cls.event_trigger_time[1] - 75)
         if cls.event_trigger_time[0] <= 200:
@@ -158,29 +158,22 @@ class Levels:
                 enemy=Seeker, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 8))
         elif event_id == 5:
             data.EVENTS.event_wave(
-                enemy=Strafer, spawn=random.randint(1, 4), amount=3, scaling=int(cls.level / 8))
+                enemy=Strafer, spawn=random.randint(1, 4), amount=2, scaling=0)
         elif event_id == 6:
             data.EVENTS.event_wave(
                 enemy=Mine_layer, spawn=random.randint(1, 4), amount=3, scaling=0)
         elif event_id == 7:
             data.EVENTS.event_wave(
-                enemy=Miner, spawn=random.randint(1, 4), amount=3, scaling=0)
+                enemy=Miner, spawn=random.randint(1, 4), amount=2, scaling=0)
 
     @classmethod
     def execute_special_event(cls):
         cls.special_events = True
-        # if len(cls.special_events_lst) == 0:
-        #     cls.special_events_lst = [
-        #         e[0] for e in data.EVENTS.get_special_events_lst() if e[1] >= cls.level and e[1] <= cls.level + 5
-        #     ]
         cls.special_event_queue.append(
             cls.special_events_lst.pop(random.randint(0, len(cls.special_events_lst) - 1)))
 
     @classmethod
     def save_game(cls):
-        # for _, item in data.ITEMS.inventory_dic.items():
-        #     if item is not None:
-        #         item.end_effect()
         with open(os.path.join(os.getcwd()[:-7], f"save_games\\saves"), "wb") as file:
             pickle.dump(STAGE_SAVE(), file)
 
