@@ -3,6 +3,7 @@ from Gfx import Gfx
 import astraid_data as data
 from astraid_funcs import *
 from init import *
+from ui import *
 
 
 class Item_auto_repair(Items):
@@ -237,8 +238,8 @@ class Item_overdrive(Items):
         super().__init__("Weapons system Overdrive (passive)", "Every Kill increases Damage and Fire Rate until taking Damage", (19, 21))
         self.color = color
         self.flag = "overdrive"
-        self.base_effect = 30
-        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+        self.base_effect = 28
+        self.effect_strength = int(self.get_lvl_effects(reverse=True)[self.lvl])
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "Stacks")
 
     def get_upgrade_desc(self):
@@ -247,13 +248,56 @@ class Item_overdrive(Items):
     def set_effect_strength(self):
         self.effect_strength = int(self.get_lvl_effects(reverse=True)[self.lvl])
 
-    def set_text_update(self):
-        self.text = f"{data.TURRET.overdrive_count}/{int(self.effect_strength)}"
+    # def set_text_update(self):
+    #     self.text = f"{data.TURRET.overdrive_count}/{int(self.effect_strength)}"
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+            Items.active_flag_lst.append(self.flag)
+            for _ in range(data.TURRET.overdrive_count):
+                data.PLAYER.damage += 0.05
+                data.TURRET.set_fire_rate(0.07)
+            if data.PLAYER.indicator_slots[0] is None:  # left
+                data.PLAYER.indicator_slots[0] = Gui_text(
+                    anchor=data.PLAYER.hitbox,
+                    anchor_x=data.PLAYER.indicator_pos[0][0],
+                    anchor_y=data.PLAYER.indicator_pos[0][1],
+                    text=lambda: f"{int(data.TURRET.overdrive_count)}/{self.effect_strength}",
+                    text_size=15,
+                    flag="overdrive_counter")
+                data.PLAYER.indicator_slots[2] = Gui_image(
+                    anchor=data.PLAYER.hitbox,
+                    anchor_x=data.PLAYER.indicator_pos[0][0] - 30,
+                    anchor_y=data.PLAYER.indicator_pos[0][1] - 5,
+                    img_idx=14,
+                    flag="overdrive_counter")
+            else:  # Right
+                if data.PLAYER.indicator_slots[1] is None:
+                    data.PLAYER.indicator_slots[1] = Gui_text(
+                        anchor=data.PLAYER.hitbox,
+                        anchor_x=data.PLAYER.indicator_pos[1][0],
+                        anchor_y=data.PLAYER.indicator_pos[1][1],
+                        text=lambda: f"{int(data.TURRET.overdrive_count)}/{int(self.effect_strength)}",
+                        text_size=15,
+                        flag="overdrive_counter")
+                    data.PLAYER.indicator_slots[3] = Gui_image(
+                        anchor=data.PLAYER.hitbox,
+                        anchor_x=data.PLAYER.indicator_pos[1][0] + 30,
+                        anchor_y=data.PLAYER.indicator_pos[1][1] - 5,
+                        img_idx=14,
+                        flag="overdrive_counter")
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
-            data.PLAYER.reset_overdrive()
+            for _ in range(data.TURRET.overdrive_count):
+                data.PLAYER.damage -= 0.05
+                data.TURRET.set_fire_rate(-0.07)
+
             Items.active_flag_lst.remove(self.flag)
+            for key in data.PLAYER.indicator_slots:
+                if data.PLAYER.indicator_slots[key] is not None:
+                    if data.PLAYER.indicator_slots[key].flag == "overdrive_counter":
+                        data.PLAYER.indicator_slots[key] = None
 
 
 class Item_targeting_scanner(Items):
@@ -339,7 +383,7 @@ class Item_debris_scanner(Items):
         super().__init__("Debris Scanner (passiv)", "Passivily Scans the Debris of destroyed Enemys for useful Items", (1, 1))
         self.color = color
         self.flag = "debris_scanner"
-        self.base_effect = 8
+        self.base_effect = 12
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
 
     def get_upgrade_desc(self):
@@ -371,6 +415,6 @@ Items.set_drop_table([
     (Item_hyper_velocity_rounds, (1, 169, 201)),
     (Item_expert_damage_control, (0, 0, 0)),
     # (Item_overdrive, (89, 1, 37)),
-    # (Item_bi_weave_shields, (0, 0, 0)),
+    (Item_bi_weave_shields, (0, 0, 0)),
     (Item_debris_scanner, (0, 0, 0))
 ])

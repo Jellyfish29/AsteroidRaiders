@@ -70,6 +70,8 @@ class Player:
     item_locs = [((-25, -30), 5), ((20, -30), 6), ((-25, 0), 7), ((20, 0), 8)]
     item_amount = 0
     gfx_ticker = 0
+    indicator_slots = {i: None for i in range(4)}
+    indicator_pos = [(-30, 75), (72, 75)]
     # Time
     restart_timer = False
 
@@ -111,9 +113,10 @@ class Player:
     @classmethod
     def reset_overdrive(cls):
         if "overdrive" in data.ITEMS.active_flag_lst:
-            cls.damage -= 0.05 * data.TURRET.overdrive_count
-            data.TURRET.set_fire_rate(-0.1 * data.TURRET.overdrive_count)
-            data.TURRET.overdrive_count = int(data.TURRET.overdrive_count / 2)
+            data.TURRET.overdrive_count = round(data.TURRET.overdrive_count / 2, 0)
+            for _ in range(int(data.TURRET.overdrive_count)):
+                cls.damage -= 0.05
+                data.TURRET.set_fire_rate(-0.07)
 
     @classmethod
     def shield_update(cls):
@@ -215,13 +218,10 @@ class Player:
         cls.interaction_button_pressed = p
 
     @classmethod
-    def gfx_item_extensions(cls):
-
-        cls.item_amount = 4 - [data.ITEMS.inventory_dic[k] for k in data.ITEMS.inventory_dic if k >= 4].count(None)
-
-        for loc, idx in cls.item_locs[:cls.item_amount]:
-            win.blit(
-                cls.ship_sprites[idx], (cls.hitbox.center[0] + loc[0], cls.hitbox.center[1] + loc[1]))
+    def item_info_indicator_update(cls):
+        for key, indicator in cls.indicator_slots.items():
+            if indicator is not None:
+                indicator.tick()
 
     @classmethod
     @timer
@@ -269,6 +269,7 @@ class Player:
                 cls.restart_timer = False
 
         # pygame.draw.rect(win, (255, 0, 0), cls.hitbox)
+        cls.item_info_indicator_update()
         cls.jumpdrive_update()
         cls.afterburner_update()
         cls.gfx_animation()

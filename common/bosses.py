@@ -271,6 +271,19 @@ class Bosses(Shooter, Boss_skills):
         data.LEVELS.boss_fight = False
         data.LEVELS.after_boss = True
         self.special_death()
+
+        if self.buffer_hp > 0:
+            text_size = self.get_dmg_text_size(self.buffer_hp)
+            if self.buffer_hp > data.PLAYER.damage:
+                color = (222, 91, 22)  # de5b16
+            else:
+                color = (255, 10, 10)
+            Gfx.create_effect(
+                "dmg_text", 4,
+                (self.hitbox.center[0] + random.randint(-10, 10),
+                 self.hitbox.center[1] + random.randint(-10, 10)),
+                hover=True, follow=True, text=self.buffer_hp, text_size=text_size, text_color=color
+            )
         self.kill = True
 
     def set_snared(self):

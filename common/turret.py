@@ -335,7 +335,7 @@ class Turret:
             if cls.overdrive_count < data.ITEMS.get_item(flag="overdrive").effect_strength:
                 cls.overdrive_count += 1
                 data.PLAYER.damage += 0.05
-                cls.set_fire_rate(0.1)
+                cls.set_fire_rate(0.07)
 
     @classmethod
     @timer
@@ -576,7 +576,7 @@ class Turret:
         if "debris_scanner" in data.ITEMS.active_flag_lst:
             for loc in cls.hit_locations:
                 if random.randint(1, 100) > 100 - data.ITEMS.get_item(flag="debris_scanner").effect_strength:
-                    item = random.choice([Item_cd_reduction_prog, Item_damage_prog, Item_shield_prog])
+                    item = random.choices([Item_damage_prog, Item_cd_reduction_prog, Item_shield_prog], [60, 25, 15], k=1)[0]
                     data.ITEMS.drop(loc.hitbox.center, target=item((100, 100, 200)))
 
     @classmethod

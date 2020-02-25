@@ -94,6 +94,7 @@ class Events():
 
             data.PLAYER_DATA.clear()
             data.GUI_DATA.clear()
+            data.ITEMS.dropped_lst.clear()
 
             Background.y += 1080
             Background.bg_objs.append(Background(y=random.randint(100, 800)))

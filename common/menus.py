@@ -130,22 +130,24 @@ class Upgrade_menu(Timer):
                 slot.add_ui_elements(idx)
 
     def place_proximity_items(self):
-        self.orig_dropped_len = len(data.ITEMS.dropped_lst)
-        for i, item in enumerate(data.ITEMS.dropped_lst):
+        dropped_items = [i for i in data.ITEMS.dropped_lst if not any([isinstance(i, c) for c in data.ITEMS.consumables])]
+        self.orig_dropped_len = len(dropped_items)
+        for i, item in enumerate(dropped_items):
             self.dropped_item_pos.append(item.hitbox.center)
             item.hitbox.center = (740, 400 + i * 80)
 
     def proximity_items_interaction(self):
-        for i, item in enumerate(data.ITEMS.dropped_lst):
+        dropped_items = [i for i in data.ITEMS.dropped_lst if not any([isinstance(i, c) for c in data.ITEMS.consumables])]
+        for item in dropped_items:
             item.gfx_draw()
             item.tool_tip()
             item.drag_drop(pygame.mouse.get_pos(), self.inventory_grid, key="proximity")
 
-        if len(data.ITEMS.dropped_lst) != self.orig_dropped_len:
+        if len(dropped_items) != self.orig_dropped_len:
             self.place_proximity_items()
 
     def reset_dropped_items(self):
-        for idx, item in enumerate(data.ITEMS.dropped_lst):
+        for idx, item in enumerate([i for i in data.ITEMS.dropped_lst if not any([isinstance(i, c) for c in data.ITEMS.consumables])]):
             item.hitbox.center = self.dropped_item_pos[idx]
         self.dropped_item_pos.clear()
 

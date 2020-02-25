@@ -217,6 +217,9 @@ data.LEVELS = Levels
 class STAGE_SAVE():
 
     def __init__(self):
+        for _, item in data.ITEMS.inventory_dic.items():
+            if item is not None:
+                item.end_effect()
         self.items = data.ITEMS.inventory_dic
         self.pl_health = data.PLAYER.health
         self.pl_max_health = data.PLAYER.max_health
@@ -250,9 +253,6 @@ class STAGE_SAVE():
         self.raw_cd = Active_Items.raw_cd_reduction
 
     def load_save(self):
-        for _, item in data.ITEMS.inventory_dic.items():
-            if item is not None:
-                item.end_effect()
         Levels.level = self.lvl
         data.ENEMY_DATA.clear()
         data.ENEMY_PROJECTILE_DATA.clear()
@@ -265,6 +265,7 @@ class STAGE_SAVE():
         Levels.special_events_lst.clear()
         Levels.special_event_queue.clear()
         data.EVENTS.all_reset()
+        data.PLAYER.indicator_slots = {i: None for i in range(4)}
         Levels.special_events_lst = [e[0] for e in data.EVENTS.get_special_events_lst() if e[1] == Levels.level]
 
         Levels.after_boss = False
@@ -277,7 +278,6 @@ class STAGE_SAVE():
         Levels.level_interval = self.interval_score
         data.ITEMS.inventory_dic = self.items
         data.PLAYER.health = self.pl_health
-        # data.PLAYER.max_health = self.pl_max_health
         data.PLAYER.heal_amount = self.pl_heal_amount
         data.PLAYER.raw_max_health = self.pl_raw_health
         data.PLAYER.hitbox.center = (1000, 900)
@@ -288,9 +288,6 @@ class STAGE_SAVE():
         data.PLAYER.damage = self.pl_dmg
         data.PLAYER.raw_crit_chance = self.pl_raw_crit
         data.TURRET.raw_fire_rate = self.pl_raw_fire_rate
-        # Active_Items.cd_reduction = self.pl_cd
-        # Active_Items.raw_cd_reduction = self.raw_cd
-        # data.PLAYER.heal_strenght = 4
         data.PLAYER.jumpdrive = self.pl_jump
         data.PLAYER.shield = self.pl_shield
         Levels.boss_fight = self.boss_fight

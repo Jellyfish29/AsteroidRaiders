@@ -132,12 +132,12 @@ class Item_damage_prog(Items):
         self.lvl = None
 
     def get_upgrade_desc(self):
-        return f"Damage: {data.PLAYER.damage + data.PLAYER.damage * 2}"
+        return f"Damage: {data.PLAYER.damage + data.PLAYER.damage * 3}"
 
     def effect(self):
         if self.flag not in Items.active_flag_lst:
 
-            data.TURRET.special_damage += data.PLAYER.damage * 2
+            data.TURRET.special_damage += data.PLAYER.damage * 3
 
             for key, item in Items.inventory_dic.items():
                 if item == self:
@@ -202,5 +202,6 @@ Items.consumables = [
     Item_upgrade_point_crate,
     Item_heal_crate,
     Item_cd_reduction_prog,
-    Item_shield_prog
+    Item_shield_prog,
+    Item_damage_prog
 ]

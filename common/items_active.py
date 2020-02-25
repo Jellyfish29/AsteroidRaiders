@@ -249,8 +249,54 @@ class Item_rail_gun(Active_Items):
     def set_effect_strength(self):
         self.effect_strength = self.get_lvl_effects()[self.lvl]
 
-    def get_active_str(self):
-        return f"{int(data.TURRET.rail_gun_charge * 100)}/100"
+    # def get_active_str(self):
+    #     return f"{int(data.TURRET.rail_gun_charge * 100)}/100"
+
+    def activation_effect(self):
+        if not self.cooldown:
+            if data.PLAYER.indicator_slots[0] is None:  # left
+                data.PLAYER.indicator_slots[0] = Gui_text(
+                    anchor=data.PLAYER.hitbox,
+                    anchor_x=data.PLAYER.indicator_pos[0][0],
+                    anchor_y=data.PLAYER.indicator_pos[0][1],
+                    text=lambda: f"{int(data.TURRET.rail_gun_charge * 100)}%",
+                    text_size=15,
+                    text_color=(255, 20, 20),
+                    flag="rail_gun_charge")
+                data.PLAYER.indicator_slots[2] = Gui_image(
+                    anchor=data.PLAYER.hitbox,
+                    anchor_x=data.PLAYER.indicator_pos[0][0] - 30,
+                    anchor_y=data.PLAYER.indicator_pos[0][1] - 5,
+                    img_idx=13,
+                    flag="rail_gun_charge")
+            else:  # Right
+                if data.PLAYER.indicator_slots[1] is None:
+                    data.PLAYER.indicator_slots[1] = Gui_text(
+                        anchor=data.PLAYER.hitbox,
+                        anchor_x=data.PLAYER.indicator_pos[1][0],
+                        anchor_y=data.PLAYER.indicator_pos[1][1],
+                        text=lambda: f"{int(data.TURRET.rail_gun_charge * 100)}%",
+                        text_size=15,
+                        text_color=(255, 20, 20),
+                        flag="rail_gun_charge")
+                    data.PLAYER.indicator_slots[3] = Gui_image(
+                        anchor=data.PLAYER.hitbox,
+                        anchor_x=data.PLAYER.indicator_pos[1][0] + 30,
+                        anchor_y=data.PLAYER.indicator_pos[1][1] - 5,
+                        img_idx=13,
+                        flag="rail_gun_charge")
+
+    def end_active(self):
+        if self.active:
+            self.cooldown = True
+            self.set_cd_img = True
+        if self.engage:
+            self.engage = False
+        self.active = False
+        for key in data.PLAYER.indicator_slots:
+            if data.PLAYER.indicator_slots[key] is not None:
+                if data.PLAYER.indicator_slots[key].flag == "rail_gun_charge":
+                    data.PLAYER.indicator_slots[key] = None
 
 
 class Item_concussion_rounds(Active_Items):
