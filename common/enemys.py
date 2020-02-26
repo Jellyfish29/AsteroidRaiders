@@ -324,7 +324,7 @@ class Enemy(Timer):
             data.LEVELS.after_boss,
             data.LEVELS.special_events
         )):
-            if len(data.ENEMY_DATA) < data.LEVELS.enemy_amount:
+            if len([e for e in data.ENEMY_DATA if isinstance(e, Asteroid)]) < data.LEVELS.enemy_amount:
                 data.ENEMY_DATA.append(Asteroid())
             if timer.trigger(Enemy.spez_spawn_time):
                 data.ENEMY_DATA.append(random.choice(cls.spez_spawn_table)())
