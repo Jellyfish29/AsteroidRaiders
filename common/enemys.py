@@ -629,120 +629,24 @@ class Comet(Enemy):
         self.ttk_bonus = 50
 
 
-spez_spawn_table = [Jumper, Seeker]
+class Mining_astroid(Enemy):
 
-
-# Event Ships
-
-class Event_shooter(Shooter):
-
-    def __init__(self, dest, standart_spawn=None,
-                 special_spawn=None, border_check=False, gfx_rot=True):
-        if standart_spawn is None:
-            standart_spawn = random.randint(1, 4)
-        super().__init__(spawn=standart_spawn)
-        if special_spawn is not None:
-            self.hitbox.center = special_spawn
-        self.dest = dest
-        self.border_check = border_check
-        self.gfx_hook = (-50, -50)
-        self.health = Enemy.health + 6
-        self.max_health = self.health
-        self.fire_rate = random.randint(40, 120)
-        self.gfx_rot = gfx_rot
+    def __init__(self, spawn=1):
+        super().__init__(0, 0, spawn, Enemy.health, (100, 100), None, (0, 0), Enemy.asteroid_sprites)
+        self.gfx_idx = random.randint(0, 100)
+        self.hitbox.center = spawn
 
     def move(self):
-        self.direction = degrees(
-            self.dest[0], self.hitbox.center[0],
-            self.dest[1], self.hitbox.center[1]
-        )
-
-        self.hitbox.move_ip(self.angles[self.direction])
-
-        if self.hitbox.collidepoint(self.dest):
-            self.angles = angles_360(0)
-            self.gfx_idx = (15, 15)
+        self.hitbox.move_ip(0, Background.scroll_speed)
 
     def gfx_animation(self):
-        # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
-        animation_ticker = self.timer_animation_ticker(8)
-
-        if self.gfx_rot:
-
-            if len(data.PLAYER_DATA) > 0:
-                target = data.PLAYER_DATA[0].hitbox.center
-            else:
-                target = self.dest
-
-            gfx_angle = degrees(
-                target[1],
-                self.hitbox.center[1],
-                target[0],
-                self.hitbox.center[0]
-            )
-
-            if animation_ticker < 4:
-                win.blit(rot_center(
-                    self.sprites[self.gfx_idx[0]], gfx_angle),
-                    (self.hitbox.topleft[0] + self.gfx_hook[0],
-                     self.hitbox.topleft[1] + self.gfx_hook[1])
-                )
-            else:
-                win.blit(rot_center(
-                    self.sprites[self.gfx_idx[1]], gfx_angle),
-                    (self.hitbox.topleft[0] + self.gfx_hook[0],
-                     self.hitbox.topleft[1] + self.gfx_hook[1])
-                )
-
-        else:
-
-            if animation_ticker < 4:
-                win.blit(self.sprites[self.gfx_idx[0]],
-                         (self.hitbox.topleft[0] + self.gfx_hook[0], self.hitbox.topleft[1] + self.gfx_hook[1]))
-            else:
-                win.blit(self.sprites[self.gfx_idx[1]],
-                         (self.hitbox.topleft[0] + self.gfx_hook[0], self.hitbox.topleft[1] + self.gfx_hook[1]))
-
-    def reset(self):
-        self.dest = (-1000, -500)
-        self.angles = angles_360(4)
-        self.border_check = True
-        self.gfx_idx = (7, 8)
+        win.blit(self.sprites[self.gfx_idx], self.hitbox.topleft)
 
 
-class Convoy_ship_enemy(Shooter):
+class Extractor(Enemy):
 
-    def __init__(self, y):
-        super().__init__()
-        self.x = random.randint(1950, 2050)
-        self.y = random.randint(-50, 50)
-        self.gfx_idx = (11, 12)
-        self.spawn_points = [(self.x, y + self.y)]
-        self.spawn_point = 0
-        self.hitbox.center = (self.x, y + self.y)
-        self.direction = degrees(-100, self.x, y + self.y, y + self.y)
-        self.orig_direction = self.direction
-        self.target = (-100, y + self.y)
-        self.angles = angles_360(4)
-        self.health = Enemy.health + 10
-        self.max_health = self.health
+    def __init__(self):
+        super().__init__(0, 0, 1, Enemy.health * 0.3, (60, 60), (18, 18), (0, 0), Enemy.spez_sprites)
 
-    # def move(self):
-    #     self.hitbox.move_ip(self.speed, 0)
 
-    def skill(self):
-        pass
-
-    def death(self):
-        data.TURRET.overdrive()
-        self.gfx_hit()
-        data.EVENTS.convoy_attack_c_destroyed += 1
-        if data.EVENTS.convoy_attack_c_destroyed == 4:
-            data.EVENTS.convoy_attack_c_destroyed = 0
-            random.choice([
-                lambda: data.ITEMS.drop(
-                    self.hitbox.topleft, target=Item_upgrade_point_crate((100, 100, 200), level=0)),
-                lambda: data.ITEMS.drop(
-                    (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100), level=0))
-            ])()
-        self.kill = True
+spez_spawn_table = [Jumper, Seeker]

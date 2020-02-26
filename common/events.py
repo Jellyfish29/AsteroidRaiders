@@ -4,6 +4,7 @@ from astraid_funcs import *
 import astraid_data as data
 from phenomenon import *
 from enemys import *
+from event_enemys import *
 from allies import *
 from bosses_def import Elites
 from Gfx import Gfx, Background
