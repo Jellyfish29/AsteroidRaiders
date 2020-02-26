@@ -109,8 +109,16 @@ def rect_not_on_sreen(rect, bot=False, strict=False):
         return False
 
 
+def get_distance(obj_1, obj_2):
+    return math.hypot(obj_2.hitbox.x - obj_1.hitbox.x, obj_2.hitbox.y - obj_1.hitbox.y)
+
+
 def get_random_point():
     return (random.randint(200, winwidth - 200), random.randint(200, winheight - 200))
+
+
+def get_random_top_point():
+    return (random.randint(200, winwidth - 200), random.randint(- 1080, - 300))
 
 
 def gfx_rotate(surf, angle):

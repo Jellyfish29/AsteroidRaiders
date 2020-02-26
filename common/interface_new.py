@@ -44,7 +44,7 @@ class Interface_new(Timer):
 
         # Score board
         cls.standat_ui.append(Gui_image(loc=(0, 0), img_idx=2))
-        cls.standat_ui.append(Gui_text(loc=(65, 4), text=lambda: f"{data.LEVELS.display_score}"))
+        cls.standat_ui.append(Gui_text(loc=(65, 4), text=lambda: f"{int(data.LEVELS.display_score)}"))
         cls.standat_ui.append(Gui_text(loc=(65, 34), text=lambda: f"{data.LEVELS.level}"))
 
         # Health bar

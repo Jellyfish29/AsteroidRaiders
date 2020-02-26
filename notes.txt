@@ -32,7 +32,8 @@ TODO:
 - 8 Item Slots
 - Mehr Spez Enemys:
     - Dart missile ship
-    - Boarding ship (Nahkampft)
+    - #Boarding ship (Nahkampft)
+    - Reperatur shciff variante von Extarctor mit kapputem schiff anstatt m_ast
     -...
 - Mehr Events
     - #Convoys
@@ -57,6 +58,8 @@ TODO:
     - Turret
     - #Jumpdrive explosion
     - #swarm misisles
+    - shield discharge Reflection dmg
+    - lifesteal
     -...
 - Gfx
     - #Spez neu

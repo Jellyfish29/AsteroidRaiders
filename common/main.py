@@ -76,8 +76,8 @@ def main():
     data.UP_MENU = Upgrade_menu()
 
     # Item Setup
-    Items.drop((winwidth / 2, 400), target=Item_overdrive((100, 100, 200)))
-    Items.drop((winwidth / 2, 400), target=Item_rail_gun((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_overdrive((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_rail_gun((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.special_events = Turret
 
@@ -85,6 +85,12 @@ def main():
     Levels.spez_add()
     Levels.special_events_lst = [e[0] for e in Events.get_special_events_lst() if e[1] == Levels.level]
     Levels.special_event_queue.append(Events.intro_event)
+
+    # data.ENEMY_DATA.append(Mining_asteroid())
+    # data.ENEMY_DATA.append(Extractor(data.ENEMY_DATA[0].hitbox, data.ENEMY_DATA[0].hitbox.topleft))
+    # data.ENEMY_DATA.append(Extractor(data.ENEMY_DATA[0].hitbox, data.ENEMY_DATA[0].hitbox.topright))
+    # data.ENEMY_DATA.append(Extractor(data.ENEMY_DATA[0].hitbox, data.ENEMY_DATA[0].hitbox.bottomleft))
+    # data.ENEMY_DATA.append(Extractor(data.ENEMY_DATA[0].hitbox, data.ENEMY_DATA[0].hitbox.bottomright))
 
     while True:
 

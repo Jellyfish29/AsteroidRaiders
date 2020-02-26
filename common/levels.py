@@ -19,7 +19,9 @@ class Levels:
     display_level = 1
     level = 1
     level_interval = 35
-    enemy_amount = 3  # at Start
+    asteroid_enemy_amount = 3  # at Start
+    extractor_enemy_amount = 3
+    mining_ast_enemy_amount = 1
     skill_points = 0
     # elite/Elites
     elite_max_spawn_time = 4500
@@ -60,7 +62,9 @@ class Levels:
         #         self.special_event_amount = 5
         if cls.level % 6 == 0:
             cls.special_events_lst = [e[0] for e in data.EVENTS.get_special_events_lst() if e[1] == cls.level]
-            cls.enemy_amount += 1
+            cls.asteroid_enemy_amount += 1
+            if cls.extractor_enemy_amount > 0:
+                cls.extractor_enemy_amount -= 1
             # cls.elite_max_spawn_time -= 80
             cls.spez_add()
             cls.boss_spawn()
@@ -70,6 +74,12 @@ class Levels:
             cls.special_event_didnt_trigger = 0
             cls.save_game()
             Gui.add(Gui_tw_text(text=data.BOSS_TEXT[str(cls.level)], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
+
+        if cls.level % 12 == 0:
+            if cls.level == 24:
+                cls.mining_ast_enemy_amount += 2
+            else:
+                cls.mining_ast_enemy_amount += 1
 
         else:
             if not cls.events_disabled:
@@ -120,6 +130,7 @@ class Levels:
     def spez_add(cls):
         data.ENEMY.spez_spawn_time -= 18
         data.PHENOM.spawn_time -= 15
+
         if data.ENEMY.spez_spawn_time < 60:
             data.ENEMY.spez_spawn_time = 60
         if cls.level == 1:
@@ -168,6 +179,10 @@ class Levels:
 
     @classmethod
     def execute_special_event(cls):
+        for enemy in data.ENEMY_DATA:
+            if rect_not_on_sreen(enemy.hitbox, strict=True):
+                enemy.kill = True
+
         cls.special_events = True
         cls.special_event_queue.append(
             cls.special_events_lst.pop(random.randint(0, len(cls.special_events_lst) - 1)))
@@ -241,7 +256,8 @@ class STAGE_SAVE():
         self.boss_fight = Levels.boss_fight
         self.enemy_health = data.ENEMY.health
         self.elite_health = Elites.health
-        self.enemy_amount = Levels.enemy_amount
+        self.asteroid_enemy_amount = Levels.asteroid_enemy_amount
+        self.extractor_enemy_amount = Levels.extractor_enemy_amount
         self.second_elite_chance = Levels.second_elite_chance
         self.enemy_table = data.ENEMY.spez_spawn_table
         self.phenomenon_spawn_table = data.PHENOM.phenomenon_spawn_table
@@ -293,7 +309,8 @@ class STAGE_SAVE():
         Levels.boss_fight = self.boss_fight
         data.ENEMY.health = self.enemy_health
         Elites.health = self.elite_health
-        Levels.enemy_amount = self.enemy_amount
+        Levels.asteroid_enemy_amount = self.asteroid_enemy_amount
+        Levels.extractor_enemy_amount = self.extractor_enemy_amount
         Levels.second_elite_chance = self.second_elite_chance
         data.ENEMY.spez_spawn_table = self.enemy_table
         data.PHENOM.phenomenon_spawn_table = self.phenomenon_spawn_table

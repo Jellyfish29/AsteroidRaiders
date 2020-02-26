@@ -281,9 +281,14 @@ class Background(Timer):
             if bg_obj.kill:
                 cls.bg_objs.remove(bg_obj)
 
-        if cls.bg_move:
-            cls.y += cls.scroll_speed
-        win.blit(cls.bg_sprites[1], (0, cls.y - 1080))  # 4040
-        win.blit(cls.bg_sprites[1], (0, cls.y - 0))  # 1480
-        if cls.y >= 1080:
-            cls.y = 0
+        if data.PLAYER.health > 2:
+
+            if cls.bg_move:
+                cls.y += cls.scroll_speed
+            win.blit(cls.bg_sprites[1], (0, cls.y - 1080))  # 4040
+            win.blit(cls.bg_sprites[1], (0, cls.y - 0))  # 1480
+            if cls.y >= 1080:
+                cls.y = 0
+
+        else:
+            win.blit(cls.bg_sprites[18], (0, 0))
