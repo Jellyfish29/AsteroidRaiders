@@ -37,7 +37,7 @@ def test_mode():
     Player.health = 40
     Player.max_health = 40
     Levels.scaling()
-    Levels.execute_special_event()
+    # Levels.execute_special_event()
     # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())
@@ -57,7 +57,6 @@ def main():
             Player.move(str_3)
 
     components = [Player, Turret, Enemy, Phenomenon, Levels, Items]
-    # @profile
 
     def components_update():
         for component in components:
@@ -85,12 +84,6 @@ def main():
     Levels.spez_add()
     Levels.special_events_lst = [e[0] for e in Events.get_special_events_lst() if e[1] == Levels.level]
     Levels.special_event_queue.append(Events.intro_event)
-
-    # data.ENEMY_DATA.append(Mining_asteroid())
-    # data.ENEMY_DATA.append(Extractor(data.ENEMY_DATA[0].hitbox, data.ENEMY_DATA[0].hitbox.topleft))
-    # data.ENEMY_DATA.append(Extractor(data.ENEMY_DATA[0].hitbox, data.ENEMY_DATA[0].hitbox.topright))
-    # data.ENEMY_DATA.append(Extractor(data.ENEMY_DATA[0].hitbox, data.ENEMY_DATA[0].hitbox.bottomleft))
-    # data.ENEMY_DATA.append(Extractor(data.ENEMY_DATA[0].hitbox, data.ENEMY_DATA[0].hitbox.bottomright))
 
     while True:
 

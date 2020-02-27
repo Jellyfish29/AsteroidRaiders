@@ -19,12 +19,12 @@ class Levels:
     display_level = 1
     level = 1
     level_interval = 35
-    asteroid_enemy_amount = 3  # at Start
-    extractor_enemy_amount = 3
+    asteroid_enemy_amount = 2  # at Start
+    extractor_enemy_amount = 2
     mining_ast_enemy_amount = 1
     skill_points = 0
     # elite/Elites
-    elite_max_spawn_time = 4500
+    elite_max_spawn_time = 4000
     second_elite_chance = 100
     elite_spawn_time = 0
     # Flags
@@ -37,7 +37,7 @@ class Levels:
     death_score_panalties = {0: 30, 6: 50, 12: 80, 18: 150,
                              24: 250, 30: 370, 36: 500, 42: 700}
     # Events
-    event_trigger_time = (3600, 5000)
+    event_trigger_time = (3800, 4800)
     special_event_queue = []
     special_events_lst = []
     events_disabled = False
@@ -49,38 +49,33 @@ class Levels:
     @classmethod
     def scaling(cls):
         data.ENEMY.health += 0.3
-        Elites.health += Elites.health * 0.12
+        Elites.health += Elites.health * 0.1
         cls.event_trigger_time = (cls.event_trigger_time[0] - 60, cls.event_trigger_time[1] - 75)
+
         if cls.event_trigger_time[0] <= 200:
             cls.event_trigger_time = (200, 500)
+
         cls.second_elite_chance -= 1.5
         if cls.second_elite_chance < 40:
             cls.second_elite_chance = 40
-        # if cls.level % 12 == 0:
-        #     cls.special_event_amount += 1
-        #     if cls.special_event_amount > 5:
-        #         self.special_event_amount = 5
-        if cls.level % 6 == 0:
-            cls.special_events_lst = [e[0] for e in data.EVENTS.get_special_events_lst() if e[1] == cls.level]
+
+        if cls.level % 12 == 0:
             cls.asteroid_enemy_amount += 1
-            if cls.extractor_enemy_amount > 0:
-                cls.extractor_enemy_amount -= 1
+            cls.mining_ast_enemy_amount += 1
+
+        if cls.level % 6 == 0:
+            cls.extractor_enemy_amount += 1
             # cls.elite_max_spawn_time -= 80
             cls.spez_add()
             cls.boss_spawn()
+            cls.special_events_lst = [e[0] for e in data.EVENTS.get_special_events_lst() if e[1] == cls.level]
             cls.boss_fight = True
             Background.bg_move = False
             cls.special_event_triggered = 0
             cls.special_event_didnt_trigger = 0
             cls.save_game()
-            Gui.add(Gui_tw_text(text=data.BOSS_TEXT[str(cls.level)], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=80))
-
-        if cls.level % 12 == 0:
-            if cls.level == 24:
-                cls.mining_ast_enemy_amount += 2
-            else:
-                cls.mining_ast_enemy_amount += 1
-
+            Gui.add(Gui_tw_text(text=data.BOSS_TEXT[str(cls.level)], text_size=20,
+                                anchor=data.PLAYER.hitbox, anchor_x=80))
         else:
             if not cls.events_disabled:
                 if cls.special_event_triggered < cls.special_event_amount:
@@ -107,10 +102,14 @@ class Levels:
         if cls.second_elite:
             if timer.trigger(240):
                 cls.second_elite = False
-                Elites.spawn()
+                # Elites.spawn()
 
     @classmethod
     def boss_spawn(cls):
+        for enemy in data.ENEMY_DATA:
+            if rect_not_on_sreen(enemy.hitbox, strict=True):
+                enemy.kill = True
+
         if cls.level == 6:
             data.ENEMY_DATA.append(Boss_mine_boat())
         elif cls.level == 12:
@@ -160,10 +159,10 @@ class Levels:
                 enemy=Asteroid, spawn=random.randint(1, 4), amount=4, scaling=int(cls.level / 2))
         elif event_id == 2:
             data.EVENTS.event_wave(
-                enemy=Jumper, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 2))
+                enemy=Jumper, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 4))
         elif event_id == 3:
             data.EVENTS.event_wave(
-                enemy=Shooter, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 8))
+                enemy=Shooter, spawn=random.randint(1, 4), amount=2, scaling=0)
         elif event_id == 4:
             data.EVENTS.event_wave(
                 enemy=Seeker, spawn=random.randint(1, 4), amount=2, scaling=int(cls.level / 8))
@@ -258,6 +257,7 @@ class STAGE_SAVE():
         self.elite_health = Elites.health
         self.asteroid_enemy_amount = Levels.asteroid_enemy_amount
         self.extractor_enemy_amount = Levels.extractor_enemy_amount
+        self.mining_ast_enemy_amount = Levels.mining_ast_enemy_amount
         self.second_elite_chance = Levels.second_elite_chance
         self.enemy_table = data.ENEMY.spez_spawn_table
         self.phenomenon_spawn_table = data.PHENOM.phenomenon_spawn_table
@@ -311,6 +311,7 @@ class STAGE_SAVE():
         Elites.health = self.elite_health
         Levels.asteroid_enemy_amount = self.asteroid_enemy_amount
         Levels.extractor_enemy_amount = self.extractor_enemy_amount
+        Levels.mining_ast_enemy_amount = self.mining_ast_enemy_amount
         Levels.second_elite_chance = self.second_elite_chance
         data.ENEMY.spez_spawn_table = self.enemy_table
         data.PHENOM.phenomenon_spawn_table = self.phenomenon_spawn_table

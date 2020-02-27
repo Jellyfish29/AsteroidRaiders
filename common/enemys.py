@@ -72,7 +72,7 @@ class Enemy(Timer):
         self.kill = False
         self.border_check = True
         self.ttk_bonus = 0
-        self.projectile_speed = 17
+        self.projectile_speed = 14
         self.hitable = True
         self.special_take_damage = None
         self.flag = "normal"
@@ -127,6 +127,8 @@ class Enemy(Timer):
 
     def set_health(self, hp, color):
         self.health -= hp
+        if self.health > self.max_health:
+            self.health = self.max_health
         self.healthbar_len -= (self.healthbar_max_len / (self.max_health / hp))
 
         if hp < 0:
@@ -134,10 +136,8 @@ class Enemy(Timer):
                 "dmg_text", 4,
                 (self.hitbox.center[0] + random.randint(-10, 10),
                  self.hitbox.center[1] + random.randint(-10, 10)),
-                hover=True, follow=True, text=hp, text_size=30, text_color=color
+                hover=True, follow=True, text=abs(hp), text_size=30, text_color=(10, 255, 10)
             )
-            if self.health > self.max_health:
-                self.health = self.max_health
 
         elif hp == data.PLAYER.damage or hp == data.PLAYER.damage * 2:
             text_size = self.get_dmg_text_size(hp)
@@ -331,12 +331,13 @@ class Enemy(Timer):
                 for _ in range(data.LEVELS.mining_ast_enemy_amount):
                     m_ast = Mining_asteroid(spawn=get_random_top_point())
                     data.ENEMY_DATA.append(m_ast)
-                    for loc in [
-                        (m_ast.hitbox.topleft[0] + random.randint(-20, 20), m_ast.hitbox.topleft[1] + random.randint(-20, 20)),
-                        (m_ast.hitbox.topright[0] + random.randint(-20, 20), m_ast.hitbox.topright[1] + random.randint(-20, 20)),
-                        (m_ast.hitbox.bottomleft[0] + random.randint(-20, 20), m_ast.hitbox.bottomleft[1] + random.randint(-20, 20)),
-                        (m_ast.hitbox.bottomright[0] + random.randint(-20, 20), m_ast.hitbox.bottomright[1] + random.randint(-20, 20))
-                    ][data.LEVELS.extractor_enemy_amount:]:
+                    for _ in range(data.LEVELS.extractor_enemy_amount):
+                        loc = random.choice([
+                            (m_ast.hitbox.topleft[0] + random.randint(-20, 20), m_ast.hitbox.topleft[1] + random.randint(-20, 20)),
+                            (m_ast.hitbox.topright[0] + random.randint(-20, 20), m_ast.hitbox.topright[1] + random.randint(-20, 20)),
+                            (m_ast.hitbox.bottomleft[0] + random.randint(-20, 20), m_ast.hitbox.bottomleft[1] + random.randint(-20, 20)),
+                            (m_ast.hitbox.bottomright[0] + random.randint(-20, 20), m_ast.hitbox.bottomright[1] + random.randint(-20, 20))
+                        ])
                         data.ENEMY_DATA.append(Extractor(target=m_ast.hitbox, spawn=loc, ast=m_ast))
             if timer.trigger(Enemy.spez_spawn_time):
                 data.ENEMY_DATA.append(random.choice(cls.spez_spawn_table)())
@@ -471,6 +472,7 @@ class Shooter(Enemy):
                 data.PLAYER.hitbox.center], weights=[80, 20], k=1)[0]
 
         if self.timer_trigger(self.fire_rate):
+            angle_variation = random.choices([-20, 0, 20], [20, 60, 20], k=1)[0]
             self.muzzle_effect_timer = (i for i in range(8))
             data.ENEMY_PROJECTILE_DATA.append(Projectile(
                 speed=self.projectile_speed,
@@ -479,7 +481,8 @@ class Shooter(Enemy):
                 damage=1,
                 flag="spez_enemy",
                 gfx_idx=12,
-                target=target
+                target=target,
+                angle_variation=angle_variation
             ))
 
 
@@ -647,8 +650,9 @@ class Mining_asteroid(Enemy):
 class Extractor(Enemy):
 
     def __init__(self, target=None, spawn=None, ast=None):
-        super().__init__(0, 3, 1, Enemy.health * 0.3, (60, 60), (18, 19), (30, 30), Enemy.spez_sprites)
+        super().__init__(0, 3, 1, Enemy.health * 0.3, (40, 40), (18, 19), (15, 15), Enemy.spez_sprites)
         self.gfx_speed = random.randint(30, 90)
+        self.orig_gfx_speed = self.gfx_speed
         self.target = target
         self.ast = ast
         self.zero_angles = angles_360(0)
@@ -657,6 +661,11 @@ class Extractor(Enemy):
         self.score_amount = 0.25
         self.bg_speed = Background.scroll_speed
         self.atk_cd = False
+        try:
+            while any([self.hitbox.colliderect(e.hitbox) for e in data.ENEMY_DATA if isinstance(e, Extractor)]):
+                self.hitbox.move_ip(random.randint(-10, 10), random.randint(-10, 10))
+        except IndexError:
+            pass
 
     def move(self):
         if Background.bg_move:
@@ -688,9 +697,18 @@ class Extractor(Enemy):
                  self.hitbox.topleft[1] + self.gfx_hook[1] - 50)
             )
 
+    def gfx_hit(self):
+        Gfx.create_effect(
+            "explosion_4", 2,
+            (self.hitbox.topleft[0] - 80, self.hitbox.topleft[1] - 80),
+            explo=True
+        )
+
     def skill(self):
         if get_distance(self, data.PLAYER) < 300 or self.ast.kill:
             self.bg_speed = 0
+            self.gfx_idx = (20, 21)
+            self.gfx_speed = 14
             self.target = data.PLAYER.hitbox
             self.direction = degrees(
                 data.PLAYER.hitbox.center[0],
@@ -702,6 +720,7 @@ class Extractor(Enemy):
 
             if self.hitbox.colliderect(data.PLAYER.hitbox):
                 self.angles = self.zero_angles
+                self.gfx_idx = (18, 19)
                 if not self.atk_cd:
                     if self.timer_key_trigger(20, key="atk_delay"):
                         data.PLAYER.take_damage(1)
@@ -714,6 +733,8 @@ class Extractor(Enemy):
                     self.atk_cd = False
         else:
             self.bg_speed = Background.scroll_speed
+            self.gfx_idx = (18, 19)
+            self.gfx_speed = self.orig_gfx_speed
 
     def player_collide(self):
         pass
