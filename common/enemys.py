@@ -472,7 +472,7 @@ class Shooter(Enemy):
                 data.PLAYER.hitbox.center], weights=[80, 20], k=1)[0]
 
         if self.timer_trigger(self.fire_rate):
-            angle_variation = random.choices([-20, 0, 20], [20, 60, 20], k=1)[0]
+            angle_variation = random.choices([-20, 0, 20], [10, 80, 10], k=1)[0]
             self.muzzle_effect_timer = (i for i in range(8))
             data.ENEMY_PROJECTILE_DATA.append(Projectile(
                 speed=self.projectile_speed,

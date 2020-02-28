@@ -260,12 +260,12 @@ class Boss_cruiser(Bosses):
     def __init__(self):
         self.health = 7000
         self.speed = 2
-        self.fire_rate = 50
+        self.fire_rate = 65
         self.move_pattern = [8, 9]
         self.size = (130, 230)
         self.gfx_idx = (8, 9)
         self.gfx_hook = (-130, -130)
-        self.skills_lst = [self.skill_volley, self.skill_missile, self.skill_salvo_charlie]
+        self.skills_lst = [self.skill_volley, self.skill_salvo_charlie]
         self.turn_angles = (359 - i for i in range(0, 91))
         self.turn_angle = 359
         self.drop_amount = 1
