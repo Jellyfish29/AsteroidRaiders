@@ -15,6 +15,7 @@ from ui import *
 class Events():
 
     special_events_lst = []
+    timer_lst = []
     # Intro Event
     intro_set_up = True
     # Comet Storm
@@ -111,6 +112,7 @@ class Events():
         if cls.comet_storm_set_up:
             data.GUI_DATA.append(Gui_text(loc=(600, 100), text=data.EVENT_TEXT["comet_alert"],
                                           text_size=50, decay=400, animation_interval=60))
+            cls.timer_lst.append(timer)
             cls.comet_storm_set_up = False
         cls.set_bg_color()
         if timer.timer_delay(120):
@@ -135,6 +137,7 @@ class Events():
     def event_mine_field(cls, timer):
         cls.set_bg_color()
         if cls.mine_field_set_up:
+            cls.timer_lst.append(timer)
             data.PLAYER.jumpdrive_disabled = True
             cls.spawn_mine_field()
             Gui.add(Gui_text(loc=(500, 100), text=data.EVENT_TEXT["mine_alert"],
@@ -224,6 +227,7 @@ class Events():
         cls.set_bg_color()
 
         if cls.convoy_set_up:
+            cls.timer_lst.append(timer)
             cls.station_dest = (250, random.randint(400, 700))
             data.PLAYER_DATA.append(Space_station_ally(
                 spawn_point=(200, -200), target=cls.station_dest, script_name="convoy_defence"))
@@ -282,6 +286,7 @@ class Events():
     def event_battleship_defence(cls, timer):
         cls.set_bg_color()
         if cls.battleship_defence_set_up:
+            cls.timer_lst.append(timer)
             cls.bs_dest = (950, 400)
             data.PLAYER_DATA.append(Battleship_allie(spawn_point=(950, -200),
                                                      target=cls.bs_dest, script_name="btl_defence"))
@@ -323,6 +328,7 @@ class Events():
         else:
             if len(data.PLAYER_DATA) == 0:
                 cls.bs_defence_reset()
+                timer.timer_reset()
                 for enemy in [e for e in data.ENEMY_DATA if e.get_name() == "Event_shooter"]:
                     enemy.reset()
 
@@ -341,6 +347,7 @@ class Events():
     def event_convoy_attack(cls, timer):
         cls.set_bg_color()
         if cls.convoy_attack_set_up:
+            cls.timer_lst.append(timer)
             Background.bg_move = False
             timer.ticker["c_spawn"] = 100
             cls.c_a_ship = next(cls.convoy_attack_c_length, "stop")
@@ -379,6 +386,7 @@ class Events():
                         Gui.add(Gui_tw_text(text=data.EVENT_TEXT["con_atk_end"],
                                             text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
                         cls.convoy_attack_reset()
+                        timer.timer_reset()
                         Background.bg_move = True
 
                         return "stop_event"
@@ -397,6 +405,7 @@ class Events():
     def event_station_hack(cls, timer):
         cls.set_bg_color()
         if cls.hack_set_up:
+            cls.timer_lst.append(timer)
             for i in [-200, -300, -600, -450]:
                 spawn = (random.randint(200, 1700), i)
                 data.PLAYER_DATA.append(Comrelay(spawn_point=spawn, script_name="hack"))
@@ -438,6 +447,7 @@ class Events():
                     ((1000, 500)), target=Item_supply_crate((100, 100, 100), level=1))
                 Background.bg_move = True
                 cls.hack_reset()
+                timer.timer_reset()
 
                 return "stop_event"
 
@@ -457,6 +467,7 @@ class Events():
 
                 Background.bg_move = True
                 cls.hack_reset()
+                timer.timer_reset()
 
                 return "stop_event"
 
@@ -470,6 +481,7 @@ class Events():
     def event_zone_defence(cls, timer):
         cls.set_bg_color()
         if cls.z_def_set_up:
+            cls.timer_lst.append(timer)
             data.PLAYER_DATA.append(Battlecruiser_ally(
                 spawn_point=(900, -250), target=(1000, 600), script_name="zone_def"))
             timer.ticker.update({"elite_spawn": 400})
@@ -491,11 +503,13 @@ class Events():
                 cls.zone_defence_reset_elites()
 
                 if len(data.PLAYER_DATA) == 0:
+                    timer.timer_reset()
                     cls.end_zone_defence()
 
                     return "stop_event"
 
         if timer.trigger(6000):
+            timer.timer_reset()
             cls.zone_defence_reset_elites()
             cls.end_zone_defence()
 
@@ -517,11 +531,12 @@ class Events():
                 (1000, 500), target=Item_upgrade_point_crate((100, 100, 100), level=3))
             data.ITEMS.drop(
                 (1000, 500), target=Item_supply_crate((100, 100, 100), level=3))
+            Background.bg_move = True
+
         cls.z_def_set_up = True
         cls.z_def_bc_destroyed = False
         cls.z_def_active_zones = []
         data.PHENOMENON_DATA.clear()
-        Background.bg_move = True
 
     @classmethod
     @timer
@@ -529,6 +544,7 @@ class Events():
         cls.set_bg_color()
 
         if cls.planet_evac_set_up:
+            cls.timer_lst.append(timer)
             data.PHENOMENON_DATA.append(Planet(loc=(1600, -400), script_name="evac"))
             timer.ticker.update({"ast_wave": -300})
             Background.add(loc=(400, -400), gfx_idx=13)
@@ -594,6 +610,7 @@ class Events():
     def event_planet_invasion(cls, timer):
         cls.set_bg_color()
         if cls.planet_inv_set_up:
+            cls.timer_lst.append(timer)
             data.PHENOMENON_DATA.append(Planet(loc=(1000, -400), script_name="invasion"))
             timer.ticker.update({"defence_spawn": 380})
             cls.planet_inv_set_up = False
@@ -654,6 +671,7 @@ class Events():
                             Background.bg_move = True
 
                             if timer.timer_key_delay(500, key="end"):
+                                timer.timer_reset()
                                 cls.planet_invasion_reset()
 
                                 return "stop_event"
@@ -682,6 +700,9 @@ class Events():
         cls.end_zone_defence(all_reset=True)
         cls.planet_evac_reset()
         cls.planet_invasion_reset()
+
+        for timer in cls.timer_lst:
+            timer.timer_reset()
 
     @classmethod
     def get_special_events_lst(cls):

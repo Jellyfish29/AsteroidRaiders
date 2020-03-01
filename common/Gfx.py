@@ -207,7 +207,7 @@ class Background(Timer):
 
     bg_sprites = get_images("background")
     y = 0
-    scroll_speed = 1
+    scroll_speed = 8
     bg_move = True
     bg_color = [0, 0, 30]
     standart_color = [0, 0, 30]

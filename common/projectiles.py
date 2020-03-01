@@ -324,7 +324,8 @@ class Missile(Projectile):
         if not self.enemy_missile:
             if self.movement_checker == self.target.center:
                 try:
-                    self.target = data.ENEMY_DATA[0].hitbox
+                    self.target = [
+                        e for e in data.ENEMY_DATA if not rect_not_on_sreen(e.hitbox, strict=True)][0].hitbox
                 except IndexError:
                     self.kill = True
         self.movement_checker = self.target.center

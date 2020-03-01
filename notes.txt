@@ -29,7 +29,9 @@ engine:
 TODO:
 
 - Boss "Carrier/Mothership"
-- 8 Item Slots
+- Boss Skills:
+    - Add call in Phase
+- #8 Item Slots
 - Mehr Spez Enemys:
     - Dart missile ship
     - #Boarding ship (Nahkampft)

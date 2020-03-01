@@ -37,7 +37,7 @@ def test_mode():
     Player.health = 40
     Player.max_health = 40
     Levels.scaling()
-    # Levels.execute_special_event()
+    Levels.execute_special_event()
     # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())

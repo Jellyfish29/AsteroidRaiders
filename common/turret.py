@@ -455,13 +455,14 @@ class Turret:
         if "smart_missile" in data.ITEMS.active_flag_lst:
             if data.ITEMS.get_item(flag="smart_missile").active:
                 if timer.trigger(3):
-                    if len(data.ENEMY_DATA) > 0:
+                    targets = [e for e in data.ENEMY_DATA if not rect_not_on_sreen(e.hitbox, strict=True)]
+                    if len(targets) > 0:
                         try:
-                            target = data.ENEMY_DATA[cls.smart_missile_target].hitbox
+                            target = targets[cls.smart_missile_target].hitbox
                             cls.smart_missile_target += 1
                         except IndexError:
                             cls.smart_missile_target = 0
-                            target = data.ENEMY_DATA[cls.smart_missile_target].hitbox
+                            target = targets[cls.smart_missile_target].hitbox
 
                         cls.smart_burst_limiter += 1
                         if cls.smart_burst_limiter <= data.ITEMS.get_item(flag="smart_missile").effect_strength:
