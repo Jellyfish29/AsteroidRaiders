@@ -658,7 +658,7 @@ class Extractor(Enemy):
         self.zero_angles = angles_360(0)
         self.orig_angles = angles_360(3)
         self.hitbox.center = spawn
-        self.score_amount = 0.25
+        self.score_amount = 0.5
         self.bg_speed = Background.scroll_speed
         self.atk_cd = False
         try:

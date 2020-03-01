@@ -423,7 +423,7 @@ class Boss_scout(Bosses):
 class Boss_battleship(Bosses):
 
     def __init__(self):
-        self.health = 12000
+        self.health = 15000
         self.speed = 2
         self.fire_rate = 70
         self.move_pattern = [0, 7, 0, 1, 2]

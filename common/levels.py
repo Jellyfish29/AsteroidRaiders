@@ -34,10 +34,10 @@ class Levels:
     elite_fight = False
     special_events = False
     second_elite = False
-    death_score_panalties = {0: 30, 6: 50, 12: 80, 18: 150,
-                             24: 250, 30: 370, 36: 500, 42: 700}
+    death_score_panalties = {0: 30, 6: 40, 12: 60, 18: 100,
+                             24: 150, 30: 210, 36: 320, 42: 450}
     # Events
-    event_trigger_time = (3800, 4800)
+    event_trigger_time = (2700, 3700)
     special_event_queue = []
     special_events_lst = []
     events_disabled = False

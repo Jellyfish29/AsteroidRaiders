@@ -90,7 +90,7 @@ class Item_piercing_shot(Active_Items):
         super().__init__(color, "Hyper Penetrator rounds (active)", "Rounds pierce the target and deal damge depending on traveltime", (17, 19))
         self.color = color
         self.flag = "piercing_shot"
-        self.base_effect = 1.2
+        self.base_effect = 1
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
         self.cd_len = 1200
         self.active_time = 600
