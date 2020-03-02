@@ -306,7 +306,8 @@ class Planet(Phenomenon):
             self.hitbox.center = loc
         self.script_name = script_name
         self.scripts.update({"evac": self.evac_script,
-                             "invasion": self.invasion_script})
+                             "invasion": self.invasion_script,
+                             "ground_support": self.ground_sup_script})
 
     def hit(self, obj):
         if self.hitbox.colliderect(obj.hitbox):
@@ -330,6 +331,9 @@ class Planet(Phenomenon):
                               explo=True)
 
     def invasion_script(self):
+        pass
+
+    def ground_sup_script(self):
         pass
 
 

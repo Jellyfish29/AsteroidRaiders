@@ -66,6 +66,8 @@ class Events():
     planet_inv_battle = True
     planet_invasion_2nd_elite = False
     planet_inv_ally_amount = 2
+    # Ground Support
+    ground_sup_set_up = True
 
     @classmethod
     def set_bg_color(cls):
@@ -677,6 +679,17 @@ class Events():
                                 return "stop_event"
 
     @classmethod
+    @timer
+    def event_ground_support(cls, timer):
+        if cls.ground_sup_set_up:
+            cls.timer_lst.append(timer)
+            data.PHENOMENON_DATA.append(Planet(loc=(400, -400), script_name="ground_support"))
+            cls.ground_sup_set_up = False
+
+        if [p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center[1] >= 300:
+            Background.bg_move = False
+
+    @classmethod
     def planet_invasion_reset(cls):
         cls.planet_inv_set_up = True
         cls.planet_inv_enemy_amount = 5
@@ -716,7 +729,7 @@ class Events():
             (cls.event_zone_defence, 18),
             (cls.event_planet_evacuation, 18),
             (cls.event_planet_invasion, 24),
-            (cls.event_placeholder, 24),  # Stealth Base infiltration
+            (cls.event_ground_support, 24),  # Stealth Base infiltration
             (cls.event_placeholder, 30),  # Planeten Ring
             (cls.event_placeholder, 30),  # Battlegroup Escort
             (cls.event_placeholder, 36),  # Planeten Invasion / Ground Support

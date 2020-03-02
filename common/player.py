@@ -245,7 +245,7 @@ class Player:
             cls.hitbox.move_ip(cls.angles[cls.direction])
 
         if data.LEVELS.after_boss:
-            if timer.timer_delay(120):
+            if timer.timer_key_delay(120, key="c_delay"):
                 if cls.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):
                     cls.hitbox.center = (cls.hitbox.center[0], winheight)
 
@@ -262,6 +262,8 @@ class Player:
                     data.LEVELS.save_game()
 
                     cls.restart_timer = True
+
+                    timer.timer_key_delay(reset=True, key="c_delay")
 
         if cls.restart_timer:
             if timer.trigger(120):
