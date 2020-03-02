@@ -243,6 +243,10 @@ class Items(Timer):
                 self.effect()
                 self.upgrade_cost = self.upgrade_cost_base[self.lvl]
                 self.set_effect_strength()
+                self.secondary_upgrade_effect()
+
+    def secondary_upgrade_effect(self):
+        pass
 
     def upgradeable(self):
         try:

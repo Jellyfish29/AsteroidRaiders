@@ -31,7 +31,7 @@ class Item_missile(Active_Items):
         super().__init__(color, "Heat seeking Missiles (acive)", "Fires two heat seeking Missile at the Target", (4, 6))
         self.color = color
         self.flag = "missile"
-        self.base_effect = 6  # cooldown time
+        self.base_effect = 8
         self.cd_len = 300
         self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
         self.active_time = None
@@ -407,7 +407,6 @@ class Item_jump_drive(Active_Items):
         self.cd_len = self.get_lvl_effects()[self.lvl]
         self.active_time = None
         self.engage = False
-        # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
 
     def get_upgrade_desc(self):
         return f"Cooldown: {int(self.get_cd_len() / 60) + 1}s"
@@ -437,14 +436,17 @@ class Item_shield(Active_Items):
         self.lvl = 0
         self.base_effect = 5400  # cooldown time
         self.cd_len = self.get_lvl_effects()[self.lvl]
-        # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(), "cd")
+
+    def secondary_upgrade_effect(self):
+        data.PLAYER.shield_strength += 1
+        data.PLAYER.max_shield_strength += 1
 
     def activation_effect(self):
         if not self.cooldown:
             Gfx.create_effect("shield", 2, pl_shield=True)
 
     def get_upgrade_desc(self):
-        return f"Cooldown: {int(self.get_cd_len() / 60) + 1}s"
+        return f"Cooldown: {int(self.get_cd_len() / 60) + 1}s / Strength: {data.PLAYER.max_shield_strength}"
 
     def set_effect_strength(self):
         self.cd_len = self.get_lvl_effects()[self.lvl]

@@ -41,8 +41,8 @@ class Player:
     crit_limit = 50
     # Shield
     shield = Item_shield((0, 0, 0))
-    shield_strength = 2
-    max_shield_strength = 2
+    shield_strength = 1
+    max_shield_strength = 1
     # Gfx
     gfx_idx = {
         "up": 0,
