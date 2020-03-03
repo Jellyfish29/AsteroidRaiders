@@ -702,12 +702,23 @@ class Events():
                 Background.bg_move = False
 
         if not Background.bg_move:
-            if timer.timer_trigger_delay(200):
-                Background.transition = True
+            try:
+                if data.PLAYER.hitbox.collidepoint([p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center):
+                    Background.transition = True
+                    data.PLAYER.angles = directions(0)
+            except IndexError:
+                pass
+
             if Background.get_transition_over():
+                data.all_clear()
+                data.GROUND = True
                 Background.bg_gfx = 19
                 Background.y = 0
-                data.all_clear()
+                data.PLAYER.draw_shaddow = True
+                data.PLAYER.hitbox.center = (1000, 500)
+                data.PLAYER.angles = directions(data.PLAYER.speed)
+                for i in range(10):
+                    data.ENEMY_DATA.append(Ground_infantry(get_random_point()))
 
     @classmethod
     def event_placeholder(cls):

@@ -58,6 +58,10 @@ class Projectile(Timer):
         self.run_spez_gfx = run_once(spez_gfx)
         self.kill = False
         self.hit_event = False
+        if all([data.GROUND, not isinstance(self, Explosion),
+                not isinstance(self, Impactor), not isinstance(self, Missile)]):
+            self.target_rect = pygame.Rect(0, 0, 50, 50)
+            self.target_rect.center = self.target
 
     def move(self):
         self.hitbox.move_ip(self.angles[self.get_angle()])
@@ -116,6 +120,14 @@ class Projectile(Timer):
             (self.hitbox.topleft[0] - 50, self.hitbox.topleft[1] - 50)
         )
 
+    def ground_behavior(self):
+        try:
+            if self.hitbox.colliderect(self.target_rect):
+                self.kill = True
+                self.gfx_hit()
+        except AttributeError:
+            pass
+
     def out_of_bounds(self):
         return rect_not_on_sreen(self.hitbox)
 
@@ -132,6 +144,8 @@ class Projectile(Timer):
         return [base.__name__ for base in self.__class__.__bases__]
 
     def tick(self):
+        if data.GROUND:
+            self.ground_behavior()
         if self.decay is not None:
             if self.timer_trigger(self.decay):
                 self.kill = True

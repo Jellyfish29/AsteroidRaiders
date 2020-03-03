@@ -27,6 +27,8 @@ UP_MENU = None
 EVENT_TEXT = get_text("event")
 BOSS_TEXT = get_text("boss")
 
+GROUND = False
+
 
 # @profile
 def GAME_UPDATE():

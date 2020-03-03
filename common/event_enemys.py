@@ -49,6 +49,8 @@ class Event_shooter(Shooter):
         self.max_health = self.health
         self.fire_rate = random.randint(40, 120)
         self.gfx_rot = gfx_rot
+        self.idle_gfx_idx = (15, 15)
+        self.animation_speed = 8
 
     def move(self):
         self.direction = degrees(
@@ -60,11 +62,11 @@ class Event_shooter(Shooter):
 
         if self.hitbox.collidepoint(self.dest):
             self.angles = angles_360(0)
-            self.gfx_idx = (15, 15)
+            self.gfx_idx = self.idle_gfx_idx
 
     def gfx_animation(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
-        animation_ticker = self.timer_animation_ticker(8)
+        animation_ticker = self.timer_animation_ticker(self.animation_speed)
 
         if self.gfx_rot:
 
@@ -80,7 +82,7 @@ class Event_shooter(Shooter):
                 self.hitbox.center[0]
             )
 
-            if animation_ticker < 4:
+            if animation_ticker < self.animation_speed / 2:
                 win.blit(rot_center(
                     self.sprites[self.gfx_idx[0]], gfx_angle),
                     (self.hitbox.topleft[0] + self.gfx_hook[0],
@@ -95,7 +97,7 @@ class Event_shooter(Shooter):
 
         else:
 
-            if animation_ticker < 4:
+            if animation_ticker < self.animation_speed / 2:
                 win.blit(self.sprites[self.gfx_idx[0]],
                          (self.hitbox.topleft[0] + self.gfx_hook[0], self.hitbox.topleft[1] + self.gfx_hook[1]))
             else:
@@ -145,3 +147,14 @@ class Convoy_ship_enemy(Shooter):
                     (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100), level=0))
             ])()
         self.kill = True
+
+
+class Ground_infantry(Event_shooter):
+
+    def __init__(self, dest):
+        super().__init__(dest, standart_spawn=random.choice([1, 3, 4]))
+        self.gfx_idx = (23, 24)
+        self.idle_gfx_idx = (22, 22)
+        self.angles = angles_360(2)
+        self.health = 1
+        self.animation_speed = 60
