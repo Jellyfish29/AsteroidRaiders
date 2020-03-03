@@ -87,6 +87,7 @@ class Player:
                 if damage > 0:
                     if cls.shield.active:
                         cls.shield_strength -= damage
+                        cls.reflex_shield()
                         # cls.gfx_hit_effect()
                         if cls.shield_strength < 1:
                             cls.shield.end_active()
@@ -123,6 +124,19 @@ class Player:
         cls.shield.effect()
         if cls.shield_strength == 0:
             cls.shield.end_active()
+
+    @classmethod
+    def reflex_shield(cls):
+        if "reflex_shield" in data.ITEMS.active_flag_lst:
+            data.PLAYER_PROJECTILE_DATA.append(Explosion(
+                location=cls.hitbox.center,
+                explo_size=800,
+                explo_speed=(60, 60),
+                damage=(cls.damage * 4) * data.ITEMS.get_item(flag="reflex_shield").effect_strength,
+                explosion_effect=lambda loc: Gfx.create_effect(
+                    "circle", 3, (loc[0] - 1600, loc[1] - 1600), explo=False)
+
+            ))
 
     @classmethod
     def use_heal(cls):

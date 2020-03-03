@@ -75,8 +75,8 @@ def main():
     data.UP_MENU = Upgrade_menu()
 
     # Item Setup
-    # Items.drop((winwidth / 2, 400), target=Item_overdrive((100, 100, 200)))
-    # Items.drop((winwidth / 2, 400), target=Item_rail_gun((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_relfex_scanner((100, 100, 200)))
+    # Items.drop((winwidth / 2, 400), target=Item_bi_weave_shields((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.special_events = Turret
 
@@ -103,6 +103,8 @@ def main():
         data.GUI_UPDATE()
 
         Interface_new.update()
+
+        Background.scene_transistion()
 
         menus_update()
 
@@ -259,7 +261,7 @@ def main():
                 exit()
 
         Clock.tick(fps)
-        # pygame.display.update()
+        # pygame.display.update():
         pygame.display.flip()
 
 

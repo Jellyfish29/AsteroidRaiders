@@ -436,10 +436,16 @@ class Item_shield(Active_Items):
         self.lvl = 0
         self.base_effect = 5400  # cooldown time
         self.cd_len = self.get_lvl_effects()[self.lvl]
+        self.raw_strength = 1
 
     def secondary_upgrade_effect(self):
         data.PLAYER.shield_strength += 1
         data.PLAYER.max_shield_strength += 1
+        if "bi_weave_shields" in Items.active_flag_lst:
+            self.raw_strength += 1
+            data.PLAYER.max_shield_strength = int(self.raw_strength / 2)
+            if data.PLAYER.shield_strength > data.PLAYER.max_shield_strength:
+                data.PLAYER.shield_strength = data.PLAYER.max_shield_strength
 
     def activation_effect(self):
         if not self.cooldown:

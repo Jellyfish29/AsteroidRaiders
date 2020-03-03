@@ -352,8 +352,8 @@ class Item_bi_weave_shields(Items):
     def __init__(self, color):
         super().__init__("Bi-Weave Shields (passiv)", "Reduces Shield Strength for faster Shield Recharge Rate", (1, 1))
         self.color = color
-        self.flag = "hyper_shields"
-        self.base_effect = 0.4
+        self.flag = "bi_weave_shields"
+        self.base_effect = 0.35
         self.player_shield_orig_base = 5400
         # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "Shield HP")
 
@@ -401,6 +401,34 @@ class Item_debris_scanner(Items):
             Items.active_flag_lst.remove(self.flag)
 
 
+class Item_reflex_shield(Items):
+
+    def __init__(self, color):
+        super().__init__("Reflex Shields (passiv)", "Incomming damage to the Shield gets relfected, amplified and dispersed around the ship", (1, 1))
+        self.color = color
+        self.flag = "reflex_shield"
+        self.base_effect = 4
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+
+    def get_upgrade_desc(self):
+        return f"Reflex Damage: {data.PLAYER.damage * 4 * 10 * int(self.get_lvl_effects(reverse=True)[self.lvl])} / Shield strength + 1"
+
+    def set_effect_strength(self):
+        self.effect_strength = self.get_lvl_effects(reverse=True)[self.lvl]
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+            Items.active_flag_lst.append(self.flag)
+            data.PLAYER.shield_strength += 1
+            data.PLAYER.max_shield_strength += 1
+
+    def end_effect(self):
+        if self.flag in Items.active_flag_lst:
+            Items.active_flag_lst.remove(self.flag)
+            data.PLAYER.shield_strength -= 1
+            data.PLAYER.max_shield_strength -= 1
+
+
 Items.set_drop_table([
     (Item_auto_repair, (255, 0, 0)),
     (Item_targeting_scanner, (0, 0, 0)),
@@ -414,7 +442,8 @@ Items.set_drop_table([
     (Item_hammer_shot, (99, 140, 3)),
     (Item_hyper_velocity_rounds, (1, 169, 201)),
     (Item_expert_damage_control, (0, 0, 0)),
-    # (Item_overdrive, (89, 1, 37)),
+    (Item_overdrive, (89, 1, 37)),
     (Item_bi_weave_shields, (0, 0, 0)),
-    (Item_debris_scanner, (0, 0, 0))
+    (Item_debris_scanner, (0, 0, 0)),
+    (Item_reflex_shield, (0, 0, 0))
 ])

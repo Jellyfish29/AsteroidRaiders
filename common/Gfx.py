@@ -210,10 +210,17 @@ class Background(Timer):
     scroll_speed = 1
     bg_move = True
     bg_color = [0, 0, 30]
+    bg_gfx = 1
     standart_color = [0, 0, 30]
     bg_objs = []
     bg_obj_spawn_rate = 1200
     bg_sprite_main = pygame.transform.scale(bg_sprites[1], (1920, 1080))
+    transition = False
+    trans_screen = pygame.Surface((winwidth, winheight))
+    trans_screen.fill((0, 0, 0))
+    trans_screen.set_alpha(0)
+    trans_alpha = 0
+    transition_over = False
 
     def __init__(self, x=None, y=None, gfx_idx=None):
         if gfx_idx is None:
@@ -262,6 +269,26 @@ class Background(Timer):
 
     @classmethod
     @timer
+    def scene_transistion(cls, timer):
+        if cls.transition:
+            win.blit(cls.trans_screen, (0, 0))
+            if timer.trigger(1):
+                cls.trans_alpha += 1
+            cls.trans_screen.set_alpha(cls.trans_alpha)
+            if cls.trans_alpha == 250:
+                cls.transition_over = True
+            if cls.trans_alpha >= 256:
+                cls.transition = False
+                cls.trans_alpha = 0
+
+    @classmethod
+    def get_transition_over(cls):
+        if cls.transition_over:
+            cls.transition_over = False
+            return True
+
+    @classmethod
+    @timer
     def update(cls, timer):
         if not any([data.LEVELS.boss_fight, not cls.bg_move]):
             if timer.trigger(cls.bg_obj_spawn_rate):
@@ -284,8 +311,8 @@ class Background(Timer):
 
             if cls.bg_move:
                 cls.y += cls.scroll_speed
-            win.blit(cls.bg_sprites[1], (0, cls.y - 1080))  # 4040
-            win.blit(cls.bg_sprites[1], (0, cls.y - 0))  # 1480
+            win.blit(cls.bg_sprites[cls.bg_gfx], (0, cls.y - 1080))  # 4040
+            win.blit(cls.bg_sprites[cls.bg_gfx], (0, cls.y - 0))  # 1480
             if cls.y >= 1080:
                 cls.y = 0
 

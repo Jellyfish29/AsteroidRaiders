@@ -117,6 +117,16 @@ def GAME_UPDATE():
         enemy.hit(PLAYER)
 
 
+def all_clear():
+    ENEMY_DATA.clear()
+    ENEMY_PROJECTILE_DATA.clear()
+    PLAYER_DATA.clear()
+    PLAYER_PROJECTILE_DATA.clear()
+    PHENOMENON_DATA.clear()
+    GUI_DATA.clear()
+    ITEMS.dropped_lst.clear()
+
+
 def GUI_UPDATE():
 
     for gui_element in GUI_DATA:

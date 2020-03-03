@@ -132,7 +132,7 @@ class Item_damage_prog(Items):
         self.lvl = None
 
     def get_upgrade_desc(self):
-        return f"Damage: {data.PLAYER.damage + data.PLAYER.damage * 3}"
+        return f"Damage: {data.PLAYER.damage + data.PLAYER.damage * 3 * 10}"
 
     def effect(self):
         if self.flag not in Items.active_flag_lst:

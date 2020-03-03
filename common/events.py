@@ -679,17 +679,6 @@ class Events():
                                 return "stop_event"
 
     @classmethod
-    @timer
-    def event_ground_support(cls, timer):
-        if cls.ground_sup_set_up:
-            cls.timer_lst.append(timer)
-            data.PHENOMENON_DATA.append(Planet(loc=(400, -400), script_name="ground_support"))
-            cls.ground_sup_set_up = False
-
-        if [p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center[1] >= 300:
-            Background.bg_move = False
-
-    @classmethod
     def planet_invasion_reset(cls):
         cls.planet_inv_set_up = True
         cls.planet_inv_enemy_amount = 5
@@ -698,6 +687,27 @@ class Events():
         cls.planet_inv_tr_spawn = iter([(1000, 1180), (1000, 1300)])
         cls.planet_inv_ally_amount = 2
         cls.planet_invasion_2nd_elite = False
+
+    @classmethod
+    @timer
+    def event_ground_support(cls, timer):
+        cls.set_bg_color()
+        if cls.ground_sup_set_up:
+            cls.timer_lst.append(timer)
+            data.PHENOMENON_DATA.append(Planet(loc=(400, -400), script_name="ground_support"))
+            cls.ground_sup_set_up = False
+
+        if Background.bg_move:
+            if [p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center[1] >= 300:
+                Background.bg_move = False
+
+        if not Background.bg_move:
+            if timer.timer_trigger_delay(200):
+                Background.transition = True
+            if Background.get_transition_over():
+                Background.bg_gfx = 19
+                Background.y = 0
+                data.all_clear()
 
     @classmethod
     def event_placeholder(cls):
@@ -720,16 +730,16 @@ class Events():
     @classmethod
     def get_special_events_lst(cls):
         return [
-            (cls.event_comet_storm, 1),
-            (cls.event_mine_field, 1),
-            (cls.event_convoy_escort, 6),
-            (cls.event_battleship_defence, 6),
-            (cls.event_convoy_attack, 12),
-            (cls.event_station_hack, 12),
-            (cls.event_zone_defence, 18),
-            (cls.event_planet_evacuation, 18),
-            (cls.event_planet_invasion, 24),
-            (cls.event_ground_support, 24),  # Stealth Base infiltration
+            # (cls.event_comet_storm, 1),
+            # (cls.event_mine_field, 1),
+            # (cls.event_convoy_escort, 6),
+            # (cls.event_battleship_defence, 6),
+            # (cls.event_convoy_attack, 12),
+            # (cls.event_station_hack, 12),
+            # (cls.event_zone_defence, 18),
+            # (cls.event_planet_evacuation, 18),
+            # (cls.event_planet_invasion, 24),
+            (cls.event_ground_support, 1),  # Stealth Base infiltration
             (cls.event_placeholder, 30),  # Planeten Ring
             (cls.event_placeholder, 30),  # Battlegroup Escort
             (cls.event_placeholder, 36),  # Planeten Invasion / Ground Support

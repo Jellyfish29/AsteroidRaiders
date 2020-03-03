@@ -145,7 +145,7 @@ class Turret:
                         target=pos,
                         impact_effect=lambda loc=pos: data.PLAYER_PROJECTILE_DATA.append(Explosion(
                             location=loc,
-                            explo_size=400,
+                            explo_size=700,
                             damage=3.5 + data.PLAYER.damage + int(cls.fire_rate),
                             explosion_effect=lambda loc: Gfx.create_effect(
                                 "explosion_1", 3, (loc[0] - 400, loc[1] - 400), explo=True),
