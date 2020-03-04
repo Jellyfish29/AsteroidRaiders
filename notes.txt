@@ -60,8 +60,10 @@ TODO:
     - Turret
     - #Jumpdrive explosion
     - #swarm misisles
-    - shield discharge Reflection dmg
-    - lifesteal
+    - #shield discharge Reflection dmg
+    - #lifesteal
+    - debuff rounds
+    - gift rounds
     -...
 - Gfx
     - #Spez neu

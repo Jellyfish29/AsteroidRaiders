@@ -154,7 +154,12 @@ class Ground_infantry(Event_shooter):
     def __init__(self, dest):
         super().__init__(dest, standart_spawn=random.choice([1, 3, 4]))
         self.gfx_idx = (23, 24)
+        self.gfx_hook = (-30, -30)
         self.idle_gfx_idx = (22, 22)
         self.angles = angles_360(2)
         self.health = 1
         self.animation_speed = 60
+        self.hitbox = pygame.Rect(self.hitbox.topleft[0], self.hitbox.topleft[1], 35, 35)
+
+    def skill(self):
+        pass

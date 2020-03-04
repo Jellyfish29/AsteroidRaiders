@@ -429,6 +429,67 @@ class Item_reflex_shield(Items):
             data.PLAYER.max_shield_strength -= 1
 
 
+class Item_scan_rounds(Items):
+
+    def __init__(self, color):
+        super().__init__("Scan Rounds (passive)", ">Livesteal Flavor text<", (1, 1))
+        self.color = color
+        self.flag = "scan_rounds"
+        self.base_effect = 4
+        self.effect_strength = int(self.get_lvl_effects(reverse=True)[self.lvl])
+        # self.upgrade_desc = self.get_upgrade_desc(self.get_lvl_effects(reverse=True), "Stacks")
+
+    def get_upgrade_desc(self):
+        return f"Livesteal Amount: {int(self.get_lvl_effects(reverse=True)[self.lvl])}"
+
+    def set_effect_strength(self):
+        self.effect_strength = int(self.get_lvl_effects(reverse=True)[self.lvl])
+
+    def effect(self):
+        if self.flag not in Items.active_flag_lst:
+            Items.active_flag_lst.append(self.flag)
+
+            if data.PLAYER.indicator_slots[0] is None:  # left
+                data.PLAYER.indicator_slots[0] = Gui_text(
+                    anchor=data.PLAYER.hitbox,
+                    anchor_x=data.PLAYER.indicator_pos[0][0],
+                    anchor_y=data.PLAYER.indicator_pos[0][1],
+                    text=lambda: f"{int(data.TURRET.livesteal_progress)} %",
+                    text_size=15,
+                    text_color=(222, 91, 22),
+                    flag="livesteal_progress")
+                data.PLAYER.indicator_slots[2] = Gui_image(
+                    anchor=data.PLAYER.hitbox,
+                    anchor_x=data.PLAYER.indicator_pos[0][0] - 30,
+                    anchor_y=data.PLAYER.indicator_pos[0][1] - 5,
+                    img_idx=0,
+                    flag="livesteal_progress")
+            else:  # Right
+                if data.PLAYER.indicator_slots[1] is None:
+                    data.PLAYER.indicator_slots[1] = Gui_text(
+                        anchor=data.PLAYER.hitbox,
+                        anchor_x=data.PLAYER.indicator_pos[1][0],
+                        anchor_y=data.PLAYER.indicator_pos[1][1],
+                        text=lambda: f"{int(data.TURRET.livesteal_progress)} %",
+                        text_size=15,
+                        text_color=(222, 91, 22),
+                        flag="livesteal_progress")
+                    data.PLAYER.indicator_slots[3] = Gui_image(
+                        anchor=data.PLAYER.hitbox,
+                        anchor_x=data.PLAYER.indicator_pos[1][0] + 30,
+                        anchor_y=data.PLAYER.indicator_pos[1][1] - 5,
+                        img_idx=0,
+                        flag="livesteal_progress")
+
+    def end_effect(self):
+        if self.flag in Items.active_flag_lst:
+            Items.active_flag_lst.remove(self.flag)
+            for key in data.PLAYER.indicator_slots:
+                if data.PLAYER.indicator_slots[key] is not None:
+                    if data.PLAYER.indicator_slots[key].flag == "livesteal_progress":
+                        data.PLAYER.indicator_slots[key] = None
+
+
 Items.set_drop_table([
     (Item_auto_repair, (255, 0, 0)),
     (Item_targeting_scanner, (0, 0, 0)),

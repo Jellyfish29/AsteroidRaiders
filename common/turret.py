@@ -26,8 +26,9 @@ class Turret:
     gfx_idx = 0
     hit_locations = []
     special_damage = 0
-    # Overdrive
+    # Special Values
     overdrive_count = 0
+    livesteal_progress = 0
     # ammunition = normal_fire_rate[1]
     fire_limiter = 0
     # special fire
@@ -84,6 +85,7 @@ class Turret:
     @classmethod
     def passiv_item_actions(cls):
         cls.debris_scanner()
+        cls.scan_rounds()
 
     @classmethod
     @timer
@@ -579,6 +581,18 @@ class Turret:
                 if random.randint(1, 100) > 100 - data.ITEMS.get_item(flag="debris_scanner").effect_strength:
                     item = random.choices([Item_damage_prog, Item_cd_reduction_prog, Item_shield_prog], [60, 25, 15], k=1)[0]
                     data.ITEMS.drop(loc.hitbox.center, target=item((100, 100, 200)))
+
+    @classmethod
+    def scan_rounds(cls):
+        if "scan_rounds" in data.ITEMS.active_flag_lst:
+            for _ in cls.hit_locations:
+                cls.livesteal_progress += data.ITEMS.get_item(flag="scan_rounds").effect_strength
+            if cls.livesteal_progress >= 100:
+                if data.PLAYER.health < data.PLAYER.max_health:
+                    data.PLAYER.health += 1
+                    cls.livesteal_progress = 0
+                else:
+                    cls.livesteal_progress = 100
 
     @classmethod
     def boss_snare(cls):
