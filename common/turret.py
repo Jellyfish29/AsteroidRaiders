@@ -590,6 +590,7 @@ class Turret:
             if cls.livesteal_progress >= 100:
                 if data.PLAYER.health < data.PLAYER.max_health:
                     data.PLAYER.health += 1
+                    pygame.draw.rect(win, (0, 255, 0), pygame.Rect(0, 0, winwidth, winheight))
                     cls.livesteal_progress = 0
                 else:
                     cls.livesteal_progress = 100
