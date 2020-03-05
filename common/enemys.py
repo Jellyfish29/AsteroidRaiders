@@ -296,7 +296,8 @@ class Enemy(Timer):
             self.cc_move()
         if self.border_check:
             self.border_collide()
-        self.player_collide()
+        if not data.GROUND:
+            self.player_collide()
         if not self.stunned:
             self.skill()
         data.TURRET.missile_aquisition(self)

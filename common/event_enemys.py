@@ -51,6 +51,7 @@ class Event_shooter(Shooter):
         self.gfx_rot = gfx_rot
         self.idle_gfx_idx = (15, 15)
         self.animation_speed = 8
+        self.zero_angles = angles_360(0)
 
     def move(self):
         self.direction = degrees(
@@ -61,7 +62,7 @@ class Event_shooter(Shooter):
         self.hitbox.move_ip(self.angles[self.direction])
 
         if self.hitbox.collidepoint(self.dest):
-            self.angles = angles_360(0)
+            self.angles = self.zero_angles
             self.gfx_idx = self.idle_gfx_idx
 
     def gfx_animation(self):
@@ -151,15 +152,28 @@ class Convoy_ship_enemy(Shooter):
 
 class Ground_infantry(Event_shooter):
 
-    def __init__(self, dest):
-        super().__init__(dest, standart_spawn=random.choice([1, 3, 4]))
+    def __init__(self, dest, speed=2):
+        super().__init__(dest, standart_spawn=1)
         self.gfx_idx = (23, 24)
-        self.gfx_hook = (-30, -30)
+        self.gfx_hook = (-10, -10)
         self.idle_gfx_idx = (22, 22)
-        self.angles = angles_360(2)
+        self.angles = angles_360(speed)
+        self.speed = speed
         self.health = 1
+        self.max_health = 1
         self.animation_speed = 60
         self.hitbox = pygame.Rect(self.hitbox.topleft[0], self.hitbox.topleft[1], 35, 35)
+        self.charge = False
+
+    def gfx_hit(self):
+        Gfx.create_effect(
+            "explosion_4", 2,
+            (self.hitbox.topleft[0] - 80, self.hitbox.topleft[1] - 80),
+            explo=True
+        )
 
     def skill(self):
-        pass
+        if self.charge:
+            self.dest = (1000, 900)
+            self.angles = angles_360(self.speed)
+            self.charge = False

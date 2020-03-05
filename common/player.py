@@ -72,7 +72,6 @@ class Player:
     gfx_ticker = 0
     indicator_slots = {i: None for i in range(4)}
     indicator_pos = [(-30, 75), (72, 75)]
-    draw_shaddow = False
     # Time
     restart_timer = False
 
@@ -199,8 +198,9 @@ class Player:
 
     @classmethod
     def gfx_shadow(cls):
-        win.blit(
-            cls.ship_sprites[9], (cls.hitbox.bottomright[0], cls.hitbox.bottomright[1]))
+        if data.GROUND:
+            win.blit(
+                cls.ship_sprites[9], (cls.hitbox.bottomright[0], cls.hitbox.bottomright[1]))
 
     @classmethod
     def gfx_hit_effect(cls):
@@ -295,8 +295,7 @@ class Player:
         cls.jumpdrive_update()
         cls.afterburner_update()
         cls.gfx_animation()
-        if cls.draw_shaddow:
-            cls.gfx_shadow()
+        cls.gfx_shadow()
         # cls.gfx_item_extensions()
         cls.shield_update()
 

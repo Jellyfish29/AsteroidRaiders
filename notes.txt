@@ -36,6 +36,7 @@ TODO:
     - Dart missile ship
     - #Boarding ship (Nahkampft)
     - Reperatur shciff variante von Extarctor mit kapputem schiff anstatt m_ast
+    - Broodmother Style enemy
     -...
 - Mehr Events
     - #Convoys

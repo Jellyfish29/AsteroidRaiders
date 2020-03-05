@@ -5,7 +5,7 @@ from init import *
 from astraid_funcs import *
 import astraid_data as data
 from Gfx import Gfx, Background
-from projectiles import Projectile, Missile
+from projectiles import Projectile, Missile, Impactor, Explosion
 from phenomenon import Defence_zone
 from items_misc import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
 from ui import Gui
@@ -41,6 +41,7 @@ class Allied_entity(Timer):
         self.flag = "allie"
         self.scripts = {None: self.script}
         self.script_name = None
+        self.animation_speed = 16
         Timer.__init__(self)
 
     def move(self):
@@ -106,7 +107,7 @@ class Allied_entity(Timer):
 
     def gfx_animation(self):
         # pygame.draw.rect(win, (255, 0, 0), self.hitbox)
-        animation_ticker = self.timer_animation_ticker(16)
+        animation_ticker = self.timer_animation_ticker(self.animation_speed)
         if not self.rot_sprite:
             gfx_angle = 0
         else:
@@ -114,7 +115,7 @@ class Allied_entity(Timer):
                 self.target[1], self.hitbox.center[1],
                 self.target[0], self.hitbox.center[0]
             )
-        if animation_ticker < 8:
+        if animation_ticker < self.animation_speed / 2:
             win.blit(rot_center(
                 Allied_entity.allied_sprites[self.gfx_idx[0]], gfx_angle),
                 (self.hitbox.topleft[0] + self.gfx_hook[0] - 50,
@@ -481,7 +482,8 @@ class Fighter_ally(Allied_entity):
     def __init__(self, spawn_point=None, target=None, script_name=None):
         Allied_entity.__init__(self, speed=8, health=3, spawn_point=spawn_point,
                                target=target, size=(60, 60), gfx_idx=(16, 17), gfx_hook=(0, 0))
-        self.fire_rate = 20
+        self.fire_rate = 120
+
         # self.border_check = False
 
     def skill(self):
@@ -499,6 +501,47 @@ class Fighter_ally(Allied_entity):
                         flag="missile",
                         gfx_idx=24
                     ))
+
+
+class Mech_ally(Allied_entity):
+
+    def __init__(self):
+        Allied_entity.__init__(self, speed=0, health=50, spawn_point=(1000, 850),
+                               size=(60, 60), gfx_idx=(18, 18), gfx_hook=(0, 0))
+        self.rot_sprite = False
+        self.fire_rate = 100
+        self.muzzle_effect_timer = (i for i in range(1))
+
+    def move(self):
+        pass
+
+    def skill(self):
+        if len(data.ENEMY_DATA) > 0:
+            target = data.ENEMY_DATA[random.randint(0, len(data.ENEMY_DATA) - 1)].hitbox.center
+            if self.timer_trigger(self.fire_rate):
+                self.muzzle_effect_timer = (i for i in range(10))
+                # self.muzzle_effect_timer = (i for i in range(8))
+                for start_point in [self.hitbox.topleft, self.hitbox.topright]:
+                    data.PLAYER_PROJECTILE_DATA.append(Impactor(
+                        speed=15,
+                        size=(4, 4),
+                        start_point=start_point,
+                        damage=0,
+                        gfx_idx=15,
+                        target=target,
+                        impact_effect=lambda loc=target: data.PLAYER_PROJECTILE_DATA.append(Explosion(
+                            location=loc,
+                            explo_size=100,
+                            damage=1,
+                            explosion_effect=lambda loc: Gfx.create_effect(
+                                "explosion_2", 2, (loc[0] - 120, loc[1] - 120), explo=True),
+                            explo_speed=(60, 60)
+                        ))
+                    ))
+        if next(self.muzzle_effect_timer, "stop") == "stop":
+            self.gfx_idx = (18, 18)
+        else:
+            self.gfx_idx = (19, 19)
 
 
 data.ALLIE = Allied_entity

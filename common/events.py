@@ -68,6 +68,11 @@ class Events():
     planet_inv_ally_amount = 2
     # Ground Support
     ground_sup_set_up = True
+    ground_sup_fire_positions = [(x, random.randint(200, 250)) for x in range(200, 1800, 50)]
+    ground_sup_battle = False
+    ground_sup_enemy_amount = 40
+    ground_sup_charge_time = 600
+    ground_sup_final_waves = 5
 
     @classmethod
     def set_bg_color(cls):
@@ -714,11 +719,38 @@ class Events():
                 data.GROUND = True
                 Background.bg_gfx = 19
                 Background.y = 0
-                data.PLAYER.draw_shaddow = True
                 data.PLAYER.hitbox.center = (1000, 500)
                 data.PLAYER.angles = directions(data.PLAYER.speed)
-                for i in range(10):
-                    data.ENEMY_DATA.append(Ground_infantry(get_random_point()))
+                data.PLAYER_DATA.append(Mech_ally())
+                cls.ground_sup_battle = True
+
+            if cls.ground_sup_battle:
+
+                while len(data.ENEMY_DATA) < cls.ground_sup_enemy_amount:
+                    data.ENEMY_DATA.append(Ground_infantry(cls.get_fire_position(), speed=7 - cls.ground_sup_final_waves))
+
+                if timer.trigger(cls.ground_sup_charge_time):
+                    for inf in [e for e in data.ENEMY_DATA if isinstance(e, Ground_infantry)]:
+                        inf.charge = True
+                    cls.ground_sup_enemy_amount += 2
+
+                    if cls.ground_sup_enemy_amount >= 70:
+                        cls.ground_sup_enemy_amount = 70
+                        cls.ground_sup_charge_time = 200
+                        cls.ground_sup_final_waves -= 1
+
+                if cls.ground_sup_final_waves <= 0:
+                    cls.ground_sup_battle = False
+
+    @classmethod
+    def ground_sup_reset(cls):
+        pass
+
+    @classmethod
+    def get_fire_position(cls):
+        if len(cls.ground_sup_fire_positions) <= 0:
+            cls.ground_sup_fire_positions = [(x, random.randint(200, 250)) for x in range(200, 1800, 50)]
+        return cls.ground_sup_fire_positions.pop(random.randint(0, len(cls.ground_sup_fire_positions) - 1))
 
     @classmethod
     def event_placeholder(cls):
@@ -741,8 +773,8 @@ class Events():
     @classmethod
     def get_special_events_lst(cls):
         return [
-            (cls.event_comet_storm, 1),
-            (cls.event_mine_field, 1),
+            # (cls.event_comet_storm, 1),
+            # (cls.event_mine_field, 1),
             # (cls.event_convoy_escort, 6),
             # (cls.event_battleship_defence, 6),
             # (cls.event_convoy_attack, 12),
@@ -750,7 +782,7 @@ class Events():
             # (cls.event_zone_defence, 18),
             # (cls.event_planet_evacuation, 18),
             # (cls.event_planet_invasion, 24),
-            # (cls.event_ground_support, 1),  # Stealth Base infiltration
+            (cls.event_ground_support, 1),  # Stealth Base infiltration
             (cls.event_placeholder, 30),  # Planeten Ring
             (cls.event_placeholder, 30),  # Battlegroup Escort
             (cls.event_placeholder, 36),  # Planeten Invasion / Ground Support

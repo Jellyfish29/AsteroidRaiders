@@ -59,7 +59,8 @@ class Projectile(Timer):
         self.kill = False
         self.hit_event = False
         if all([data.GROUND, not isinstance(self, Explosion),
-                not isinstance(self, Impactor), not isinstance(self, Missile)]):
+                not isinstance(self, Impactor), not isinstance(self, Missile),
+                self.flag != "secondary"]):
             self.target_rect = pygame.Rect(0, 0, 50, 50)
             self.target_rect.center = self.target
 
@@ -124,7 +125,14 @@ class Projectile(Timer):
         try:
             if self.hitbox.colliderect(self.target_rect):
                 self.kill = True
-                self.gfx_hit()
+                data.PLAYER_PROJECTILE_DATA.append(Explosion(
+                    location=self.hitbox.center,
+                    explo_size=70,
+                    damage=0.5,
+                    explosion_effect=lambda loc: Gfx.create_effect(
+                        "explosion_4", 2, (loc[0] - 80, loc[1] - 80), explo=True),
+                    explo_speed=(60, 60)
+                ))
         except AttributeError:
             pass
 
