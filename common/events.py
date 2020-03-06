@@ -73,6 +73,8 @@ class Events():
     ground_sup_enemy_amount = 40
     ground_sup_charge_time = 600
     ground_sup_final_waves = 5
+    ground_sup_cap_progress = 0
+    ground_sup_cap_limiter = False
 
     @classmethod
     def set_bg_color(cls):
@@ -726,6 +728,8 @@ class Events():
 
             if cls.ground_sup_battle:
 
+                data.EVENTS.ground_sup_cap_limiter = False
+
                 while len(data.ENEMY_DATA) < cls.ground_sup_enemy_amount:
                     data.ENEMY_DATA.append(Ground_infantry(cls.get_fire_position(), speed=7 - cls.ground_sup_final_waves))
 
@@ -739,8 +743,34 @@ class Events():
                         cls.ground_sup_charge_time = 200
                         cls.ground_sup_final_waves -= 1
 
+                if timer.trigger(cls.ground_sup_charge_time * 2):
+                    if len([e for e in data.ENEMY_DATA if isinstance(e, Ground_aa_tank)]) == 0:
+                        for dest, spawn in [((150, 200), (150, -100)), ((1700, 270), (1700, -100))]:
+                            data.ENEMY_DATA.append(Ground_aa_tank(dest=dest, spawn=spawn))
+
+                if timer.trigger(1000):
+                    data.ENEMY_DATA.append(Strafer(spawn=1, intercept=True))
+
                 if cls.ground_sup_final_waves <= 0:
                     cls.ground_sup_battle = False
+
+            if cls.ground_sup_cap_progress >= 100 or all([cls.ground_sup_final_waves <= 0, len(data.ENEMY_DATA) == 0]):
+                if timer.timer_trigger_delay(200, key="over_1"):
+                    Background.transition = True
+                    data.PLAYER.angles = directions(0)
+
+                if timer.timer_key_delay(300, key="over_2"):
+                    if Background.get_transition_over():
+                        Background.bg_move = True
+                        data.GROUND = False
+                        Background.bg_gfx = 1
+                        Background.y = 0
+                        data.all_clear()
+                        data.PHENOMENON_DATA.append(Planet(loc=(400, 300), script_name="ground_support"))
+                        data.PLAYER.hitbox.center = data.PHENOMENON_DATA[0].hitbox.center
+                        data.PLAYER.angles = directions(data.PLAYER.speed)
+
+                        return "stop_event"
 
     @classmethod
     def ground_sup_reset(cls):
@@ -782,7 +812,7 @@ class Events():
             # (cls.event_zone_defence, 18),
             # (cls.event_planet_evacuation, 18),
             # (cls.event_planet_invasion, 24),
-            (cls.event_ground_support, 1),  # Stealth Base infiltration
+            (cls.event_ground_support, 24),  # Stealth Base infiltration
             (cls.event_placeholder, 30),  # Planeten Ring
             (cls.event_placeholder, 30),  # Battlegroup Escort
             (cls.event_placeholder, 36),  # Planeten Invasion / Ground Support

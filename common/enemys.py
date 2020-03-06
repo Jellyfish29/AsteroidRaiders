@@ -525,7 +525,7 @@ class Seeker(Enemy):
 
 class Strafer(Enemy):
 
-    def __init__(self, spawn=None):
+    def __init__(self, spawn=None, intercept=False):
         if spawn is None:
             spawn = random.randint(1, 4)
         super().__init__(
@@ -542,6 +542,12 @@ class Strafer(Enemy):
         self.shot_angles = angles_360(12)
         self.fire_rate = 35
         self.ttk_bonus = 40
+        if intercept:
+            self.target = data.PLAYER.hitbox.center
+            self.direction = degrees(
+                self.target[0], self.spawn_points[self.spawn_point][0],
+                self.target[1], self.spawn_points[self.spawn_point][1]
+            )
 
     def skill(self):
         if self.timer_trigger(self.fire_rate):
@@ -550,10 +556,13 @@ class Strafer(Enemy):
                 size=(6, 6),
                 start_point=self.hitbox.center,
                 damage=1,
-                flag="spez_enemy",
+                flag="enemy",
                 gfx_idx=12,
                 angle=self.direction
             ))
+
+        if data.GROUND:
+            win.blit(self.sprites[26], self.hitbox.bottomleft)
 
 
 class Miner(Enemy):

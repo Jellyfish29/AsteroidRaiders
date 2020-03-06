@@ -60,7 +60,7 @@ class Projectile(Timer):
         self.hit_event = False
         if all([data.GROUND, not isinstance(self, Explosion),
                 not isinstance(self, Impactor), not isinstance(self, Missile),
-                self.flag != "secondary"]):
+                self.flag != "secondary", self.flag != "enemy"]):
             self.target_rect = pygame.Rect(0, 0, 50, 50)
             self.target_rect.center = self.target
 
@@ -135,6 +135,9 @@ class Projectile(Timer):
                 ))
         except AttributeError:
             pass
+
+        if not isinstance(self, Explosion):
+            win.blit(Projectile.projectile_sprites[26], self.hitbox.bottomleft)
 
     def out_of_bounds(self):
         return rect_not_on_sreen(self.hitbox)

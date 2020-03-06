@@ -511,6 +511,9 @@ class Mech_ally(Allied_entity):
         self.rot_sprite = False
         self.fire_rate = 100
         self.muzzle_effect_timer = (i for i in range(1))
+        self.hitable = False
+        self.healthbar_height = 8
+        self.healthbar_max_len = 100
 
     def move(self):
         pass
@@ -542,6 +545,24 @@ class Mech_ally(Allied_entity):
             self.gfx_idx = (18, 18)
         else:
             self.gfx_idx = (19, 19)
+
+        if data.EVENTS.ground_sup_cap_progress >= 100:
+            self.kill = True
+
+    def gfx_health_bar(self):
+        pygame.draw.rect(win, (200, 200, 200),
+                         (pygame.Rect(self.hitbox.bottomleft[0],
+                                      self.hitbox.bottomleft[1] + 10,
+                                      self.healthbar_max_len,
+                                      self.healthbar_height
+                                      )))
+
+        pygame.draw.rect(win, (0, 0, 200),
+                         (pygame.Rect(self.hitbox.bottomleft[0],
+                                      self.hitbox.bottomleft[1] + 10,
+                                      data.EVENTS.ground_sup_cap_progress,
+                                      self.healthbar_height
+                                      )))
 
 
 data.ALLIE = Allied_entity

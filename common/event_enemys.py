@@ -52,6 +52,7 @@ class Event_shooter(Shooter):
         self.idle_gfx_idx = (15, 15)
         self.animation_speed = 8
         self.zero_angles = angles_360(0)
+        self.target_player = False
 
     def move(self):
         self.direction = degrees(
@@ -71,7 +72,9 @@ class Event_shooter(Shooter):
 
         if self.gfx_rot:
 
-            if len(data.PLAYER_DATA) > 0:
+            if self.target_player:
+                target = data.PLAYER.hitbox.center
+            elif len(data.PLAYER_DATA) > 0:
                 target = data.PLAYER_DATA[0].hitbox.center
             else:
                 target = self.dest
@@ -177,3 +180,62 @@ class Ground_infantry(Event_shooter):
             self.dest = (1000, 900)
             self.angles = angles_360(self.speed)
             self.charge = False
+
+        try:
+            if self.hitbox.colliderect(data.PLAYER_DATA[0].hitbox):
+                if not data.EVENTS.ground_sup_cap_limiter:
+                    data.EVENTS.ground_sup_cap_progress += 1
+                    data.EVENTS.ground_sup_cap_limiter = True
+        except IndexError:
+            pass
+
+
+class Ground_aa_tank(Event_shooter):
+
+    def __init__(self, dest, spawn):
+        super().__init__(dest, standart_spawn=1)
+        self.hitbox.center = spawn
+        self.gfx_idx = (25, 25)
+        self.idle_gfx_idx = (25, 25)
+        self.health = Enemy.health * 6
+        self.max_health = self.health
+        self.target_player = True
+        self.delta_salvo_limit = (i for i in range(6))
+        self.fire_rate = random.randint(100, 160)
+        self.animation_speed = 10
+        self.gun_idx = 15
+        self.angles = angles_360(1)
+        self.gfx_rot = False
+
+    def skill(self):
+        if self.timer_key_delay(limit=self.fire_rate, key="salvo_d"):
+            if self.timer_trigger(5):
+                self.fire_rate -= 1
+                self.gun_idx = 15
+                data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                    15, (6, 6),
+                    (self.hitbox.center[0], self.hitbox.center[1]),
+                    1, "enemy", 12,
+                    target=data.PLAYER.hitbox)
+                )
+                limit = next(self.delta_salvo_limit, "stop")
+                if limit == "stop":
+                    self.timer_key_delay(reset=True, key="salvo_d")
+                    self.delta_salvo_limit = (i for i in range(6))
+            else:
+                self.gun_idx = 16
+
+        self.gfx_gun()
+
+    def gfx_gun(self):
+        gfx_angle = degrees(
+            data.PLAYER.hitbox.center[1],
+            self.hitbox.center[1],
+            data.PLAYER.hitbox.center[0],
+            self.hitbox.center[0]
+        )
+
+        win.blit(rot_center(
+            Gfx.gun_sprites[self.gun_idx], gfx_angle),
+            (self.hitbox.topleft[0] - 26, self.hitbox.topleft[1] - 30)
+        )
