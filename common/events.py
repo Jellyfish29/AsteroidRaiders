@@ -803,15 +803,15 @@ class Events():
     @classmethod
     def get_special_events_lst(cls):
         return [
-            # (cls.event_comet_storm, 1),
-            # (cls.event_mine_field, 1),
-            # (cls.event_convoy_escort, 6),
-            # (cls.event_battleship_defence, 6),
-            # (cls.event_convoy_attack, 12),
-            # (cls.event_station_hack, 12),
-            # (cls.event_zone_defence, 18),
-            # (cls.event_planet_evacuation, 18),
-            # (cls.event_planet_invasion, 24),
+            (cls.event_comet_storm, 1),
+            (cls.event_mine_field, 1),
+            (cls.event_convoy_escort, 6),
+            (cls.event_battleship_defence, 6),
+            (cls.event_convoy_attack, 12),
+            (cls.event_station_hack, 12),
+            (cls.event_zone_defence, 18),
+            (cls.event_planet_evacuation, 18),
+            (cls.event_planet_invasion, 24),
             (cls.event_ground_support, 24),  # Stealth Base infiltration
             (cls.event_placeholder, 30),  # Planeten Ring
             (cls.event_placeholder, 30),  # Battlegroup Escort
