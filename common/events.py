@@ -75,6 +75,7 @@ class Events():
     ground_sup_final_waves = 5
     ground_sup_cap_progress = 0
     ground_sup_cap_limiter = False
+    ground_sup_end = False
 
     @classmethod
     def set_bg_color(cls):
@@ -705,26 +706,44 @@ class Events():
             cls.ground_sup_set_up = False
 
         if Background.bg_move:
-            if [p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center[1] >= 300:
-                Background.bg_move = False
+            if not cls.ground_sup_end:
+                if [p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center[1] >= 300:
+                    Background.bg_move = False
 
         if not Background.bg_move:
-            try:
-                if data.PLAYER.hitbox.collidepoint([p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center):
-                    Background.transition = True
-                    data.PLAYER.angles = directions(0)
-            except IndexError:
-                pass
+            if not cls.ground_sup_end:
+                try:
+                    if data.PLAYER.hitbox.collidepoint([p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center):
+                        Background.transition = True
+                        data.PLAYER.angles = directions(0)
+                except IndexError:
+                    pass
 
-            if Background.get_transition_over():
-                data.all_clear()
-                data.GROUND = True
-                Background.bg_gfx = 19
-                Background.y = 0
-                data.PLAYER.hitbox.center = (1000, 500)
-                data.PLAYER.angles = directions(data.PLAYER.speed)
-                data.PLAYER_DATA.append(Mech_ally())
-                cls.ground_sup_battle = True
+            if not cls.ground_sup_end:
+                if Background.get_transition_over():
+                    data.all_clear()
+                    data.GROUND = True
+                    cls.ground_sup_battle = True
+
+                    Background.bg_gfx = 19
+                    Background.y = 0
+
+                    data.PLAYER.hitbox.center = (1000, 500)
+                    data.PLAYER.angles = directions(data.PLAYER.speed)
+                    data.PLAYER_DATA.append(Mech_ally())
+
+            else:
+                if Background.get_transition_over():
+                    Background.bg_move = True
+                    Background.bg_gfx = 1
+                    data.GROUND = False
+
+                    data.all_clear()
+                    data.PHENOMENON_DATA.append(Planet(loc=(400, 300), script_name="ground_support"))
+
+                    data.PLAYER.hitable = True
+                    data.PLAYER.hitbox.center = data.PHENOMENON_DATA[0].hitbox.center
+                    data.PLAYER.angles = directions(data.PLAYER.speed)
 
             if cls.ground_sup_battle:
 
@@ -756,22 +775,17 @@ class Events():
 
             if cls.ground_sup_cap_progress >= 100 or all([cls.ground_sup_final_waves <= 0, len(data.ENEMY_DATA) == 0]):
                 cls.ground_sup_battle = False
-                if timer.timer_trigger_delay(limit=200, key="over_1"):
+                if timer.timer_trigger_delay(limit=120, key="over_1"):
                     Background.transition = True
+                    cls.ground_sup_end = True
+
+                    data.PLAYER.hitable = False
                     data.PLAYER.angles = directions(0)
 
-                if timer.timer_key_delay(300, key="over_2"):
-                    if Background.get_transition_over():
-                        Background.bg_move = True
-                        data.GROUND = False
-                        Background.bg_gfx = 1
-                        Background.y = 0
-                        data.all_clear()
-                        data.PHENOMENON_DATA.append(Planet(loc=(400, 300), script_name="ground_support"))
-                        data.PLAYER.hitbox.center = data.PHENOMENON_DATA[0].hitbox.center
-                        data.PLAYER.angles = directions(data.PLAYER.speed)
+        if cls.ground_sup_end:
+            if timer.timer_trigger_delay(limit=600, key="over_2"):
 
-                        return "stop_event"
+                return "stop_event"
 
     @classmethod
     def ground_sup_reset(cls):

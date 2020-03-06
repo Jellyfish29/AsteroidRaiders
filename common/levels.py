@@ -269,6 +269,10 @@ class STAGE_SAVE():
         self.raw_cd = Active_Items.raw_cd_reduction
 
     def load_save(self):
+        for _, item in data.ITEMS.inventory_dic.items():
+            if item is not None:
+                item.end_effect()
+
         Levels.level = self.lvl
         data.ENEMY_DATA.clear()
         data.ENEMY_PROJECTILE_DATA.clear()
