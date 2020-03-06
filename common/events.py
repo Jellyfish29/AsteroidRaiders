@@ -755,7 +755,8 @@ class Events():
                     cls.ground_sup_battle = False
 
             if cls.ground_sup_cap_progress >= 100 or all([cls.ground_sup_final_waves <= 0, len(data.ENEMY_DATA) == 0]):
-                if timer.timer_trigger_delay(200, key="over_1"):
+                cls.ground_sup_battle = False
+                if timer.timer_trigger_delay(limit=200, key="over_1"):
                     Background.transition = True
                     data.PLAYER.angles = directions(0)
 
@@ -803,15 +804,15 @@ class Events():
     @classmethod
     def get_special_events_lst(cls):
         return [
-            (cls.event_comet_storm, 1),
-            (cls.event_mine_field, 1),
-            (cls.event_convoy_escort, 6),
-            (cls.event_battleship_defence, 6),
-            (cls.event_convoy_attack, 12),
-            (cls.event_station_hack, 12),
-            (cls.event_zone_defence, 18),
-            (cls.event_planet_evacuation, 18),
-            (cls.event_planet_invasion, 24),
+            # (cls.event_comet_storm, 1),
+            # (cls.event_mine_field, 1),
+            # (cls.event_convoy_escort, 6),
+            # (cls.event_battleship_defence, 6),
+            # (cls.event_convoy_attack, 12),
+            # (cls.event_station_hack, 12),
+            # (cls.event_zone_defence, 18),
+            # (cls.event_planet_evacuation, 18),
+            # (cls.event_planet_invasion, 24),
             (cls.event_ground_support, 24),  # Stealth Base infiltration
             (cls.event_placeholder, 30),  # Planeten Ring
             (cls.event_placeholder, 30),  # Battlegroup Escort

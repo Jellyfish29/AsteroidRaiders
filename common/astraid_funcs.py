@@ -228,8 +228,8 @@ class Timer:
             self.ticker[key] += 1
             return True
         else:
-            if self.ticker[self.timer_calls_per_tick] < limit:
-                self.ticker[self.timer_calls_per_tick] += 1
+            if self.ticker[key] < limit:
+                self.ticker[key] += 1
 
     def timer_animation_ticker(self, limit):
         self.timer_calls_per_tick += 1

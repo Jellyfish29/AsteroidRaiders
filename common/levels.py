@@ -292,6 +292,7 @@ class STAGE_SAVE():
         Levels.display_level = self.display_level
         Levels.display_score = self.score
         Levels.level_interval = self.interval_score
+        Active_Items.raw_cd_reduction = self.raw_cd
         data.ITEMS.inventory_dic = self.items
         data.PLAYER.health = self.pl_health
         data.PLAYER.heal_amount = self.pl_heal_amount

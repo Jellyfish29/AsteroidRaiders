@@ -208,22 +208,23 @@ class Ground_aa_tank(Event_shooter):
         self.gfx_rot = False
 
     def skill(self):
-        if self.timer_key_delay(limit=self.fire_rate, key="salvo_d"):
-            if self.timer_trigger(5):
-                self.fire_rate -= 1
-                self.gun_idx = 15
-                data.ENEMY_PROJECTILE_DATA.append(Projectile(
-                    15, (6, 6),
-                    (self.hitbox.center[0], self.hitbox.center[1]),
-                    1, "enemy", 12,
-                    target=data.PLAYER.hitbox)
-                )
-                limit = next(self.delta_salvo_limit, "stop")
-                if limit == "stop":
-                    self.timer_key_delay(reset=True, key="salvo_d")
-                    self.delta_salvo_limit = (i for i in range(6))
-            else:
-                self.gun_idx = 16
+        if len(data.PLAYER_DATA) > 0:
+            if self.timer_key_delay(limit=self.fire_rate, key="salvo_d"):
+                if self.timer_trigger(5):
+                    self.fire_rate -= 1
+                    self.gun_idx = 15
+                    data.ENEMY_PROJECTILE_DATA.append(Projectile(
+                        15, (6, 6),
+                        (self.hitbox.center[0], self.hitbox.center[1]),
+                        1, "enemy", 12,
+                        target=data.PLAYER.hitbox)
+                    )
+                    limit = next(self.delta_salvo_limit, "stop")
+                    if limit == "stop":
+                        self.timer_key_delay(reset=True, key="salvo_d")
+                        self.delta_salvo_limit = (i for i in range(6))
+                else:
+                    self.gun_idx = 16
 
         self.gfx_gun()
 
