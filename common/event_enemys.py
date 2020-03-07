@@ -184,7 +184,7 @@ class Ground_infantry(Event_shooter):
         try:
             if self.hitbox.colliderect(data.PLAYER_DATA[0].hitbox):
                 if not data.EVENTS.ground_sup_cap_limiter:
-                    data.EVENTS.ground_sup_cap_progress += 1
+                    data.EVENTS.ground_sup_cap_progress += 0.1
                     data.EVENTS.ground_sup_cap_limiter = True
         except IndexError:
             pass

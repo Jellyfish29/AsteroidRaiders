@@ -289,7 +289,7 @@ class Item_overdrive(Items):
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
-            for _ in range(data.TURRET.overdrive_count):
+            for _ in range(int(data.TURRET.overdrive_count)):
                 data.PLAYER.damage -= 0.05
                 data.TURRET.set_fire_rate(-0.07)
 

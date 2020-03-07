@@ -8,7 +8,7 @@ from Gfx import Gfx, Background
 from projectiles import Projectile, Missile, Impactor, Explosion
 from phenomenon import Defence_zone
 from items_misc import Item_upgrade_point_crate, Item_heal_crate, Item_supply_crate
-from ui import Gui
+from ui import *
 
 
 class Allied_entity(Timer):
@@ -25,6 +25,7 @@ class Allied_entity(Timer):
         self.gfx_idx = gfx_idx
         self.gfx_hook = gfx_hook
         self.angles = angles_360(self.speed)
+        self.zero_angles = angles_360(0)
         self.hitbox = pygame.Rect(self.spawn_point[0], self.spawn_point[1],
                                   self.size[0], self.size[1])
         self.max_health = self.health
@@ -447,7 +448,8 @@ class Destroyer_ally(Allied_entity):
         Allied_entity.__init__(self, speed=2, health=60, spawn_point=spawn_point,
                                target=target, size=(100, 100), gfx_idx=(13, 14), gfx_hook=(-25, -25))
         self.script_name = script_name
-        self.scripts.update({"planet_invasion": self.planet_invasion_script})
+        self.scripts.update({"planet_invasion": self.planet_invasion_script,
+                             "ground_support": self.ground_support_script})
         self.max_health = self.health
         self.border_check = False
         self.fire_rate = 50
@@ -460,6 +462,15 @@ class Destroyer_ally(Allied_entity):
         if Background.bg_move:
             self.hitbox.move_ip(0, Background.scroll_speed)
             self.border_check = True
+
+    def ground_support_script(self):
+        self.angles = self.zero_angles
+        self.gfx_idx = (15, 15)
+
+        if Background.bg_move:
+            self.hitbox.move_ip(0, Background.scroll_speed)
+            if self.hitbox.top >= 1200:
+                self.border_check = True
 
     def skill(self):
         if len(data.ENEMY_DATA) > 0:
@@ -548,6 +559,10 @@ class Mech_ally(Allied_entity):
 
         if data.EVENTS.ground_sup_cap_progress >= 100:
             self.kill = True
+
+        if self.timer_trigger(self.fire_rate * 2):
+            Gui.add(Gui_tw_text(text=random.choice(data.EVENT_TEXT["ground_sup_mech"]),
+                                text_size=20, anchor=self.hitbox, anchor_x=140, anchor_y=40))
 
     def gfx_health_bar(self):
         pygame.draw.rect(win, (200, 200, 200),

@@ -702,7 +702,11 @@ class Events():
         cls.set_bg_color()
         if cls.ground_sup_set_up:
             cls.timer_lst.append(timer)
+            Gui.add(Gui_tw_text(text=data.EVENT_TEXT["ground_sup_intro"], text_size=20, anchor=data.PLAYER.hitbox, anchor_x=100))
             data.PHENOMENON_DATA.append(Planet(loc=(400, -400), script_name="ground_support"))
+            for loc in [(600, -300), (400, -100)]:
+                data.PLAYER_DATA.append(Destroyer_ally(spawn_point=loc, target=(400, -2000),
+                                                       script_name="ground_support"))
             cls.ground_sup_set_up = False
 
         if Background.bg_move:
@@ -712,6 +716,12 @@ class Events():
 
         if not Background.bg_move:
             if not cls.ground_sup_end:
+                if timer.timer_trigger_delay(limit=20, key="info_1"):
+                    Gui.add(Gui_tw_text(text=data.EVENT_TEXT["ground_sup_info_1"], anchor=data.PLAYER_DATA[0].hitbox, anchor_x=60))
+                if timer.timer_trigger_delay(limit=600, key="info_2"):
+                    if len(data.PHENOMENON_DATA) > 0:
+                        data.GUI_DATA.append(Gui_text(loc=data.PHENOMENON_DATA[0].hitbox, text=data.EVENT_TEXT["ground_sup_info_2"],
+                                                      text_size=15, animation_interval=60))
                 try:
                     if data.PLAYER.hitbox.collidepoint([p for p in data.PHENOMENON_DATA if isinstance(p, Planet)][0].hitbox.center):
                         Background.transition = True
@@ -740,6 +750,9 @@ class Events():
 
                     data.all_clear()
                     data.PHENOMENON_DATA.append(Planet(loc=(400, 300), script_name="ground_support"))
+                    for loc in [(600, 300), (400, 100)]:
+                        data.PLAYER_DATA.append(Destroyer_ally(spawn_point=loc, target=(400, -2000),
+                                                               script_name="ground_support"))
 
                     data.PLAYER.hitable = True
                     data.PLAYER.hitbox.center = data.PHENOMENON_DATA[0].hitbox.center
@@ -783,13 +796,36 @@ class Events():
                     data.PLAYER.angles = directions(0)
 
         if cls.ground_sup_end:
+            if timer.timer_trigger_delay(limit=300, key="drop"):
+                if cls.ground_sup_cap_progress < 100:
+                    for _ in range(2):
+                        data.ITEMS.drop(
+                            data.PLAYER_DATA[1].hitbox.center, target=Item_heal_crate((100, 100, 100), level=3))
+                        data.ITEMS.drop(
+                            data.PLAYER_DATA[1].hitbox.center, target=Item_upgrade_point_crate((100, 100, 100), level=3))
+                else:
+                    data.ITEMS.drop(
+                        data.PLAYER_DATA[1].hitbox.center, target=Item_heal_crate((100, 100, 100), level=1))
+                    data.ITEMS.drop(
+                        data.PLAYER_DATA[1].hitbox.center, target=Item_upgrade_point_crate((100, 100, 100), level=1))
+
             if timer.timer_trigger_delay(limit=600, key="over_2"):
+                timer.timer_reset()
+                cls.ground_sup_reset()
 
                 return "stop_event"
 
     @classmethod
     def ground_sup_reset(cls):
-        pass
+        cls.ground_sup_set_up = True
+        cls.ground_sup_fire_positions = [(x, random.randint(200, 250)) for x in range(200, 1800, 50)]
+        cls.ground_sup_battle = False
+        cls.ground_sup_enemy_amount = 40
+        cls.ground_sup_charge_time = 600
+        cls.ground_sup_final_waves = 5
+        cls.ground_sup_cap_progress = 0
+        cls.ground_sup_cap_limiter = False
+        cls.ground_sup_end = False
 
     @classmethod
     def get_fire_position(cls):
@@ -811,6 +847,7 @@ class Events():
         cls.end_zone_defence(all_reset=True)
         cls.planet_evac_reset()
         cls.planet_invasion_reset()
+        cls.ground_sup_reset()
 
         for timer in cls.timer_lst:
             timer.timer_reset()
@@ -818,15 +855,15 @@ class Events():
     @classmethod
     def get_special_events_lst(cls):
         return [
-            # (cls.event_comet_storm, 1),
-            # (cls.event_mine_field, 1),
-            # (cls.event_convoy_escort, 6),
-            # (cls.event_battleship_defence, 6),
-            # (cls.event_convoy_attack, 12),
-            # (cls.event_station_hack, 12),
-            # (cls.event_zone_defence, 18),
-            # (cls.event_planet_evacuation, 18),
-            # (cls.event_planet_invasion, 24),
+            (cls.event_comet_storm, 1),
+            (cls.event_mine_field, 1),
+            (cls.event_convoy_escort, 6),
+            (cls.event_battleship_defence, 6),
+            (cls.event_convoy_attack, 12),
+            (cls.event_station_hack, 12),
+            (cls.event_zone_defence, 18),
+            (cls.event_planet_evacuation, 18),
+            (cls.event_planet_invasion, 24),
             (cls.event_ground_support, 24),  # Stealth Base infiltration
             (cls.event_placeholder, 30),  # Planeten Ring
             (cls.event_placeholder, 30),  # Battlegroup Escort

@@ -40,6 +40,14 @@
 
     "planet_evac_intro": "Commander!/We are entering the Sydan System",
 
-    "planet_evac_info": "Commander!/The ZHEE are trying to destroy/Sydan Prime by hurling Asteroids at/the Planet. We need to evacuate NOW!/Destroy the incoming Asteroids until the/Evacuations are completed"
+    "planet_evac_info": "Commander!/The ZHEE are trying to destroy/Sydan Prime by hurling Asteroids at/the Planet. We need to evacuate NOW!/Destroy the incoming Asteroids until the/Evacuations are completed",
+
+    "ground_sup_intro": "Commander!/We are entering the Kublar System",
+
+    "ground_sup_info_1": "Commander!/Task Force WARHAMMER is under attack on the ground/The ZHEE will overrun their Position shortly/Fly to the surface of Kublar and provide Aircover",
+
+    "ground_sup_info_2": "Fly to surface",
+
+    "ground_sup_mech": ["Take THIS", "Filthy Donks", "Die Donks!", "Engaging", "KTF!", "Fire", "12 o'clock", "Incoming", "K! T! fuking F!"]
 
 }
