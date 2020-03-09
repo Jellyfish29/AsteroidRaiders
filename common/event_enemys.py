@@ -167,6 +167,7 @@ class Ground_infantry(Event_shooter):
         self.animation_speed = 60
         self.hitbox = pygame.Rect(self.hitbox.topleft[0], self.hitbox.topleft[1], 35, 35)
         self.charge = False
+        self.score_amount = 0.1
 
     def gfx_hit(self):
         Gfx.create_effect(

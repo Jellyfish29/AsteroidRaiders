@@ -163,14 +163,14 @@ class Item_hyper_shields(Items):
     def effect(self):
         if self.flag not in Items.active_flag_lst:
             Items.active_flag_lst.append(self.flag)
-            data.PLAYER.shield_strength += int(self.get_lvl_effects(reverse=True)[self.lvl])
-            data.PLAYER.max_shield_strength += int(self.get_lvl_effects(reverse=True)[self.lvl])
+            data.PLAYER.shield.shield_strength += int(self.get_lvl_effects(reverse=True)[self.lvl])
+            data.PLAYER.shield.max_shield_strength += int(self.get_lvl_effects(reverse=True)[self.lvl])
 
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
             Items.active_flag_lst.remove(self.flag)
-            data.PLAYER.shield_strength -= int(self.get_lvl_effects(reverse=True)[self.lvl])
-            data.PLAYER.max_shield_strength -= int(self.get_lvl_effects(reverse=True)[self.lvl])
+            data.PLAYER.shield.shield_strength -= int(self.get_lvl_effects(reverse=True)[self.lvl])
+            data.PLAYER.shield.max_shield_strength -= int(self.get_lvl_effects(reverse=True)[self.lvl])
 
 
 class Item_fan_shot(Items):
@@ -363,9 +363,9 @@ class Item_bi_weave_shields(Items):
     def effect(self):
         if self.flag not in Items.active_flag_lst:
             Items.active_flag_lst.append(self.flag)
-            data.PLAYER.max_shield_strength = int(data.PLAYER.max_shield_strength / 2)
-            if data.PLAYER.shield_strength > data.PLAYER.max_shield_strength:
-                data.PLAYER.shield_strength = data.PLAYER.max_shield_strength
+            data.PLAYER.shield.max_shield_strength = int(data.PLAYER.shield.max_shield_strength / 2)
+            if data.PLAYER.shield.shield_strength > data.PLAYER.shield.max_shield_strength:
+                data.PLAYER.shield.shield_strength = data.PLAYER.shield.max_shield_strength
             data.PLAYER.shield.base_effect *= self.get_lvl_effects()[self.lvl]
             data.PLAYER.shield.set_effect_strength()
 

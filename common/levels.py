@@ -234,6 +234,8 @@ class STAGE_SAVE():
         for _, item in data.ITEMS.inventory_dic.items():
             if item is not None:
                 item.end_effect()
+        data.PLAYER.shield.end_effect()
+
         self.items = data.ITEMS.inventory_dic
         self.pl_health = data.PLAYER.health
         self.pl_max_health = data.PLAYER.max_health
@@ -272,6 +274,7 @@ class STAGE_SAVE():
         for _, item in data.ITEMS.inventory_dic.items():
             if item is not None:
                 item.end_effect()
+        data.PLAYER.shield.end_effect()
 
         Levels.level = self.lvl
         data.ENEMY_DATA.clear()

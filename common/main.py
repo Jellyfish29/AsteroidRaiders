@@ -31,13 +31,13 @@ def test_mode():
     Levels.events_disabled = True
     Levels.display_score += 400
     # Player.health += 40000
-    # Player.damage += 10
+    Player.damage += 10
     Items.upgrade_points += 400
     Levels.skill_points += 100
     Player.health = 40
     Player.max_health = 40
-    # Levels.scaling()
-    Levels.execute_special_event()
+    Levels.scaling()
+    # Levels.execute_special_event()
     # Elites.spawn()
     # data.ENEMY.set_spawn_table(Shooter)
     # data.ENEMY_DATA.append(random.choice(Enemy.spez_spawn_table)())

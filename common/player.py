@@ -41,8 +41,6 @@ class Player:
     crit_limit = 50
     # Shield
     shield = Item_shield((0, 0, 0))
-    shield_strength = 1
-    max_shield_strength = 1
     # Gfx
     gfx_idx = {
         "up": 0,
@@ -74,6 +72,7 @@ class Player:
     indicator_pos = [(-30, 75), (72, 75)]
     # Time
     restart_timer = False
+    restart = False
 
     @classmethod
     def move(cls, direction):
@@ -86,12 +85,12 @@ class Player:
             if timer.trigger(staggered):
                 if damage > 0:
                     if cls.shield.active:
-                        cls.shield_strength -= damage
+                        cls.shield.shield_strength -= damage
                         cls.reflex_shield()
                         # cls.gfx_hit_effect()
-                        if cls.shield_strength < 1:
+                        if cls.shield.shield_strength < 1:
                             cls.shield.end_active()
-                            cls.shield_strength = cls.max_shield_strength
+                            cls.shield.shield_strength = cls.shield.max_shield_strength
                     else:  # not cls.shield.active:
                         cls.health -= damage
                         cls.gfx_hit_effect()
@@ -122,7 +121,7 @@ class Player:
     @classmethod
     def shield_update(cls):
         cls.shield.effect()
-        if cls.shield_strength == 0:
+        if cls.shield.shield_strength == 0:
             cls.shield.end_active()
 
     @classmethod
@@ -265,8 +264,12 @@ class Player:
             cls.hitbox.move_ip(cls.angles[cls.direction])
 
         if data.LEVELS.after_boss:
-            if timer.timer_key_delay(120, key="c_delay"):
+            if timer.timer_key_trigger(300, key="oof"):
+                cls.restart = True
+
+            if cls.restart:
                 if cls.hitbox.colliderect(pygame.Rect(0, -10, winwidth, 15)):
+                    cls.restart = False
                     cls.hitbox.center = (cls.hitbox.center[0], winheight)
 
                     Background.bg_move = True
@@ -278,12 +281,11 @@ class Player:
                     data.PHENOMENON_DATA.clear()
                     data.PLAYER_DATA.clear()
                     data.ENEMY_DATA.clear()
+                    timer.timer_reset()
 
                     data.LEVELS.save_game()
 
                     cls.restart_timer = True
-
-                    timer.timer_key_delay(reset=True, key="c_delay")
 
         if cls.restart_timer:
             if timer.trigger(120):

@@ -437,28 +437,30 @@ class Item_shield(Active_Items):
         self.base_effect = 5400  # cooldown time
         self.cd_len = self.get_lvl_effects()[self.lvl]
         self.raw_strength = 1
+        self.shield_strength = 1
+        self.max_shield_strength = 1
 
     def secondary_upgrade_effect(self):
-        data.PLAYER.shield_strength += 1
-        data.PLAYER.max_shield_strength += 1
+        self.shield_strength += 1
+        self.max_shield_strength += 1
         if "bi_weave_shields" in Items.active_flag_lst:
             self.raw_strength += 1
-            data.PLAYER.max_shield_strength = int(self.raw_strength / 2)
-            if data.PLAYER.shield_strength > data.PLAYER.max_shield_strength:
-                data.PLAYER.shield_strength = data.PLAYER.max_shield_strength
+            self.max_shield_strength = int(self.raw_strength / 2)
+            if self.shield_strength > self.max_shield_strength:
+                self.shield_strength = self.max_shield_strength
 
     def activation_effect(self):
         if not self.cooldown:
             Gfx.create_effect("shield", 2, pl_shield=True)
 
     def get_upgrade_desc(self):
-        return f"Cooldown: {int(self.get_cd_len() / 60) + 1}s / Strength: {data.PLAYER.max_shield_strength}"
+        return f"Cooldown: {int(self.get_cd_len() / 60) + 1}s / Strength: {self.max_shield_strength}"
 
     def set_effect_strength(self):
         self.cd_len = self.get_lvl_effects()[self.lvl]
 
     def get_active_str(self):
-        return " "  # str(data.PLAYER.shield_strength)
+        return " "  # str(self.shield_strength)
 
     def get_inventory_key(self):
         return 0

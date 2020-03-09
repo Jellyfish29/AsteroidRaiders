@@ -107,11 +107,11 @@ class Interface_new(Timer):
     @classmethod
     def player_shield_update(cls):
         if data.PLAYER.shield.active:
-            while len(cls.shield_bar) < data.PLAYER.shield_strength:
+            while len(cls.shield_bar) < data.PLAYER.shield.shield_strength:
                 cls.shield_bar.append(Gui_image(img_idx=7, anchor=data.PLAYER.hitbox,
                                                 anchor_x=80 + cls.shield_x_pos, anchor_y=15))
                 cls.shield_x_pos += 15
-            while len(cls.shield_bar) > data.PLAYER.shield_strength:
+            while len(cls.shield_bar) > data.PLAYER.shield.shield_strength:
                 try:
                     cls.shield_bar.pop()
                     cls.shield_x_pos -= 15

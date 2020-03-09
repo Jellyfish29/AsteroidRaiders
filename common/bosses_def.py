@@ -559,14 +559,25 @@ class Elites(Bosses):
             if random.randint(0, 100) > 90:
                 data.ITEMS.drop((self.hitbox.topleft), amount=1)
             else:
-                random.choice([
-                    lambda:data.ITEMS.drop(
-                        (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100))),
-                    lambda: data.ITEMS.drop(
-                        (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100))),
-                    lambda: data.ITEMS.drop(
-                        (self.hitbox.topleft), target=Item_upgrade_point_crate((100, 100, 100)))
-                ])()
+                if data.PLAYER.heal_amount == 0:
+                    data.ITEMS.drop(
+                        (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100)))
+                elif data.PLAYER.heal_amount < 5:
+                    random.choice([
+                        lambda:data.ITEMS.drop(
+                            (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100))),
+                        lambda: data.ITEMS.drop(
+                            (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100))),
+                        lambda: data.ITEMS.drop(
+                            (self.hitbox.topleft), target=Item_upgrade_point_crate((100, 100, 100)))
+                    ])()
+                elif data.PLAYER.heal_amount > 5:
+                    random.choice([
+                        lambda:data.ITEMS.drop(
+                            (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100))),
+                        lambda: data.ITEMS.drop(
+                            (self.hitbox.topleft), target=Item_upgrade_point_crate((100, 100, 100)))
+                    ])()
         self.kill = True
 
     # def boss_skills(self):
