@@ -65,7 +65,8 @@ class Gfx(Timer):
             "p_right": (86, 87),
             "p_left": (88, 89),
             "p_down": (90, 91),
-            "p_idle": (92, 93)
+            "p_idle": (92, 93),
+            "blood": (94, 95, 96, 97, 98, 99, 100, 101, 102, 103)
         }
 
     def draw(self):
@@ -299,14 +300,6 @@ class Background(Timer):
                 ]):
             cls.bg_color_change(color=(0, 0, 30))
 
-        for bg_obj in cls.bg_objs:
-            if timer.trigger(30):
-                if bg_obj.gfx_idx > 14 and bg_obj.gfx_idx < 18:
-                    Gfx.create_effect("smoke1", 4, anchor=(bg_obj.x, bg_obj.y))
-            bg_obj.gfx_animation()
-            if bg_obj.kill:
-                cls.bg_objs.remove(bg_obj)
-
         if data.PLAYER.health > 2:
 
             if cls.bg_move:
@@ -318,3 +311,11 @@ class Background(Timer):
 
         else:
             win.blit(cls.bg_sprites[18], (0, 0))
+
+        for bg_obj in cls.bg_objs:
+            if timer.trigger(30):
+                if bg_obj.gfx_idx > 14 and bg_obj.gfx_idx < 18:
+                    Gfx.create_effect("smoke1", 4, anchor=(bg_obj.x, bg_obj.y))
+            bg_obj.gfx_animation()
+            if bg_obj.kill:
+                cls.bg_objs.remove(bg_obj)

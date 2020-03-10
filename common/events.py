@@ -732,6 +732,7 @@ class Events():
             if not cls.ground_sup_end:
                 if Background.get_transition_over():
                     data.all_clear()
+                    Background.bg_objs.clear()
                     data.GROUND = True
                     cls.ground_sup_battle = True
 
@@ -749,6 +750,7 @@ class Events():
                     data.GROUND = False
 
                     data.all_clear()
+                    Background.bg_objs.clear()
                     data.PHENOMENON_DATA.append(Planet(loc=(400, 300), script_name="ground_support"))
                     for loc in [(600, 300), (400, 100)]:
                         data.PLAYER_DATA.append(Destroyer_ally(spawn_point=loc, target=(400, -2000),

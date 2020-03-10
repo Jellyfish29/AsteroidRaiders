@@ -4,7 +4,7 @@ import random
 from init import *
 from astraid_funcs import *
 import astraid_data as data
-from Gfx import Gfx
+from Gfx import Gfx, Background
 from projectiles import Projectile, Mine, Explosion
 from items_misc import Item_upgrade_point_crate, Item_supply_crate
 from enemys import Enemy, Shooter
@@ -170,10 +170,10 @@ class Ground_infantry(Event_shooter):
         self.score_amount = 0.1
 
     def gfx_hit(self):
+        Background.bg_objs.append(Infantry_corps(self.hitbox.topleft))
         Gfx.create_effect(
-            "explosion_4", 2,
-            (self.hitbox.topleft[0] - 80, self.hitbox.topleft[1] - 80),
-            explo=True
+            "blood", 2,
+            (self.hitbox.topleft[0] - 50, self.hitbox.topleft[1] - 50)
         )
 
     def skill(self):
@@ -189,6 +189,21 @@ class Ground_infantry(Event_shooter):
                     data.EVENTS.ground_sup_cap_limiter = True
         except IndexError:
             pass
+
+
+class Infantry_corps(Timer):
+
+    def __init__(self, loc):
+        self.loc = loc
+        super().__init__()
+        self.kill = False
+        self.gfx_idx = random.choice([27, 28, 29])
+
+    def gfx_animation(self):
+        win.blit(Enemy.spez_sprites[self.gfx_idx], (self.loc[0], self.loc[1]))
+        if self.timer_trigger(240):
+            self.kill = True
+        self.timer_tick()
 
 
 class Ground_aa_tank(Event_shooter):
