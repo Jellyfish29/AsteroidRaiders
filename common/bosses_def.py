@@ -562,7 +562,7 @@ class Elites(Bosses):
                 if data.PLAYER.heal_amount == 0:
                     data.ITEMS.drop(
                         (self.hitbox.topleft), target=Item_heal_crate((100, 100, 100)))
-                elif data.PLAYER.heal_amount < 5:
+                elif data.PLAYER.heal_amount < 6:
                     random.choice([
                         lambda:data.ITEMS.drop(
                             (self.hitbox.topleft), target=Item_supply_crate((100, 100, 100))),
