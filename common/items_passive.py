@@ -372,7 +372,7 @@ class Item_bi_weave_shields(Items):
     def end_effect(self):
         if self.flag in Items.active_flag_lst:
             Items.active_flag_lst.remove(self.flag)
-            data.PLAYER.max_shield_strength = int(data.PLAYER.max_shield_strength * 2)
+            data.PLAYER.shield.max_shield_strength = int(data.PLAYER.shield.max_shield_strength * 2)
             data.PLAYER.shield.base_effect = self.player_shield_orig_base
             data.PLAYER.shield.set_effect_strength()
 
