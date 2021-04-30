@@ -7,8 +7,6 @@ import random
 # x = {1: 1, 2: 2, 3: 3}
 
 
-# print(abs(-20))
-
 # class Sensor:
 
 #     def __init__(self):
@@ -29,7 +27,7 @@ import random
 # for s in sensoren:
 #     if farbe != "rot":
 #         if s.get_erreichbar():
-#             breakpoint()
+#             # breakpoint()
 #             if s.get_temp() < 20:
 #                 farbe = "gelb"
 #             if s.get_temp() > 30:
@@ -42,8 +40,3 @@ import random
 # for s in sensoren:
 #     print(f"{s.temp}    {s.erreichbar}")
 # print(farbe)
-
-
-x = "$ooooooof"
-
-print(x[0])

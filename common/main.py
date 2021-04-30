@@ -76,7 +76,7 @@ def main():
 
     # Item Setup
     # Items.drop((winwidth / 2, 400), target=Item_scan_rounds((100, 100, 200)))
-    # Items.drop((winwidth / 2, 400), target=Item_bi_weave_shields((100, 100, 200)))
+    Items.drop((winwidth / 2, 400), target=Item_overdrive((100, 100, 200)))
     Items.drop((winwidth / 2, 400), target=start_item_generator()((100, 100, 200)))
     Levels.special_events = Turret
 
